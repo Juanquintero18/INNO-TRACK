@@ -1,3 +1,5 @@
+// src/App.tsx
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,12 +19,17 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+//Componente para proteger rutas que requieren autenticación y, opcionalmente, permisos de administrador
+
 function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
   const { user, isAdmin } = useAuth();
   if (!user) return <Navigate to="/" replace />;
   if (adminOnly && !isAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
+
+
+//Define las rutas de la aplicación, protegiendo las que requieren autenticación y permisos de administrador
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -44,6 +51,9 @@ function AppRoutes() {
   );
 }
 
+//Componente principal de la aplicación que envuelve todo en los proveedores necesarios para el manejo de estado, autenticación y enrutamiento
+
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -57,5 +67,7 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+//Exporta el componente principal de la aplicación
 
 export default App;
