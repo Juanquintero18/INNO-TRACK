@@ -1,3 +1,5 @@
+//descripcion: Pagina de dashboard con resumen de estadísticas, gráficos y alertas para el sistema de costos e inventario
+
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,7 +7,12 @@ import { piezas, materiasPrimas, movimientosInventario, calcularCostoPieza, getS
 import { Puzzle, Package, ArrowLeftRight, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
+// Colores para los gráficos, definidos como constantes para mantener consistencia y facilitar cambios futuros
+
 const CHART_COLORS = ['hsl(212, 99%, 25%)', 'hsl(212, 80%, 45%)', 'hsl(212, 60%, 60%)', 'hsl(0, 0%, 50%)', 'hsl(142, 71%, 45%)'];
+
+
+// Componente principal del dashboard que muestra estadísticas clave, gráficos de costo por pieza y stock de materiales, alertas de stock bajo y actividad reciente
 
 export default function Dashboard() {
   const { user, isAdmin } = useAuth();
@@ -15,10 +22,14 @@ export default function Dashboard() {
   const costoPromedio = piezas.reduce((sum, p) => sum + calcularCostoPieza(p), 0) / totalPiezas;
   const totalMovimientos = movimientosInventario.length;
 
+// Prepara los datos para los gráficos, calculando el costo por pieza y el stock de materiales, y filtrando las materias primas con stock bajo para mostrar alertas
+
   const costoPorPieza = piezas.map(p => ({
     name: p.trace_id,
     costo: Math.round(calcularCostoPieza(p) * 100) / 100,
   }));
+
+// Para el gráfico de stock de materiales, se toman las primeras 5 materias primas y se calcula su nivel de stock, truncando el nombre si es muy largo para mejorar la visualización
 
   const materialesStock = materiasPrimas.slice(0, 5).map(mp => ({
     name: mp.nombre.length > 15 ? mp.nombre.slice(0, 15) + '…' : mp.nombre,

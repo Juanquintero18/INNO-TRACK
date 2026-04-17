@@ -19,6 +19,8 @@ export default function Piezas() {
     p.trace_id.toLowerCase().includes(search.toLowerCase())
   );
 
+// Componente principal de la página de piezas, que muestra una tabla con las piezas registradas, permite buscar por nombre o trace ID, y muestra un diálogo con detalles al hacer clic en una pieza
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div className="flex items-center justify-between">

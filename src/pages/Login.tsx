@@ -1,3 +1,5 @@
+//descripcion: Página de login con formulario de autenticación, validación de credenciales y diseño moderno para el sistema de costos e inventario
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,6 +9,9 @@ import { Label } from '@/components/ui/label';
 import logo from '@/assets/logo-innolution.jfif';
 import { motion } from 'framer-motion';
 import { Lock, Mail } from 'lucide-react';
+
+//componente de login que maneja el estado del formulario, la autenticación y la navegación, con un diseño centrado y animaciones suaves para mejorar la experiencia del usuario
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -24,6 +29,8 @@ export default function Login() {
       setError('Credenciales incorrectas. Intenta con admin@innolution.com o carlos@innolution.com');
     }
   };
+
+// El diseño del formulario incluye un logo, campos de entrada con iconos, mensajes de error estilizados y un botón de envío, todo envuelto en un contenedor animado para una apariencia moderna y profesional
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
