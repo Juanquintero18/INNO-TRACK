@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import logo from '@/assets/logo-innolution.jfif';
+import logo from '@/assets/logo-inno-transparente. RGB.png';
 import { motion } from 'framer-motion';
 import { Lock, Mail } from 'lucide-react';
 
@@ -43,8 +43,8 @@ export default function Login() {
         <div className="bg-card rounded-2xl shadow-xl border border-border p-8">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <img src={logo} alt="Innolution" className="w-20 h-20 rounded-xl object-contain mb-4" />
-            <h1 className="text-2xl font-bold text-primary tracking-tight">INNOLUTION</h1>
+            <img src={logo} alt="Innolution" className="w-28 h-28 rounded-xl object-contain mb-4" />
+            <h1 className="text-2xl font-bold text-primary tracking-tight">INNO-TRACK</h1>
             <p className="text-sm text-muted-foreground mt-1">Sistema de Costos e Inventario</p>
           </div>
 

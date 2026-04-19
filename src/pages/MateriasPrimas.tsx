@@ -11,10 +11,32 @@ import { Search, Package, Plus, Pencil, Trash2 } from 'lucide-react';
 export default function MateriasPrimas() {
   const [search, setSearch] = useState('');
   const [openCreate, setOpenCreate] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
-  const filtered = materiasPrimas.filter(mp =>
-    mp.nombre.toLowerCase().includes(search.toLowerCase())
-  );
+  const formatFecha = (fecha?: string | null) => {
+    if (!fecha) return '—';
+
+    const [year, month, day] = fecha.split('-');
+
+    if (!year || !month || !day) return fecha;
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const filtered = materiasPrimas.filter(mp => {
+    const matchSearch = mp.nombre.toLowerCase().includes(search.toLowerCase());
+    const fechaFiltro = mp.fecha_actualizacion;
+
+    const matchFechas =
+      !fechaInicio && !fechaFin
+        ? true
+        : Boolean(fechaFiltro) &&
+          (!fechaInicio || fechaFiltro >= fechaInicio) &&
+          (!fechaFin || fechaFiltro <= fechaFin);
+
+    return matchSearch && matchFechas;
+  });
 
   const handleEdit = (materia: (typeof materiasPrimas)[number]) => {
     console.log('Editar materia prima:', materia.id);
@@ -26,12 +48,41 @@ export default function MateriasPrimas() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Package className="w-6 h-6 text-primary" /> Materias Primas
           </h1>
           <p className="text-muted-foreground mt-1">Catálogo de materiales y costos</p>
+        </div>
+
+        <div className="flex flex-col gap-2 lg:min-w-[220px] lg:self-center">
+          <div className="space-y-1">
+            <label htmlFor="fecha-inicio" className="text-sm font-medium text-foreground">
+              Fecha inicio
+            </label>
+            <Input
+              id="fecha-inicio"
+              type="date"
+              value={fechaInicio}
+              onChange={e => setFechaInicio(e.target.value)}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="fecha-fin" className="text-sm font-medium text-foreground">
+              Fecha fin
+            </label>
+            <Input
+              id="fecha-fin"
+              type="date"
+              value={fechaFin}
+              onChange={e => setFechaFin(e.target.value)}
+              min={fechaInicio || undefined}
+              className="bg-background"
+            />
+          </div>
         </div>
 
         <Button type="button" onClick={() => setOpenCreate(true)}>
@@ -89,7 +140,7 @@ export default function MateriasPrimas() {
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
-                      {mp.fecha_actualizacion}
+                      {formatFecha(mp.fecha_actualizacion)}
                     </TableCell>
 
                     <TableCell className="text-right">

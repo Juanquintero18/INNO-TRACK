@@ -14,6 +14,18 @@ export default function Inventario() {
   const [search, setSearch] = useState('');
   const [tipoFilter, setTipoFilter] = useState<string>('todos');
   const [openCreate, setOpenCreate] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+
+  const formatFecha = (fecha?: string | null) => {
+    if (!fecha) return '—';
+
+    const [year, month, day] = fecha.split('-');
+
+    if (!year || !month || !day) return fecha;
+
+    return `${day}/${month}/${year}`;
+  };
 
   const filtered = movimientosInventario.filter(m => {
     const matchSearch =
@@ -22,7 +34,15 @@ export default function Inventario() {
       m.motivo?.toLowerCase().includes(search.toLowerCase());
 
     const matchTipo = tipoFilter === 'todos' || m.tipo === tipoFilter;
-    return matchSearch && matchTipo;
+    const fechaFiltro = m.fecha;
+    const matchFechas =
+      !fechaInicio && !fechaFin
+        ? true
+        : Boolean(fechaFiltro) &&
+          (!fechaInicio || fechaFiltro >= fechaInicio) &&
+          (!fechaFin || fechaFiltro <= fechaFin);
+
+    return matchSearch && matchTipo && matchFechas;
   });
 
   const handleEdit = (movimiento: (typeof movimientosInventario)[number]) => {
@@ -35,12 +55,41 @@ export default function Inventario() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <ArrowLeftRight className="w-6 h-6 text-primary" /> Movimientos de Inventario
           </h1>
           <p className="text-muted-foreground mt-1">Registro de entradas, salidas y ajustes</p>
+        </div>
+
+        <div className="flex flex-col gap-2 lg:min-w-[220px] lg:self-center">
+          <div className="space-y-1">
+            <label htmlFor="fecha-inicio" className="text-sm font-medium text-foreground">
+              Fecha inicio
+            </label>
+            <Input
+              id="fecha-inicio"
+              type="date"
+              value={fechaInicio}
+              onChange={e => setFechaInicio(e.target.value)}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="fecha-fin" className="text-sm font-medium text-foreground">
+              Fecha fin
+            </label>
+            <Input
+              id="fecha-fin"
+              type="date"
+              value={fechaFin}
+              onChange={e => setFechaFin(e.target.value)}
+              min={fechaInicio || undefined}
+              className="bg-background"
+            />
+          </div>
         </div>
 
         <Button type="button" onClick={() => setOpenCreate(true)}>
@@ -94,7 +143,7 @@ export default function Inventario() {
             <TableBody>
               {filtered.map(mov => (
                 <TableRow key={mov.id}>
-                  <TableCell className="text-muted-foreground">{mov.fecha}</TableCell>
+                  <TableCell className="text-muted-foreground">{formatFecha(mov.fecha)}</TableCell>
 
                   <TableCell>
                     <Badge

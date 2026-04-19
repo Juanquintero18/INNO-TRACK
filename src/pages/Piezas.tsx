@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -8,11 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { piezas, calcularCostoPieza } from '@/lib/mock-data';
-
-// 1) AGREGAR ICONOS NUEVOS:
-// - Plus: botón para crear
-// - Pencil: botón para editar
-// - Trash2: botón para eliminar
 import { Search, Eye, Puzzle, Plus, Pencil, Trash2 } from 'lucide-react';
 
 import type { Pieza } from '@/lib/mock-data';
@@ -20,20 +14,41 @@ import type { Pieza } from '@/lib/mock-data';
 export default function Piezas() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Pieza | null>(null);
-
-  // 2) ESTADO NUEVO:
-  // Este estado controla si el modal de "Nueva pieza" está abierto.
-  // Por ahora solo es visual.
   const [openCreate, setOpenCreate] = useState(false);
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
 
-  const filtered = piezas.filter(p =>
-    p.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    p.trace_id.toLowerCase().includes(search.toLowerCase())
-  );
+  const formatFecha = (fecha?: string | null) => {
+    if (!fecha) return '—';
 
-  // 3) FUNCIONES PLACEHOLDER:
-  // De momento no crean, editan ni eliminan nada.
-  // Solo dejan lista la estructura visual.
+    const [year, month, day] = fecha.split('-');
+
+    if (!year || !month || !day) return fecha;
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const term = search.toLowerCase();
+
+  const filtered = piezas.filter(p => {
+    const matchSearch =
+      (p.nombre ?? '').toLowerCase().includes(term) ||
+      (p.trace_id ?? '').toLowerCase().includes(term) ||
+      (p.orden?.codigo_orden ?? '').toLowerCase().includes(term) ||
+      (p.orden?.proyecto?.nombre ?? '').toLowerCase().includes(term);
+
+    const fechaFiltro = p.fecha_qc;
+
+const matchFechas =
+  !fechaInicio && !fechaFin
+    ? true
+    : Boolean(fechaFiltro) &&
+      (!fechaInicio || fechaFiltro >= fechaInicio) &&
+      (!fechaFin || fechaFiltro <= fechaFin);
+
+    return matchSearch && matchFechas;
+  });
+
   const handleEdit = (pieza: Pieza) => {
     console.log('Editar pieza:', pieza.id);
   };
@@ -44,7 +59,7 @@ export default function Piezas() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Puzzle className="w-6 h-6 text-primary" /> Piezas
@@ -52,7 +67,35 @@ export default function Piezas() {
           <p className="text-muted-foreground mt-1">Gestión de piezas y control de costos</p>
         </div>
 
-        {/* 4) BOTÓN VISUAL PARA CREAR */}
+        <div className="flex flex-col gap-2 lg:min-w-[220px] lg:self-center">
+          <div className="space-y-1">
+            <label htmlFor="fecha-inicio" className="text-sm font-medium text-foreground">
+              Fecha inicio
+            </label>
+            <Input
+              id="fecha-inicio"
+              type="date"
+              value={fechaInicio}
+              onChange={e => setFechaInicio(e.target.value)}
+              className="bg-background"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="fecha-fin" className="text-sm font-medium text-foreground">
+              Fecha fin
+            </label>
+            <Input
+              id="fecha-fin"
+              type="date"
+              value={fechaFin}
+              onChange={e => setFechaFin(e.target.value)}
+              min={fechaInicio || undefined}
+              className="bg-background"
+            />
+          </div>
+        </div>
+
         <Button type="button" onClick={() => setOpenCreate(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nueva pieza
@@ -65,7 +108,7 @@ export default function Piezas() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nombre o trace ID..."
+                placeholder="Buscar por nombre, trace ID, orden o proyecto..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-9"
@@ -80,13 +123,13 @@ export default function Piezas() {
               <TableRow>
                 <TableHead>Trace ID</TableHead>
                 <TableHead>Nombre</TableHead>
+                <TableHead>Proyecto</TableHead>
+                <TableHead>Orden</TableHead>
                 <TableHead>Fecha Gelcoat</TableHead>
-                <TableHead>Fecha QC</TableHead>
+                <TableHead className="text-primary">Fecha QC</TableHead>
                 <TableHead>Peso Real</TableHead>
                 <TableHead className="text-right">Costo Total</TableHead>
                 <TableHead>Estado</TableHead>
-
-                {/* 5) RENOMBRAR LA ÚLTIMA COLUMNA */}
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -98,12 +141,21 @@ export default function Piezas() {
                 return (
                   <TableRow key={pieza.id}>
                     <TableCell className="font-mono text-sm font-medium text-primary">
-                      {pieza.trace_id}
+                      {pieza.trace_id || '—'}
                     </TableCell>
 
-                    <TableCell className="font-medium">{pieza.nombre}</TableCell>
-                    <TableCell className="text-muted-foreground">{pieza.fecha_gelcoat || '—'}</TableCell>
-                    <TableCell className="text-muted-foreground">{pieza.fecha_qc || '—'}</TableCell>
+                    <TableCell className="font-medium">{pieza.nombre || '—'}</TableCell>
+
+                    <TableCell className="text-muted-foreground">
+                      {pieza.orden?.proyecto?.nombre || '—'}
+                    </TableCell>
+
+                    <TableCell className="font-mono text-muted-foreground">
+                      {pieza.orden?.codigo_orden || '—'}
+                    </TableCell>
+
+                    <TableCell className="text-muted-foreground">{formatFecha(pieza.fecha_gelcoat)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatFecha(pieza.fecha_qc)}</TableCell>
                     <TableCell>{pieza.peso_real ? `${pieza.peso_real} kg` : '—'}</TableCell>
                     <TableCell className="text-right font-semibold">${costo.toFixed(2)}</TableCell>
 
@@ -114,11 +166,6 @@ export default function Piezas() {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      {/* 6) BOTONES VISUALES POR FILA:
-                          - Ver detalle
-                          - Editar
-                          - Eliminar
-                      */}
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
@@ -156,10 +203,6 @@ export default function Piezas() {
         </CardContent>
       </Card>
 
-      {/* 7) MODAL VISUAL PARA CREAR:
-          Por ahora solo muestra estructura.
-          Después aquí se puede poner el formulario real.
-      */}
       <Dialog open={openCreate} onOpenChange={setOpenCreate}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -175,17 +218,12 @@ export default function Piezas() {
               <Button variant="outline" onClick={() => setOpenCreate(false)}>
                 Cancelar
               </Button>
-              <Button type="button">
-                Guardar
-              </Button>
+              <Button type="button">Guardar</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* 8) DIALOG ACTUAL DE DETALLE:
-          Este ya existía y se deja igual.
-      */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -197,14 +235,22 @@ export default function Piezas() {
 
           {selected && (
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Proyecto</p>
+                  <p className="font-medium">{selected.orden?.proyecto?.nombre || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Orden</p>
+                  <p className="font-medium font-mono">{selected.orden?.codigo_orden || '—'}</p>
+                </div>
                 <div>
                   <p className="text-muted-foreground">Fecha Gelcoat</p>
-                  <p className="font-medium">{selected.fecha_gelcoat || '—'}</p>
+                  <p className="font-medium">{formatFecha(selected.fecha_gelcoat)}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Fecha QC</p>
-                  <p className="font-medium">{selected.fecha_qc || '—'}</p>
+                  <p className="font-medium">{formatFecha(selected.fecha_qc)}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Peso Real</p>
@@ -228,7 +274,7 @@ export default function Piezas() {
 
                   <TableBody>
                     {selected.materias_primas?.map(pmp => {
-                      const cant = pmp.cantidad_real ?? pmp.cantidad_teorica;
+                      const cant = pmp.cantidad_real ?? pmp.cantidad_teorica ?? 0;
                       const subtotal = cant * (pmp.materia_prima?.costo ?? 0);
 
                       return (
@@ -237,7 +283,7 @@ export default function Piezas() {
                           <TableCell className="text-right">{pmp.cantidad_teorica}</TableCell>
                           <TableCell className="text-right">{pmp.cantidad_real ?? '—'}</TableCell>
                           <TableCell className="text-right">
-                            ${pmp.materia_prima?.costo.toFixed(2)}
+                            ${(pmp.materia_prima?.costo ?? 0).toFixed(2)}
                           </TableCell>
                           <TableCell className="text-right font-semibold">
                             ${subtotal.toFixed(2)}

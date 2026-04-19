@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import logo from '@/assets/logo-innolution.jfif';
+import logo from '@/assets/logo-inno-transparente. RGB.png';
 import {
   LayoutDashboard,
   Puzzle,
@@ -45,10 +45,17 @@ export function AppSidebar() {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-border min-h-[72px]">
-        <img src={logo} alt="Innolution" className="w-10 h-10 rounded-lg object-contain flex-shrink-0" />
+      <div
+        className={cn(
+          'border-b border-border px-4 py-5',
+          collapsed
+            ? 'flex min-h-[72px] items-center justify-center'
+            : 'flex min-h-[120px] flex-col items-center justify-center gap-2 text-center'
+        )}
+      >
+        <img src={logo} alt="Innolution" className="w-20 h-20 rounded-lg object-contain flex-shrink-0" />
         {!collapsed && (
-          <span className="text-lg font-bold text-primary tracking-tight">INNOLUTION</span>
+          <span className="text-lg font-bold text-primary tracking-tight">INNO-TRACK</span>
         )}
       </div>
 
