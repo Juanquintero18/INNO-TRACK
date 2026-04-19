@@ -1,25 +1,46 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { piezas, calcularCostoPieza } from '@/lib/mock-data';
-import { Search, Eye, Puzzle } from 'lucide-react';
+
+// 1) AGREGAR ICONOS NUEVOS:
+// - Plus: botón para crear
+// - Pencil: botón para editar
+// - Trash2: botón para eliminar
+import { Search, Eye, Puzzle, Plus, Pencil, Trash2 } from 'lucide-react';
+
 import type { Pieza } from '@/lib/mock-data';
 
 export default function Piezas() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Pieza | null>(null);
 
+  // 2) ESTADO NUEVO:
+  // Este estado controla si el modal de "Nueva pieza" está abierto.
+  // Por ahora solo es visual.
+  const [openCreate, setOpenCreate] = useState(false);
+
   const filtered = piezas.filter(p =>
     p.nombre.toLowerCase().includes(search.toLowerCase()) ||
     p.trace_id.toLowerCase().includes(search.toLowerCase())
   );
 
-// Componente principal de la página de piezas, que muestra una tabla con las piezas registradas, permite buscar por nombre o trace ID, y muestra un diálogo con detalles al hacer clic en una pieza
+  // 3) FUNCIONES PLACEHOLDER:
+  // De momento no crean, editan ni eliminan nada.
+  // Solo dejan lista la estructura visual.
+  const handleEdit = (pieza: Pieza) => {
+    console.log('Editar pieza:', pieza.id);
+  };
+
+  const handleDelete = (pieza: Pieza) => {
+    console.log('Eliminar pieza:', pieza.id);
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -30,6 +51,12 @@ export default function Piezas() {
           </h1>
           <p className="text-muted-foreground mt-1">Gestión de piezas y control de costos</p>
         </div>
+
+        {/* 4) BOTÓN VISUAL PARA CREAR */}
+        <Button type="button" onClick={() => setOpenCreate(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva pieza
+        </Button>
       </div>
 
       <Card>
@@ -46,6 +73,7 @@ export default function Piezas() {
             </div>
           </div>
         </CardHeader>
+
         <CardContent>
           <Table>
             <TableHeader>
@@ -57,29 +85,68 @@ export default function Piezas() {
                 <TableHead>Peso Real</TableHead>
                 <TableHead className="text-right">Costo Total</TableHead>
                 <TableHead>Estado</TableHead>
-                <TableHead></TableHead>
+
+                {/* 5) RENOMBRAR LA ÚLTIMA COLUMNA */}
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {filtered.map(pieza => {
                 const costo = calcularCostoPieza(pieza);
+
                 return (
                   <TableRow key={pieza.id}>
-                    <TableCell className="font-mono text-sm font-medium text-primary">{pieza.trace_id}</TableCell>
+                    <TableCell className="font-mono text-sm font-medium text-primary">
+                      {pieza.trace_id}
+                    </TableCell>
+
                     <TableCell className="font-medium">{pieza.nombre}</TableCell>
                     <TableCell className="text-muted-foreground">{pieza.fecha_gelcoat || '—'}</TableCell>
                     <TableCell className="text-muted-foreground">{pieza.fecha_qc || '—'}</TableCell>
                     <TableCell>{pieza.peso_real ? `${pieza.peso_real} kg` : '—'}</TableCell>
                     <TableCell className="text-right font-semibold">${costo.toFixed(2)}</TableCell>
+
                     <TableCell>
                       <Badge variant={pieza.fecha_qc ? 'default' : 'secondary'}>
                         {pieza.fecha_qc ? 'Completada' : 'En proceso'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => setSelected(pieza)}>
-                        <Eye className="w-4 h-4" />
-                      </Button>
+
+                    <TableCell className="text-right">
+                      {/* 6) BOTONES VISUALES POR FILA:
+                          - Ver detalle
+                          - Editar
+                          - Eliminar
+                      */}
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelected(pieza)}
+                          title="Ver detalle"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleEdit(pieza)}
+                          title="Editar"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleDelete(pieza)}
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -89,7 +156,36 @@ export default function Piezas() {
         </CardContent>
       </Card>
 
-      {/* Detail Dialog */}
+      {/* 7) MODAL VISUAL PARA CREAR:
+          Por ahora solo muestra estructura.
+          Después aquí se puede poner el formulario real.
+      */}
+      <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Nueva pieza</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Aquí irá el formulario para crear una nueva pieza.
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setOpenCreate(false)}>
+                Cancelar
+              </Button>
+              <Button type="button">
+                Guardar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 8) DIALOG ACTUAL DE DETALLE:
+          Este ya existía y se deja igual.
+      */}
       <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -98,6 +194,7 @@ export default function Piezas() {
               <span>— {selected?.nombre}</span>
             </DialogTitle>
           </DialogHeader>
+
           {selected && (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4 text-sm">
@@ -117,6 +214,7 @@ export default function Piezas() {
 
               <div>
                 <h3 className="font-semibold text-sm mb-2">Materias Primas Utilizadas</h3>
+
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -127,22 +225,29 @@ export default function Piezas() {
                       <TableHead className="text-right">Subtotal</TableHead>
                     </TableRow>
                   </TableHeader>
+
                   <TableBody>
                     {selected.materias_primas?.map(pmp => {
                       const cant = pmp.cantidad_real ?? pmp.cantidad_teorica;
                       const subtotal = cant * (pmp.materia_prima?.costo ?? 0);
+
                       return (
                         <TableRow key={pmp.id}>
                           <TableCell>{pmp.materia_prima?.nombre}</TableCell>
                           <TableCell className="text-right">{pmp.cantidad_teorica}</TableCell>
                           <TableCell className="text-right">{pmp.cantidad_real ?? '—'}</TableCell>
-                          <TableCell className="text-right">${pmp.materia_prima?.costo.toFixed(2)}</TableCell>
-                          <TableCell className="text-right font-semibold">${subtotal.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">
+                            ${pmp.materia_prima?.costo.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold">
+                            ${subtotal.toFixed(2)}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
                   </TableBody>
                 </Table>
+
                 <div className="mt-3 text-right">
                   <span className="text-lg font-bold text-primary">
                     Total: ${calcularCostoPieza(selected).toFixed(2)}

@@ -91,10 +91,9 @@ export default function Login() {
           </form>
 
           <div className="mt-6 p-3 rounded-lg bg-muted/50 text-xs text-muted-foreground">
-            <p className="font-medium mb-1">Demo - Credenciales:</p>
+            <p className="font-medium mb-1">Credenciales:</p>
             <p>Admin: admin@innolution.com</p>
             <p>Trabajador: carlos@innolution.com</p>
-            <p className="mt-1 italic">Cualquier contraseña funciona</p>
           </div>
         </div>
       </motion.div>
