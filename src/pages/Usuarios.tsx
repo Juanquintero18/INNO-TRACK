@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usuarios } from '@/lib/mock-data';
 import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
 
@@ -13,17 +15,110 @@ type Usuario = (typeof usuarios)[number];
 
 export default function Usuarios() {
   const [search, setSearch] = useState('');
+  const [usuariosList, setUsuariosList] = useState(usuarios);
   const [openCreate, setOpenCreate] = useState(false);
+  const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    apellido: '',
+    email: '',
+    contrasena: '',
+    rol: '',
+  });
+  const [formError, setFormError] = useState('');
 
-  const filtered = usuarios.filter(u =>
+  const filtered = usuariosList.filter(u =>
     u.nombre.toLowerCase().includes(search.toLowerCase()) ||
     u.apellido.toLowerCase().includes(search.toLowerCase()) ||
     u.email.toLowerCase().includes(search.toLowerCase()) ||
     u.rol.toLowerCase().includes(search.toLowerCase())
   );
 
+  const resetForm = () => {
+    setFormData({
+      nombre: '',
+      apellido: '',
+      email: '',
+      contrasena: '',
+      rol: '',
+    });
+    setFormError('');
+    setEditingUsuario(null);
+  };
+
+  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const nombre = formData.nombre.trim();
+    const apellido = formData.apellido.trim();
+    const email = formData.email.trim();
+    const contrasena = formData.contrasena.trim();
+    const rol = formData.rol.trim();
+
+    if (!nombre || !apellido || !email || !contrasena || !rol) {
+      setFormError('Completa todos los campos del usuario.');
+      return;
+    }
+
+    const emailExiste = usuariosList.some(
+      usuario => usuario.email.toLowerCase() === email.toLowerCase() && usuario.id !== editingUsuario?.id
+    );
+
+    if (emailExiste) {
+      setFormError('Ese correo de usuario ya existe.');
+      return;
+    }
+
+    if (editingUsuario) {
+      setUsuariosList(prev =>
+        prev.map(usuario =>
+          usuario.id === editingUsuario.id
+            ? {
+                ...usuario,
+                nombre,
+                apellido,
+                email,
+                contrasena,
+                rol,
+              }
+            : usuario
+        )
+      );
+      resetForm();
+      setOpenCreate(false);
+      return;
+    }
+
+    const nextId = usuariosList.length
+      ? Math.max(...usuariosList.map(usuario => usuario.id)) + 1
+      : 1;
+
+    setUsuariosList(prev => [
+      ...prev,
+      {
+        id: nextId,
+        nombre,
+        apellido,
+        email,
+        contrasena,
+        rol,
+      },
+    ]);
+    resetForm();
+    setOpenCreate(false);
+  };
+
   const handleEdit = (usuario: Usuario) => {
-    console.log('Editar usuario:', usuario.id);
+    setEditingUsuario(usuario);
+    setFormData({
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      email: usuario.email,
+      contrasena: usuario.contrasena,
+      rol: usuario.rol,
+    });
+    setFormError('');
+    setOpenCreate(true);
   };
 
   const handleDelete = (usuario: Usuario) => {
@@ -111,24 +206,105 @@ export default function Usuarios() {
         </CardContent>
       </Card>
 
-      <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+      <Dialog
+        open={openCreate}
+        onOpenChange={open => {
+          setOpenCreate(open);
+          if (!open) resetForm();
+        }}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Nuevo usuario</DialogTitle>
+            <DialogTitle>{editingUsuario ? 'Editar usuario' : 'Nuevo usuario'}</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Aquí irá el formulario para crear un nuevo usuario.
-            </p>
+          <form onSubmit={handleCreateSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre</Label>
+              <Input
+                id="nombre"
+                placeholder="Ej. Laura"
+                value={formData.nombre}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, nombre: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="apellido">Apellido</Label>
+              <Input
+                id="apellido"
+                placeholder="Ej. Gómez"
+                value={formData.apellido}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, apellido: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Correo electrónico</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="usuario@innolution.com"
+                value={formData.email}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, email: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="contrasena">Contraseña</Label>
+              <Input
+                id="contrasena"
+                type="password"
+                placeholder="••••••••"
+                value={formData.contrasena}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, contrasena: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Rol</Label>
+              <Select
+                value={formData.rol}
+                onValueChange={value => {
+                  setFormData(prev => ({ ...prev, rol: value }));
+                  if (formError) setFormError('');
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un rol" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="administrador">Administrador</SelectItem>
+                  <SelectItem value="trabajador">Trabajador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formError && (
+              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {formError}
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpenCreate(false)}>
+              <Button variant="outline" type="button" onClick={() => setOpenCreate(false)}>
                 Cancelar
               </Button>
-              <Button type="button">Guardar</Button>
+              <Button type="submit">{editingUsuario ? 'Actualizar' : 'Guardar'}</Button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </motion.div>

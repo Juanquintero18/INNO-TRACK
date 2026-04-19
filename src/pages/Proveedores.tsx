@@ -1,19 +1,107 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { proveedores } from '@/lib/mock-data';
 import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2 } from 'lucide-react';
 
-export default function Proveedores() {
-  const [openCreate, setOpenCreate] = useState(false);
+type Proveedor = (typeof proveedores)[number];
 
-  const handleEdit = (proveedor: (typeof proveedores)[number]) => {
-    console.log('Editar proveedor:', proveedor.id);
+export default function Proveedores() {
+  const [proveedoresList, setProveedoresList] = useState(proveedores);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [editingProveedor, setEditingProveedor] = useState<Proveedor | null>(null);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    telefono: '',
+    email: '',
+    direccion: '',
+  });
+  const [formError, setFormError] = useState('');
+
+  const resetForm = () => {
+    setFormData({ nombre: '', telefono: '', email: '', direccion: '' });
+    setFormError('');
+    setEditingProveedor(null);
   };
 
-  const handleDelete = (proveedor: (typeof proveedores)[number]) => {
+  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const nombre = formData.nombre.trim();
+    const telefono = formData.telefono.trim();
+    const email = formData.email.trim();
+    const direccion = formData.direccion.trim();
+
+    if (!nombre || !telefono || !email || !direccion) {
+      setFormError('Completa todos los campos del proveedor.');
+      return;
+    }
+
+    const emailExiste = proveedoresList.some(
+      proveedor =>
+        proveedor.email.toLowerCase() === email.toLowerCase() &&
+        proveedor.id !== editingProveedor?.id
+    );
+
+    if (emailExiste) {
+      setFormError('Ese correo del proveedor ya existe.');
+      return;
+    }
+
+    if (editingProveedor) {
+      setProveedoresList(prev =>
+        prev.map(proveedor =>
+          proveedor.id === editingProveedor.id
+            ? {
+                ...proveedor,
+                nombre,
+                telefono,
+                email,
+                direccion,
+              }
+            : proveedor
+        )
+      );
+      resetForm();
+      setOpenCreate(false);
+      return;
+    }
+
+    const nextId = proveedoresList.length
+      ? Math.max(...proveedoresList.map(proveedor => proveedor.id)) + 1
+      : 1;
+
+    setProveedoresList(prev => [
+      ...prev,
+      {
+        id: nextId,
+        nombre,
+        telefono,
+        email,
+        direccion,
+      },
+    ]);
+    resetForm();
+    setOpenCreate(false);
+  };
+
+  const handleEdit = (proveedor: Proveedor) => {
+    setEditingProveedor(proveedor);
+    setFormData({
+      nombre: proveedor.nombre,
+      telefono: proveedor.telefono,
+      email: proveedor.email,
+      direccion: proveedor.direccion,
+    });
+    setFormError('');
+    setOpenCreate(true);
+  };
+
+  const handleDelete = (proveedor: Proveedor) => {
     console.log('Eliminar proveedor:', proveedor.id);
   };
 
@@ -34,7 +122,7 @@ export default function Proveedores() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {proveedores.map(p => (
+        {proveedoresList.map(p => (
           <Card key={p.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3 mb-3">
@@ -77,24 +165,87 @@ export default function Proveedores() {
         ))}
       </div>
 
-      <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+      <Dialog
+        open={openCreate}
+        onOpenChange={open => {
+          setOpenCreate(open);
+          if (!open) resetForm();
+        }}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Nuevo proveedor</DialogTitle>
+            <DialogTitle>
+              {editingProveedor ? 'Editar proveedor' : 'Nuevo proveedor'}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Aquí irá el formulario para crear un nuevo proveedor.
-            </p>
+          <form onSubmit={handleCreateSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre del proveedor</Label>
+              <Input
+                id="nombre"
+                placeholder="Ej. Compuestos del Norte"
+                value={formData.nombre}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, nombre: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="telefono">Teléfono</Label>
+              <Input
+                id="telefono"
+                placeholder="+57 300 123 4567"
+                value={formData.telefono}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, telefono: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Correo electrónico</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="proveedor@empresa.com"
+                value={formData.email}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, email: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="direccion">Dirección</Label>
+              <Input
+                id="direccion"
+                placeholder="Ej. Zona Industrial, Barranquilla"
+                value={formData.direccion}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, direccion: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            {formError && (
+              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {formError}
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpenCreate(false)}>
+              <Button variant="outline" type="button" onClick={() => setOpenCreate(false)}>
                 Cancelar
               </Button>
-              <Button type="button">Guardar</Button>
+              <Button type="submit">{editingProveedor ? 'Actualizar' : 'Guardar'}</Button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </motion.div>
