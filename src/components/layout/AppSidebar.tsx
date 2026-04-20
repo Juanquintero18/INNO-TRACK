@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import logo from '@/assets/logo-innolution.jfif';
+import logo from '@/assets/logo-inno-transparente. RGB.png';
 import {
   LayoutDashboard,
   Puzzle,
+  ShieldAlert,
   Package,
   ArrowLeftRight,
   Truck,
@@ -13,7 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const adminLinks = [
@@ -24,17 +24,24 @@ const adminLinks = [
   { to: '/proveedores', label: 'Proveedores', icon: Truck },
   { to: '/trabajadores', label: 'Trabajadores', icon: HardHat },
   { to: '/usuarios', label: 'Usuarios', icon: Users },
+  { to: '/auditoria', label: 'Auditoría', icon: ShieldAlert },
 ];
 
 const workerLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/piezas', label: 'Piezas', icon: Puzzle },
+  { to: '/materias-primas', label: 'Materias Primas', icon: Package },
   { to: '/inventario', label: 'Inventario', icon: ArrowLeftRight },
+  { to: '/trabajadores', label: 'Trabajadores', icon: HardHat },
 ];
 
-export function AppSidebar() {
+type AppSidebarProps = {
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
+};
+
+export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
   const { user, logout, isAdmin } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
   const links = isAdmin ? adminLinks : workerLinks;
 
   return (
@@ -45,10 +52,17 @@ export function AppSidebar() {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-border min-h-[72px]">
-        <img src={logo} alt="Innolution" className="w-10 h-10 rounded-lg object-contain flex-shrink-0" />
+      <div
+        className={cn(
+          'border-b border-border px-4 py-5',
+          collapsed
+            ? 'flex min-h-[72px] items-center justify-center'
+            : 'flex min-h-[120px] flex-col items-center justify-center gap-2 text-center'
+        )}
+      >
+        <img src={logo} alt="Innolution" className="w-20 h-20 rounded-lg object-contain flex-shrink-0" />
         {!collapsed && (
-          <span className="text-lg font-bold text-primary tracking-tight">INNOLUTION</span>
+          <span className="text-lg font-bold text-primary tracking-tight">INNO-TRACK</span>
         )}
       </div>
 
@@ -90,7 +104,7 @@ export function AppSidebar() {
             {!collapsed && <span>Cerrar sesión</span>}
           </button>
           <button
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={onToggleCollapsed}
             className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
           >
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
