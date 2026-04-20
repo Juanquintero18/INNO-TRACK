@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { calcularCostoPieza } from '@/lib/domain-utils';
+import { calcularCostoPieza, calcularPesoTeoricoPieza } from '@/lib/domain-utils';
 import { useAppData } from '@/contexts/AppDataContext';
 import { apiRequest } from '@/lib/api';
 import { Search, Eye, Puzzle, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
@@ -848,6 +848,10 @@ const matchFechas =
                 <div>
                   <p className="text-muted-foreground">Peso Real</p>
                   <p className="font-medium">{selected.peso_real ? `${selected.peso_real} kg` : '—'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Peso Teórico</p>
+                  <p className="font-medium">{`${calcularPesoTeoricoPieza(selected).toFixed(2)} kg`}</p>
                 </div>
               </div>
 
