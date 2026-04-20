@@ -3,19 +3,52 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { movimientosInventario } from '@/lib/mock-data';
-import { Search, ArrowLeftRight, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useAppData } from '@/contexts/AppDataContext';
+import { useAuth } from '@/contexts/AuthContext';
+import type { MovimientoInventario } from '@/lib/mock-data';
+import { Search, ArrowLeftRight, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
+
+type Movimiento = MovimientoInventario;
 
 export default function Inventario() {
+  const { user, canEditModule } = useAuth();
+  const {
+    materiasList,
+    movimientosList,
+    setMovimientosList,
+    proveedoresList,
+    trabajadoresList,
+    deleteEntity,
+  } = useAppData();
+  const canManage = canEditModule('inventario');
   const [search, setSearch] = useState('');
   const [tipoFilter, setTipoFilter] = useState<string>('todos');
+  const [sortField, setSortField] = useState<'fecha' | 'tipo' | 'material' | 'cantidad' | 'responsable' | 'motivo' | 'referencia'>('fecha');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [openCreate, setOpenCreate] = useState(false);
+  const [editingMovimiento, setEditingMovimiento] = useState<Movimiento | null>(null);
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [formData, setFormData] = useState({
+    materia_prima_id: '',
+    tipo: 'entrada',
+    cantidad: '',
+    fecha: '',
+    proveedor_id: '',
+    trabajador_produccion_id: '',
+    motivo: '',
+    referencia: '',
+  });
+  const [formError, setFormError] = useState('');
+
+  const showPermissionDenied = () => {
+    window.alert('No tienes permisos para editar en el módulo de Inventario.');
+  };
 
   const formatFecha = (fecha?: string | null) => {
     if (!fecha) return '—';
@@ -27,11 +60,11 @@ export default function Inventario() {
     return `${day}/${month}/${year}`;
   };
 
-  const filtered = movimientosInventario.filter(m => {
+  const filtered = movimientosList.filter(m => {
     const matchSearch =
-      m.materia_prima?.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      m.referencia?.toLowerCase().includes(search.toLowerCase()) ||
-      m.motivo?.toLowerCase().includes(search.toLowerCase());
+      (m.materia_prima?.nombre ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (m.referencia ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (m.motivo ?? '').toLowerCase().includes(search.toLowerCase());
 
     const matchTipo = tipoFilter === 'todos' || m.tipo === tipoFilter;
     const fechaFiltro = m.fecha;
@@ -45,12 +78,220 @@ export default function Inventario() {
     return matchSearch && matchTipo && matchFechas;
   });
 
-  const handleEdit = (movimiento: (typeof movimientosInventario)[number]) => {
-    console.log('Editar movimiento:', movimiento.id);
+  const sorted = [...filtered].sort((left, right) => {
+    const leftValue =
+      sortField === 'material'
+        ? (left.materia_prima?.nombre ?? '').toLowerCase()
+        : sortField === 'cantidad'
+          ? left.cantidad ?? 0
+          : sortField === 'responsable'
+            ? (left.proveedor?.nombre ?? left.trabajador?.nombre ?? '').toLowerCase()
+            : sortField === 'motivo'
+              ? (left.motivo ?? '').toLowerCase()
+              : sortField === 'referencia'
+                ? (left.referencia ?? '').toLowerCase()
+                : sortField === 'tipo'
+                  ? (left.tipo ?? '').toLowerCase()
+                  : left.fecha ?? '';
+
+    const rightValue =
+      sortField === 'material'
+        ? (right.materia_prima?.nombre ?? '').toLowerCase()
+        : sortField === 'cantidad'
+          ? right.cantidad ?? 0
+          : sortField === 'responsable'
+            ? (right.proveedor?.nombre ?? right.trabajador?.nombre ?? '').toLowerCase()
+            : sortField === 'motivo'
+              ? (right.motivo ?? '').toLowerCase()
+              : sortField === 'referencia'
+                ? (right.referencia ?? '').toLowerCase()
+                : sortField === 'tipo'
+                  ? (right.tipo ?? '').toLowerCase()
+                  : right.fecha ?? '';
+
+    if (leftValue < rightValue) return sortDirection === 'asc' ? -1 : 1;
+    if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: 'fecha' | 'tipo' | 'material' | 'cantidad' | 'responsable' | 'motivo' | 'referencia') => {
+    if (sortField === field) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(field);
+    setSortDirection('asc');
   };
 
-  const handleDelete = (movimiento: (typeof movimientosInventario)[number]) => {
-    console.log('Eliminar movimiento:', movimiento.id);
+  const renderSortableHeader = (
+    label: string,
+    field: 'fecha' | 'tipo' | 'material' | 'cantidad' | 'responsable' | 'motivo' | 'referencia',
+    alignRight = false,
+  ) => (
+    <button
+      type="button"
+      onClick={() => handleSort(field)}
+      className={`inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary ${alignRight ? 'justify-end w-full' : ''}`}
+    >
+      <span>{label}</span>
+      <ArrowUpDown className={`h-4 w-4 ${sortField === field ? 'text-primary' : 'text-muted-foreground'}`} />
+      {sortField === field && (
+        <span className="text-xs text-primary">{sortDirection === 'asc' ? 'ASC' : 'DESC'}</span>
+      )}
+    </button>
+  );
+
+  const resetForm = () => {
+    setFormData({
+      materia_prima_id: '',
+      tipo: 'entrada',
+      cantidad: '',
+      fecha: '',
+      proveedor_id: '',
+      trabajador_produccion_id: '',
+      motivo: '',
+      referencia: '',
+    });
+    setFormError('');
+    setEditingMovimiento(null);
+  };
+
+  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    const materiaPrimaId = Number(formData.materia_prima_id);
+    const cantidad = Number(formData.cantidad);
+    const fecha = formData.fecha;
+    const motivo = formData.motivo.trim() || null;
+    const referencia = formData.referencia.trim();
+    const tipo = formData.tipo as Movimiento['tipo'];
+    const proveedorId = formData.proveedor_id ? Number(formData.proveedor_id) : null;
+    const trabajadorId = formData.trabajador_produccion_id
+      ? Number(formData.trabajador_produccion_id)
+      : null;
+
+    if (!materiaPrimaId || !fecha || !referencia || Number.isNaN(cantidad)) {
+      setFormError('Completa los campos obligatorios del movimiento.');
+      return;
+    }
+
+    if ((tipo === 'entrada' || tipo === 'salida') && cantidad <= 0) {
+      setFormError('La cantidad debe ser mayor que cero.');
+      return;
+    }
+
+    if (tipo === 'ajuste' && cantidad === 0) {
+      setFormError('El ajuste no puede ser cero.');
+      return;
+    }
+
+    if (tipo === 'entrada' && !proveedorId) {
+      setFormError('Selecciona un proveedor para las entradas.');
+      return;
+    }
+
+    if (tipo === 'salida' && !trabajadorId) {
+      setFormError('Selecciona un trabajador para las salidas.');
+      return;
+    }
+
+    const materiaPrima = materiasList.find(materia => materia.id === materiaPrimaId);
+
+    if (!materiaPrima) {
+      setFormError('Selecciona una materia prima válida.');
+      return;
+    }
+
+    const proveedor = tipo === 'entrada'
+      ? proveedoresList.find(item => item.id === proveedorId)
+      : undefined;
+    const trabajador = tipo === 'salida'
+      ? trabajadoresList.find(item => item.id === trabajadorId)
+      : undefined;
+
+    if (tipo === 'entrada' && !proveedor) {
+      setFormError('Selecciona un proveedor válido.');
+      return;
+    }
+
+    if (tipo === 'salida' && !trabajador) {
+      setFormError('Selecciona un trabajador válido.');
+      return;
+    }
+
+    const payload: Omit<MovimientoInventario, 'id'> = {
+      materia_prima_id: materiaPrimaId,
+      proveedor_id: tipo === 'entrada' ? proveedorId : null,
+      usuario_id: user?.id ?? editingMovimiento?.usuario_id ?? null,
+      trabajador_produccion_id: tipo === 'salida' ? trabajadorId : null,
+      tipo,
+      cantidad,
+      fecha,
+      motivo,
+      referencia,
+      materia_prima: materiaPrima,
+      proveedor,
+      usuario: user ?? editingMovimiento?.usuario,
+      trabajador,
+    };
+
+    if (editingMovimiento) {
+      setMovimientosList(prev =>
+        prev.map(movimiento =>
+          movimiento.id === editingMovimiento.id
+            ? { ...movimiento, ...payload }
+            : movimiento
+        )
+      );
+      resetForm();
+      setOpenCreate(false);
+      return;
+    }
+
+    const nextId = movimientosList.length
+      ? Math.max(...movimientosList.map(movimiento => movimiento.id)) + 1
+      : 1;
+
+    setMovimientosList(prev => [...prev, { id: nextId, ...payload }]);
+    resetForm();
+    setOpenCreate(false);
+  };
+
+  const handleEdit = (movimiento: Movimiento) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    setEditingMovimiento(movimiento);
+    setFormData({
+      materia_prima_id: String(movimiento.materia_prima_id ?? ''),
+      tipo: movimiento.tipo,
+      cantidad: String(movimiento.cantidad),
+      fecha: movimiento.fecha ?? '',
+      proveedor_id: String(movimiento.proveedor_id ?? ''),
+      trabajador_produccion_id: String(movimiento.trabajador_produccion_id ?? ''),
+      motivo: movimiento.motivo ?? '',
+      referencia: movimiento.referencia ?? '',
+    });
+    setFormError('');
+    setOpenCreate(true);
+  };
+
+  const handleDelete = (movimiento: Movimiento) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    if (!window.confirm(`¿Eliminar el movimiento ${movimiento.referencia || movimiento.id}?`)) return;
+    deleteEntity('movimiento-inventario', movimiento);
   };
 
   return (
@@ -92,10 +333,12 @@ export default function Inventario() {
           </div>
         </div>
 
-        <Button type="button" onClick={() => setOpenCreate(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo registro
-        </Button>
+        {canManage && (
+          <Button type="button" onClick={() => setOpenCreate(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo registro
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -129,19 +372,19 @@ export default function Inventario() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Fecha</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Material</TableHead>
-                <TableHead className="text-right">Cantidad</TableHead>
-                <TableHead>Proveedor / Trabajador</TableHead>
-                <TableHead>Motivo</TableHead>
-                <TableHead>Referencia</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableHead>{renderSortableHeader('Fecha', 'fecha')}</TableHead>
+                <TableHead>{renderSortableHeader('Tipo', 'tipo')}</TableHead>
+                <TableHead>{renderSortableHeader('Material', 'material')}</TableHead>
+                <TableHead className="text-right">{renderSortableHeader('Cantidad', 'cantidad', true)}</TableHead>
+                <TableHead>{renderSortableHeader('Proveedor / Trabajador', 'responsable')}</TableHead>
+                <TableHead>{renderSortableHeader('Motivo', 'motivo')}</TableHead>
+                <TableHead>{renderSortableHeader('Referencia', 'referencia')}</TableHead>
+                {canManage && <TableHead className="text-right">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {filtered.map(mov => (
+              {sorted.map(mov => (
                 <TableRow key={mov.id}>
                   <TableCell className="text-muted-foreground">{formatFecha(mov.fecha)}</TableCell>
 
@@ -176,27 +419,29 @@ export default function Inventario() {
 
                   <TableCell className="font-mono text-xs">{mov.referencia || '—'}</TableCell>
 
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleEdit(mov)}
-                        title="Editar"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
+                  {canManage && (
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleEdit(mov)}
+                          title="Editar"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
 
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleDelete(mov)}
-                        title="Eliminar"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleDelete(mov)}
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
@@ -204,24 +449,188 @@ export default function Inventario() {
         </CardContent>
       </Card>
 
-      <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+      <Dialog
+        open={openCreate}
+        onOpenChange={open => {
+          setOpenCreate(open);
+          if (!open) resetForm();
+        }}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Nuevo movimiento de inventario</DialogTitle>
+            <DialogTitle>
+              {editingMovimiento ? 'Editar movimiento de inventario' : 'Nuevo movimiento de inventario'}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <form onSubmit={handleCreateSubmit} className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Aquí irá el formulario para crear un nuevo movimiento.
+              <span className="font-semibold text-primary">*</span> es obligatorio
             </p>
+            <div className="space-y-2">
+              <Label>Materia prima <span className="text-primary">*</span></Label>
+              <Select
+                value={formData.materia_prima_id}
+                onValueChange={value => {
+                  setFormData(prev => ({ ...prev, materia_prima_id: value }));
+                  if (formError) setFormError('');
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un material" />
+                </SelectTrigger>
+                <SelectContent>
+                  {materiasList.map(materia => (
+                    <SelectItem key={materia.id} value={String(materia.id)}>
+                      {materia.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Tipo <span className="text-primary">*</span></Label>
+                <Select
+                  value={formData.tipo}
+                  onValueChange={value => {
+                    setFormData(prev => ({
+                      ...prev,
+                      tipo: value,
+                      proveedor_id: value === 'entrada' ? prev.proveedor_id : '',
+                      trabajador_produccion_id: value === 'salida' ? prev.trabajador_produccion_id : '',
+                    }));
+                    if (formError) setFormError('');
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entrada">Entrada</SelectItem>
+                    <SelectItem value="salida">Salida</SelectItem>
+                    <SelectItem value="ajuste">Ajuste</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cantidad">Cantidad <span className="text-primary">*</span></Label>
+                <Input
+                  id="cantidad"
+                  type="number"
+                  step="0.01"
+                  placeholder={formData.tipo === 'ajuste' ? 'Ej. -2.00 o 2.00' : '0.00'}
+                  value={formData.cantidad}
+                  onChange={e => {
+                    setFormData(prev => ({ ...prev, cantidad: e.target.value }));
+                    if (formError) setFormError('');
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fecha">Fecha <span className="text-primary">*</span></Label>
+              <Input
+                id="fecha"
+                type="date"
+                value={formData.fecha}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, fecha: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            {formData.tipo === 'entrada' && (
+              <div className="space-y-2">
+                <Label>Proveedor <span className="text-primary">*</span></Label>
+                <Select
+                  value={formData.proveedor_id}
+                  onValueChange={value => {
+                    setFormData(prev => ({ ...prev, proveedor_id: value }));
+                    if (formError) setFormError('');
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un proveedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {proveedoresList.map(proveedor => (
+                      <SelectItem key={proveedor.id} value={String(proveedor.id)}>
+                        {proveedor.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {formData.tipo === 'salida' && (
+              <div className="space-y-2">
+                <Label>Trabajador <span className="text-primary">*</span></Label>
+                <Select
+                  value={formData.trabajador_produccion_id}
+                  onValueChange={value => {
+                    setFormData(prev => ({ ...prev, trabajador_produccion_id: value }));
+                    if (formError) setFormError('');
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un trabajador" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {trabajadoresList.map(trabajador => (
+                      <SelectItem key={trabajador.id} value={String(trabajador.id)}>
+                        {trabajador.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="motivo">Motivo</Label>
+              <Input
+                id="motivo"
+                placeholder="Ej. Reposición mensual"
+                value={formData.motivo}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, motivo: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="referencia">Referencia <span className="text-primary">*</span></Label>
+              <Input
+                id="referencia"
+                placeholder="Ej. OC-2025-006"
+                value={formData.referencia}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, referencia: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            {formError && (
+              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {formError}
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpenCreate(false)}>
+              <Button variant="outline" type="button" onClick={() => setOpenCreate(false)}>
                 Cancelar
               </Button>
-              <Button type="button">Guardar</Button>
+              <Button type="submit">{editingMovimiento ? 'Actualizar' : 'Guardar'}</Button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </motion.div>

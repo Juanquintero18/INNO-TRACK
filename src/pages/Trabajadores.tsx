@@ -6,14 +6,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { trabajadoresProduccion } from '@/lib/mock-data';
-import { HardHat, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { useAppData } from '@/contexts/AppDataContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { HardHat, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
-type Trabajador = (typeof trabajadoresProduccion)[number];
+type Trabajador = { id: number; codigo_trabajador: string | null; nombre: string | null };
 
 export default function Trabajadores() {
+  const { canEditModule } = useAuth();
+  const { trabajadoresList: trabajadores, setTrabajadoresList: setTrabajadores, deleteEntity } = useAppData();
+  const canManage = canEditModule('trabajadores');
   const [search, setSearch] = useState('');
-  const [trabajadores, setTrabajadores] = useState(trabajadoresProduccion);
+  const [sortField, setSortField] = useState<'codigo_trabajador' | 'nombre'>('codigo_trabajador');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingTrabajador, setEditingTrabajador] = useState<Trabajador | null>(null);
   const [formData, setFormData] = useState({
@@ -22,9 +27,46 @@ export default function Trabajadores() {
   });
   const [formError, setFormError] = useState('');
 
+  const showPermissionDenied = () => {
+    window.alert('No tienes permisos para editar en el módulo de Trabajadores.');
+  };
+
   const filtered = trabajadores.filter(t =>
     t.nombre.toLowerCase().includes(search.toLowerCase()) ||
     t.codigo_trabajador.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const sorted = [...filtered].sort((left, right) => {
+    const leftValue = (left[sortField] ?? '').toString().toLowerCase();
+    const rightValue = (right[sortField] ?? '').toString().toLowerCase();
+
+    if (leftValue < rightValue) return sortDirection === 'asc' ? -1 : 1;
+    if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: 'codigo_trabajador' | 'nombre') => {
+    if (sortField === field) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(field);
+    setSortDirection('asc');
+  };
+
+  const renderSortableHeader = (label: string, field: 'codigo_trabajador' | 'nombre') => (
+    <button
+      type="button"
+      onClick={() => handleSort(field)}
+      className="inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
+    >
+      <span>{label}</span>
+      <ArrowUpDown className={`h-4 w-4 ${sortField === field ? 'text-primary' : 'text-muted-foreground'}`} />
+      {sortField === field && (
+        <span className="text-xs text-primary">{sortDirection === 'asc' ? 'ASC' : 'DESC'}</span>
+      )}
+    </button>
   );
 
   const resetForm = () => {
@@ -35,6 +77,11 @@ export default function Trabajadores() {
 
   const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
 
     const codigoTrabajador = formData.codigo_trabajador.trim();
     const nombreTrabajador = formData.nombre.trim();
@@ -89,6 +136,11 @@ export default function Trabajadores() {
   };
 
   const handleEdit = (trabajador: Trabajador) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
     setEditingTrabajador(trabajador);
     setFormData({
       codigo_trabajador: trabajador.codigo_trabajador,
@@ -99,7 +151,13 @@ export default function Trabajadores() {
   };
 
   const handleDelete = (trabajador: Trabajador) => {
-    console.log('Eliminar trabajador:', trabajador.id);
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    if (!window.confirm(`¿Eliminar al trabajador ${trabajador.nombre}?`)) return;
+    deleteEntity('trabajador', trabajador);
   };
 
   return (
@@ -112,10 +170,12 @@ export default function Trabajadores() {
           <p className="text-muted-foreground mt-1">Personal asignado a la línea de producción</p>
         </div>
 
-        <Button type="button" onClick={() => setOpenCreate(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo trabajador
-        </Button>
+        {canManage && (
+          <Button type="button" onClick={() => setOpenCreate(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo trabajador
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -135,14 +195,14 @@ export default function Trabajadores() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Código</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableHead>{renderSortableHeader('Código', 'codigo_trabajador')}</TableHead>
+                <TableHead>{renderSortableHeader('Nombre', 'nombre')}</TableHead>
+                {canManage && <TableHead className="text-right">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {filtered.map(t => (
+              {sorted.map(t => (
                 <TableRow key={t.id}>
                   <TableCell className="font-mono text-primary font-medium">
                     {t.codigo_trabajador}
@@ -150,27 +210,29 @@ export default function Trabajadores() {
 
                   <TableCell className="font-medium">{t.nombre}</TableCell>
 
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleEdit(t)}
-                        title="Editar"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
+                  {canManage && (
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleEdit(t)}
+                          title="Editar"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
 
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleDelete(t)}
-                        title="Eliminar"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleDelete(t)}
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
@@ -193,8 +255,11 @@ export default function Trabajadores() {
           </DialogHeader>
 
           <form onSubmit={handleCreateSubmit} className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-primary">*</span> es obligatorio
+            </p>
             <div className="space-y-2">
-              <Label htmlFor="codigo_trabajador">Código del trabajador</Label>
+              <Label htmlFor="codigo_trabajador">Código del trabajador <span className="text-primary">*</span></Label>
               <Input
                 id="codigo_trabajador"
                 placeholder="TRB-006"
@@ -207,7 +272,7 @@ export default function Trabajadores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre completo</Label>
+              <Label htmlFor="nombre">Nombre completo <span className="text-primary">*</span></Label>
               <Input
                 id="nombre"
                 placeholder="Ej. Laura Gómez"

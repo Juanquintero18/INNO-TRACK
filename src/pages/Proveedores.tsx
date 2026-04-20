@@ -5,13 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { proveedores } from '@/lib/mock-data';
-import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useAppData } from '@/contexts/AppDataContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2, Search } from 'lucide-react';
 
-type Proveedor = (typeof proveedores)[number];
+type Proveedor = { id: number; nombre: string; telefono: string | null; email: string | null; direccion: string | null };
 
 export default function Proveedores() {
-  const [proveedoresList, setProveedoresList] = useState(proveedores);
+  const { canEditModule } = useAuth();
+  const { proveedoresList, setProveedoresList, deleteEntity } = useAppData();
+  const canManage = canEditModule('proveedores');
+  const [search, setSearch] = useState('');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingProveedor, setEditingProveedor] = useState<Proveedor | null>(null);
   const [formData, setFormData] = useState({
@@ -22,6 +26,19 @@ export default function Proveedores() {
   });
   const [formError, setFormError] = useState('');
 
+  const term = search.toLowerCase();
+
+  const filtered = proveedoresList.filter(proveedor =>
+    proveedor.nombre.toLowerCase().includes(term) ||
+    (proveedor.telefono ?? '').toLowerCase().includes(term) ||
+    (proveedor.email ?? '').toLowerCase().includes(term) ||
+    (proveedor.direccion ?? '').toLowerCase().includes(term)
+  );
+
+  const showPermissionDenied = () => {
+    window.alert('No tienes permisos para editar en el módulo de Proveedores.');
+  };
+
   const resetForm = () => {
     setFormData({ nombre: '', telefono: '', email: '', direccion: '' });
     setFormError('');
@@ -30,6 +47,11 @@ export default function Proveedores() {
 
   const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
 
     const nombre = formData.nombre.trim();
     const telefono = formData.telefono.trim();
@@ -90,6 +112,11 @@ export default function Proveedores() {
   };
 
   const handleEdit = (proveedor: Proveedor) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
     setEditingProveedor(proveedor);
     setFormData({
       nombre: proveedor.nombre,
@@ -102,7 +129,13 @@ export default function Proveedores() {
   };
 
   const handleDelete = (proveedor: Proveedor) => {
-    console.log('Eliminar proveedor:', proveedor.id);
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    if (!window.confirm(`¿Eliminar al proveedor ${proveedor.nombre}?`)) return;
+    deleteEntity('proveedor', proveedor);
   };
 
   return (
@@ -115,14 +148,24 @@ export default function Proveedores() {
           <p className="text-muted-foreground mt-1">Directorio de proveedores de materias primas</p>
         </div>
 
-        <Button type="button" onClick={() => setOpenCreate(true)}>
+        <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
           <Plus className="w-4 h-4 mr-2" />
           Nuevo proveedor
         </Button>
       </div>
 
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Buscar por nombre, teléfono, correo o dirección..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {proveedoresList.map(p => (
+        {filtered.map(p => (
           <Card key={p.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3 mb-3">
@@ -180,8 +223,11 @@ export default function Proveedores() {
           </DialogHeader>
 
           <form onSubmit={handleCreateSubmit} className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-primary">*</span> es obligatorio
+            </p>
             <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre del proveedor</Label>
+              <Label htmlFor="nombre">Nombre del proveedor <span className="text-primary">*</span></Label>
               <Input
                 id="nombre"
                 placeholder="Ej. Compuestos del Norte"
@@ -194,7 +240,7 @@ export default function Proveedores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefono">Teléfono</Label>
+              <Label htmlFor="telefono">Teléfono <span className="text-primary">*</span></Label>
               <Input
                 id="telefono"
                 placeholder="+57 300 123 4567"
@@ -207,7 +253,7 @@ export default function Proveedores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="email">Correo electrónico <span className="text-primary">*</span></Label>
               <Input
                 id="email"
                 type="email"
@@ -221,7 +267,7 @@ export default function Proveedores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="direccion">Dirección</Label>
+              <Label htmlFor="direccion">Dirección <span className="text-primary">*</span></Label>
               <Input
                 id="direccion"
                 placeholder="Ej. Zona Industrial, Barranquilla"

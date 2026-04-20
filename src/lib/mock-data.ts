@@ -69,6 +69,16 @@ export interface Pieza {
   orden?: Orden;
   usuario?: Usuario;
   materias_primas?: PiezaMateriaPrima[];
+  historial?: PiezaHistorial[];
+}
+
+export interface PiezaHistorial {
+  id: number;
+  accion: 'creacion' | 'edicion';
+  fecha: string;
+  usuario_id: number | null;
+  usuario?: Usuario;
+  descripcion: string;
 }
 
 export interface PiezaMateriaPrima {
@@ -324,6 +334,24 @@ export const piezas: Pieza[] = [
     peso_real: 45.2,
     orden: ordenes[0],
     usuario: usuarios[0],
+    historial: [
+      {
+        id: 1,
+        accion: 'creacion',
+        fecha: '2025-02-01T08:30:00',
+        usuario_id: 1,
+        usuario: usuarios[0],
+        descripcion: 'Pieza creada en el sistema.',
+      },
+      {
+        id: 2,
+        accion: 'edicion',
+        fecha: '2025-02-03T16:10:00',
+        usuario_id: 2,
+        usuario: usuarios[1],
+        descripcion: 'Se registró la fecha de QC y el peso real.',
+      },
+    ],
     materias_primas: [
       {
         id: 1,
@@ -370,6 +398,16 @@ export const piezas: Pieza[] = [
     peso_real: 28.7,
     orden: ordenes[1],
     usuario: usuarios[1],
+    historial: [
+      {
+        id: 3,
+        accion: 'creacion',
+        fecha: '2025-02-05T09:15:00',
+        usuario_id: 2,
+        usuario: usuarios[1],
+        descripcion: 'Pieza creada en el sistema.',
+      },
+    ],
     materias_primas: [
       {
         id: 5,
@@ -408,6 +446,16 @@ export const piezas: Pieza[] = [
     peso_real: null,
     orden: ordenes[2],
     usuario: usuarios[0],
+    historial: [
+      {
+        id: 4,
+        accion: 'creacion',
+        fecha: '2025-02-10T07:50:00',
+        usuario_id: 1,
+        usuario: usuarios[0],
+        descripcion: 'Pieza creada en el sistema.',
+      },
+    ],
     materias_primas: [
       {
         id: 8,
@@ -446,6 +494,24 @@ export const piezas: Pieza[] = [
     peso_real: 52.1,
     orden: ordenes[3],
     usuario: usuarios[1],
+    historial: [
+      {
+        id: 5,
+        accion: 'creacion',
+        fecha: '2025-02-12T10:20:00',
+        usuario_id: 2,
+        usuario: usuarios[1],
+        descripcion: 'Pieza creada en el sistema.',
+      },
+      {
+        id: 6,
+        accion: 'edicion',
+        fecha: '2025-02-14T14:40:00',
+        usuario_id: 1,
+        usuario: usuarios[0],
+        descripcion: 'Se ajustaron consumos reales de materias primas.',
+      },
+    ],
     materias_primas: [
       {
         id: 11,
@@ -492,6 +558,16 @@ export const piezas: Pieza[] = [
     peso_real: 39.9,
     orden: ordenes[4],
     usuario: usuarios[0],
+    historial: [
+      {
+        id: 7,
+        accion: 'creacion',
+        fecha: '2026-02-15T11:05:00',
+        usuario_id: 1,
+        usuario: usuarios[0],
+        descripcion: 'Pieza creada en el sistema.',
+      },
+    ],
     materias_primas: [
       {
         id: 15,

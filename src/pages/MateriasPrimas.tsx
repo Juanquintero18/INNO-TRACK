@@ -3,16 +3,46 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { materiasPrimas, getStockLevel } from '@/lib/mock-data';
-import { Search, Package, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { unidadesMedida } from '@/lib/mock-data';
+import { useAppData } from '@/contexts/AppDataContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Search, Package, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
+
+type MateriaPrima = {
+  id: number;
+  unidad_medida_id: number | null;
+  nombre: string;
+  costo: number | null;
+  fecha_actualizacion: string | null;
+  unidad_medida?: { id: number; nombre: string; abreviatura: string | null };
+};
 
 export default function MateriasPrimas() {
+  const { canEditModule } = useAuth();
+  const { materiasList, setMateriasList, deleteEntity, getStockLevel } = useAppData();
+  const canManage = canEditModule('materias-primas');
   const [search, setSearch] = useState('');
+  const [sortField, setSortField] = useState<'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion'>('nombre');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [openCreate, setOpenCreate] = useState(false);
+  const [editingMateria, setEditingMateria] = useState<MateriaPrima | null>(null);
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [formData, setFormData] = useState({
+    nombre: '',
+    unidad_medida_id: '',
+    costo: '',
+    fecha_actualizacion: '',
+  });
+  const [formError, setFormError] = useState('');
+
+  const showPermissionDenied = () => {
+    window.alert('No tienes permisos para editar en el módulo de Materias Primas.');
+  };
 
   const formatFecha = (fecha?: string | null) => {
     if (!fecha) return '—';
@@ -24,7 +54,7 @@ export default function MateriasPrimas() {
     return `${day}/${month}/${year}`;
   };
 
-  const filtered = materiasPrimas.filter(mp => {
+  const filtered = materiasList.filter(mp => {
     const matchSearch = mp.nombre.toLowerCase().includes(search.toLowerCase());
     const fechaFiltro = mp.fecha_actualizacion;
 
@@ -38,12 +68,178 @@ export default function MateriasPrimas() {
     return matchSearch && matchFechas;
   });
 
-  const handleEdit = (materia: (typeof materiasPrimas)[number]) => {
-    console.log('Editar materia prima:', materia.id);
+  const sorted = [...filtered].sort((left, right) => {
+    const leftValue =
+      sortField === 'unidad'
+        ? (left.unidad_medida?.nombre ?? '').toLowerCase()
+        : sortField === 'stock'
+          ? getStockLevel(left.id)
+          : sortField === 'costo'
+            ? left.costo ?? 0
+            : sortField === 'fecha_actualizacion'
+              ? left.fecha_actualizacion ?? ''
+              : (left.nombre ?? '').toLowerCase();
+
+    const rightValue =
+      sortField === 'unidad'
+        ? (right.unidad_medida?.nombre ?? '').toLowerCase()
+        : sortField === 'stock'
+          ? getStockLevel(right.id)
+          : sortField === 'costo'
+            ? right.costo ?? 0
+            : sortField === 'fecha_actualizacion'
+              ? right.fecha_actualizacion ?? ''
+              : (right.nombre ?? '').toLowerCase();
+
+    if (leftValue < rightValue) return sortDirection === 'asc' ? -1 : 1;
+    if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion') => {
+    if (sortField === field) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(field);
+    setSortDirection('asc');
   };
 
-  const handleDelete = (materia: (typeof materiasPrimas)[number]) => {
-    console.log('Eliminar materia prima:', materia.id);
+  const renderSortableHeader = (
+    label: string,
+    field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion',
+    alignRight = false,
+  ) => (
+    <button
+      type="button"
+      onClick={() => handleSort(field)}
+      className={`inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary ${alignRight ? 'justify-end w-full' : ''}`}
+    >
+      <span>{label}</span>
+      <ArrowUpDown className={`h-4 w-4 ${sortField === field ? 'text-primary' : 'text-muted-foreground'}`} />
+      {sortField === field && (
+        <span className="text-xs text-primary">{sortDirection === 'asc' ? 'ASC' : 'DESC'}</span>
+      )}
+    </button>
+  );
+
+  const resetForm = () => {
+    setFormData({
+      nombre: '',
+      unidad_medida_id: '',
+      costo: '',
+      fecha_actualizacion: '',
+    });
+    setFormError('');
+    setEditingMateria(null);
+  };
+
+  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    const nombre = formData.nombre.trim();
+    const unidadMedidaId = Number(formData.unidad_medida_id);
+    const costo = Number(formData.costo);
+    const fechaActualizacion = formData.fecha_actualizacion;
+
+    if (!nombre || !unidadMedidaId || !fechaActualizacion || Number.isNaN(costo)) {
+      setFormError('Completa todos los campos de la materia prima.');
+      return;
+    }
+
+    if (costo <= 0) {
+      setFormError('El costo unitario debe ser mayor que cero.');
+      return;
+    }
+
+    const nombreExiste = materiasList.some(
+      materia =>
+        materia.nombre.toLowerCase() === nombre.toLowerCase() &&
+        materia.id !== editingMateria?.id
+    );
+
+    if (nombreExiste) {
+      setFormError('Ya existe una materia prima con ese nombre.');
+      return;
+    }
+
+    const unidadMedida = unidadesMedida.find(unidad => unidad.id === unidadMedidaId);
+
+    if (!unidadMedida) {
+      setFormError('Selecciona una unidad de medida válida.');
+      return;
+    }
+
+    if (editingMateria) {
+      setMateriasList(prev =>
+        prev.map(materia =>
+          materia.id === editingMateria.id
+            ? {
+                ...materia,
+                nombre,
+                unidad_medida_id: unidadMedidaId,
+                costo,
+                fecha_actualizacion: fechaActualizacion,
+                unidad_medida: unidadMedida,
+              }
+            : materia
+        )
+      );
+      resetForm();
+      setOpenCreate(false);
+      return;
+    }
+
+    const nextId = materiasList.length
+      ? Math.max(...materiasList.map(materia => materia.id)) + 1
+      : 1;
+
+    setMateriasList(prev => [
+      ...prev,
+      {
+        id: nextId,
+        nombre,
+        unidad_medida_id: unidadMedidaId,
+        costo,
+        fecha_actualizacion: fechaActualizacion,
+        unidad_medida: unidadMedida,
+      },
+    ]);
+    resetForm();
+    setOpenCreate(false);
+  };
+
+  const handleEdit = (materia: MateriaPrima) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    setEditingMateria(materia);
+    setFormData({
+      nombre: materia.nombre,
+      unidad_medida_id: String(materia.unidad_medida_id ?? ''),
+      costo: String(materia.costo ?? ''),
+      fecha_actualizacion: materia.fecha_actualizacion ?? '',
+    });
+    setFormError('');
+    setOpenCreate(true);
+  };
+
+  const handleDelete = (materia: MateriaPrima) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    if (!window.confirm(`¿Eliminar la materia prima ${materia.nombre}?`)) return;
+    deleteEntity('materia-prima', materia);
   };
 
   return (
@@ -85,10 +281,12 @@ export default function MateriasPrimas() {
           </div>
         </div>
 
-        <Button type="button" onClick={() => setOpenCreate(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo registro
-        </Button>
+        {canManage && (
+          <Button type="button" onClick={() => setOpenCreate(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo registro
+          </Button>
+        )}
       </div>
 
       <Card>
@@ -108,17 +306,17 @@ export default function MateriasPrimas() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Material</TableHead>
-                <TableHead>Unidad</TableHead>
-                <TableHead className="text-right">Costo Unitario</TableHead>
-                <TableHead className="text-right">Stock Actual</TableHead>
-                <TableHead>Última Actualización</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableHead>{renderSortableHeader('Material', 'nombre')}</TableHead>
+                <TableHead>{renderSortableHeader('Unidad', 'unidad')}</TableHead>
+                <TableHead className="text-right">{renderSortableHeader('Costo Unitario', 'costo', true)}</TableHead>
+                <TableHead className="text-right">{renderSortableHeader('Stock Actual', 'stock', true)}</TableHead>
+                <TableHead>{renderSortableHeader('Última Actualización', 'fecha_actualizacion')}</TableHead>
+                {canManage && <TableHead className="text-right">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {filtered.map(mp => {
+              {sorted.map(mp => {
                 const stock = getStockLevel(mp.id);
 
                 return (
@@ -143,27 +341,29 @@ export default function MateriasPrimas() {
                       {formatFecha(mp.fecha_actualizacion)}
                     </TableCell>
 
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleEdit(mp)}
-                          title="Editar"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
+                    {canManage && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleEdit(mp)}
+                            title="Editar"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
 
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => handleDelete(mp)}
-                          title="Eliminar"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => handleDelete(mp)}
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
@@ -172,26 +372,101 @@ export default function MateriasPrimas() {
         </CardContent>
       </Card>
 
-      <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+      <Dialog
+        open={openCreate}
+        onOpenChange={open => {
+          setOpenCreate(open);
+          if (!open) resetForm();
+        }}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Nueva materia prima</DialogTitle>
+            <DialogTitle>
+              {editingMateria ? 'Editar materia prima' : 'Nueva materia prima'}
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <form onSubmit={handleCreateSubmit} className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Aquí irá el formulario para crear una nueva materia prima.
+              <span className="font-semibold text-primary">*</span> es obligatorio
             </p>
+            <div className="space-y-2">
+              <Label htmlFor="nombre">Nombre del material <span className="text-primary">*</span></Label>
+              <Input
+                id="nombre"
+                placeholder="Ej. Resina viniléster"
+                value={formData.nombre}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, nombre: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Unidad de medida <span className="text-primary">*</span></Label>
+              <Select
+                value={formData.unidad_medida_id}
+                onValueChange={value => {
+                  setFormData(prev => ({ ...prev, unidad_medida_id: value }));
+                  if (formError) setFormError('');
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona una unidad" />
+                </SelectTrigger>
+                <SelectContent>
+                  {unidadesMedida.map(unidad => (
+                    <SelectItem key={unidad.id} value={String(unidad.id)}>
+                      {unidad.nombre} ({unidad.abreviatura})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="costo">Costo unitario <span className="text-primary">*</span></Label>
+              <Input
+                id="costo"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={formData.costo}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, costo: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fecha_actualizacion">Fecha de actualización <span className="text-primary">*</span></Label>
+              <Input
+                id="fecha_actualizacion"
+                type="date"
+                value={formData.fecha_actualizacion}
+                onChange={e => {
+                  setFormData(prev => ({ ...prev, fecha_actualizacion: e.target.value }));
+                  if (formError) setFormError('');
+                }}
+              />
+            </div>
+
+            {formError && (
+              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {formError}
+              </p>
+            )}
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpenCreate(false)}>
+              <Button variant="outline" type="button" onClick={() => setOpenCreate(false)}>
                 Cancelar
               </Button>
-              <Button type="button">
-                Guardar
-              </Button>
+              <Button type="submit">{editingMateria ? 'Actualizar' : 'Guardar'}</Button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </motion.div>

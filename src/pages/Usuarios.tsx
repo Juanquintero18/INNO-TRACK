@@ -8,14 +8,26 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { usuarios } from '@/lib/mock-data';
-import { Users, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { useAppData } from '@/contexts/AppDataContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { Users, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
-type Usuario = (typeof usuarios)[number];
+type Usuario = {
+  id: number;
+  nombre: string;
+  apellido: string | null;
+  email: string | null;
+  contrasena: string;
+  rol: string | null;
+};
 
 export default function Usuarios() {
+  const { canEditModule } = useAuth();
+  const { usuariosList, setUsuariosList, deleteEntity } = useAppData();
+  const canManage = canEditModule('usuarios');
   const [search, setSearch] = useState('');
-  const [usuariosList, setUsuariosList] = useState(usuarios);
+  const [sortField, setSortField] = useState<'nombre' | 'apellido' | 'email' | 'rol'>('nombre');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
   const [formData, setFormData] = useState({
@@ -27,11 +39,54 @@ export default function Usuarios() {
   });
   const [formError, setFormError] = useState('');
 
+  const showPermissionDenied = () => {
+    window.alert('No tienes permisos para editar en el módulo de Usuarios.');
+  };
+
   const filtered = usuariosList.filter(u =>
     u.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    u.apellido.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    u.rol.toLowerCase().includes(search.toLowerCase())
+    (u.apellido ?? '').toLowerCase().includes(search.toLowerCase()) ||
+    (u.email ?? '').toLowerCase().includes(search.toLowerCase()) ||
+    (u.rol ?? '').toLowerCase().includes(search.toLowerCase())
+  );
+
+  const sorted = [...filtered].sort((left, right) => {
+    const leftValue = (left[sortField] ?? '').toString().toLowerCase();
+    const rightValue = (right[sortField] ?? '').toString().toLowerCase();
+
+    if (leftValue < rightValue) {
+      return sortDirection === 'asc' ? -1 : 1;
+    }
+
+    if (leftValue > rightValue) {
+      return sortDirection === 'asc' ? 1 : -1;
+    }
+
+    return 0;
+  });
+
+  const handleSort = (field: 'nombre' | 'apellido' | 'email' | 'rol') => {
+    if (sortField === field) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(field);
+    setSortDirection('asc');
+  };
+
+  const renderSortableHeader = (label: string, field: 'nombre' | 'apellido' | 'email' | 'rol') => (
+    <button
+      type="button"
+      onClick={() => handleSort(field)}
+      className="inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
+    >
+      <span>{label}</span>
+      <ArrowUpDown className={`h-4 w-4 ${sortField === field ? 'text-primary' : 'text-muted-foreground'}`} />
+      {sortField === field && (
+        <span className="text-xs text-primary">{sortDirection === 'asc' ? 'ASC' : 'DESC'}</span>
+      )}
+    </button>
   );
 
   const resetForm = () => {
@@ -48,6 +103,11 @@ export default function Usuarios() {
 
   const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
 
     const nombre = formData.nombre.trim();
     const apellido = formData.apellido.trim();
@@ -109,6 +169,11 @@ export default function Usuarios() {
   };
 
   const handleEdit = (usuario: Usuario) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
     setEditingUsuario(usuario);
     setFormData({
       nombre: usuario.nombre,
@@ -122,7 +187,13 @@ export default function Usuarios() {
   };
 
   const handleDelete = (usuario: Usuario) => {
-    console.log('Eliminar usuario:', usuario.id);
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
+    if (!window.confirm(`¿Eliminar al usuario ${usuario.nombre} ${usuario.apellido ?? ''}?`)) return;
+    deleteEntity('usuario', usuario);
   };
 
   return (
@@ -135,7 +206,7 @@ export default function Usuarios() {
           <p className="text-muted-foreground mt-1">Gestión de usuarios del sistema</p>
         </div>
 
-        <Button type="button" onClick={() => setOpenCreate(true)}>
+        <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
           <Plus className="w-4 h-4 mr-2" />
           Nuevo usuario
         </Button>
@@ -158,16 +229,16 @@ export default function Usuarios() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Apellido</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Rol</TableHead>
+                <TableHead>{renderSortableHeader('Nombre', 'nombre')}</TableHead>
+                <TableHead>{renderSortableHeader('Apellido', 'apellido')}</TableHead>
+                <TableHead>{renderSortableHeader('Email', 'email')}</TableHead>
+                <TableHead>{renderSortableHeader('Rol', 'rol')}</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {filtered.map(u => (
+              {sorted.map(u => (
                 <TableRow key={u.id}>
                   <TableCell className="font-medium">{u.nombre}</TableCell>
                   <TableCell>{u.apellido}</TableCell>
@@ -219,8 +290,11 @@ export default function Usuarios() {
           </DialogHeader>
 
           <form onSubmit={handleCreateSubmit} className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-primary">*</span> es obligatorio
+            </p>
             <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre</Label>
+              <Label htmlFor="nombre">Nombre <span className="text-primary">*</span></Label>
               <Input
                 id="nombre"
                 placeholder="Ej. Laura"
@@ -233,7 +307,7 @@ export default function Usuarios() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="apellido">Apellido</Label>
+              <Label htmlFor="apellido">Apellido <span className="text-primary">*</span></Label>
               <Input
                 id="apellido"
                 placeholder="Ej. Gómez"
@@ -246,7 +320,7 @@ export default function Usuarios() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="email">Correo electrónico <span className="text-primary">*</span></Label>
               <Input
                 id="email"
                 type="email"
@@ -260,7 +334,7 @@ export default function Usuarios() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contrasena">Contraseña</Label>
+              <Label htmlFor="contrasena">Contraseña <span className="text-primary">*</span></Label>
               <Input
                 id="contrasena"
                 type="password"
@@ -274,7 +348,7 @@ export default function Usuarios() {
             </div>
 
             <div className="space-y-2">
-              <Label>Rol</Label>
+              <Label>Rol <span className="text-primary">*</span></Label>
               <Select
                 value={formData.rol}
                 onValueChange={value => {
