@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { apiRequest } from '@/lib/api';
+import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
 type Proveedor = { id: number; nombre: string; telefono: string | null; email: string | null; direccion: string | null };
 
@@ -16,6 +18,8 @@ export default function Proveedores() {
   const { proveedoresList, setProveedoresList, deleteEntity } = useAppData();
   const canManage = canEditModule('proveedores');
   const [search, setSearch] = useState('');
+  const [sortField, setSortField] = useState<'nombre' | 'email' | 'telefono' | 'direccion'>('nombre');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingProveedor, setEditingProveedor] = useState<Proveedor | null>(null);
   const [formData, setFormData] = useState({
@@ -26,17 +30,38 @@ export default function Proveedores() {
   });
   const [formError, setFormError] = useState('');
 
-  const term = search.toLowerCase();
-
-  const filtered = proveedoresList.filter(proveedor =>
-    proveedor.nombre.toLowerCase().includes(term) ||
-    (proveedor.telefono ?? '').toLowerCase().includes(term) ||
-    (proveedor.email ?? '').toLowerCase().includes(term) ||
-    (proveedor.direccion ?? '').toLowerCase().includes(term)
-  );
-
   const showPermissionDenied = () => {
     window.alert('No tienes permisos para editar en el módulo de Proveedores.');
+  };
+
+  const filtered = proveedoresList.filter(proveedor => {
+    const term = search.toLowerCase();
+
+    return (
+      proveedor.nombre.toLowerCase().includes(term) ||
+      (proveedor.email ?? '').toLowerCase().includes(term) ||
+      (proveedor.telefono ?? '').toLowerCase().includes(term) ||
+      (proveedor.direccion ?? '').toLowerCase().includes(term)
+    );
+  });
+
+  const sorted = [...filtered].sort((left, right) => {
+    const leftValue = (left[sortField] ?? '').toString().toLowerCase();
+    const rightValue = (right[sortField] ?? '').toString().toLowerCase();
+
+    if (leftValue < rightValue) return sortDirection === 'asc' ? -1 : 1;
+    if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSortFieldChange = (value: 'nombre' | 'email' | 'telefono' | 'direccion') => {
+    if (sortField === value) {
+      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortField(value);
+    setSortDirection('asc');
   };
 
   const resetForm = () => {
@@ -45,7 +70,7 @@ export default function Proveedores() {
     setEditingProveedor(null);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -65,7 +90,7 @@ export default function Proveedores() {
 
     const emailExiste = proveedoresList.some(
       proveedor =>
-        proveedor.email.toLowerCase() === email.toLowerCase() &&
+        (proveedor.email ?? '').toLowerCase() === email.toLowerCase() &&
         proveedor.id !== editingProveedor?.id
     );
 
@@ -74,41 +99,28 @@ export default function Proveedores() {
       return;
     }
 
-    if (editingProveedor) {
-      setProveedoresList(prev =>
-        prev.map(proveedor =>
-          proveedor.id === editingProveedor.id
-            ? {
-                ...proveedor,
-                nombre,
-                telefono,
-                email,
-                direccion,
-              }
-            : proveedor
-        )
-      );
+    try {
+      const payload = { nombre, telefono, email, direccion };
+
+      if (editingProveedor) {
+        const updatedProveedor = await apiRequest<Proveedor>(`/api/inventory/proveedores/${editingProveedor.id}/`, {
+          method: 'PUT',
+          json: payload,
+        });
+        setProveedoresList(prev => prev.map(proveedor => proveedor.id === editingProveedor.id ? updatedProveedor : proveedor));
+      } else {
+        const createdProveedor = await apiRequest<Proveedor>('/api/inventory/proveedores/', {
+          method: 'POST',
+          json: payload,
+        });
+        setProveedoresList(prev => [createdProveedor, ...prev]);
+      }
+
       resetForm();
       setOpenCreate(false);
-      return;
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo guardar el proveedor.');
     }
-
-    const nextId = proveedoresList.length
-      ? Math.max(...proveedoresList.map(proveedor => proveedor.id)) + 1
-      : 1;
-
-    setProveedoresList(prev => [
-      ...prev,
-      {
-        id: nextId,
-        nombre,
-        telefono,
-        email,
-        direccion,
-      },
-    ]);
-    resetForm();
-    setOpenCreate(false);
   };
 
   const handleEdit = (proveedor: Proveedor) => {
@@ -120,22 +132,27 @@ export default function Proveedores() {
     setEditingProveedor(proveedor);
     setFormData({
       nombre: proveedor.nombre,
-      telefono: proveedor.telefono,
-      email: proveedor.email,
-      direccion: proveedor.direccion,
+      telefono: proveedor.telefono ?? '',
+      email: proveedor.email ?? '',
+      direccion: proveedor.direccion ?? '',
     });
     setFormError('');
     setOpenCreate(true);
   };
 
-  const handleDelete = (proveedor: Proveedor) => {
+  const handleDelete = async (proveedor: Proveedor) => {
     if (!canManage) {
       showPermissionDenied();
       return;
     }
 
     if (!window.confirm(`¿Eliminar al proveedor ${proveedor.nombre}?`)) return;
-    deleteEntity('proveedor', proveedor);
+
+    try {
+      await deleteEntity('proveedor', proveedor);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar el proveedor.');
+    }
   };
 
   return (
@@ -154,18 +171,38 @@ export default function Proveedores() {
         </Button>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por nombre, teléfono, correo o dirección..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nombre, correo, teléfono o dirección..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+          <Select value={sortField} onValueChange={value => handleSortFieldChange(value as 'nombre' | 'email' | 'telefono' | 'direccion')}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="nombre">Nombre</SelectItem>
+              <SelectItem value="email">Correo</SelectItem>
+              <SelectItem value="telefono">Teléfono</SelectItem>
+              <SelectItem value="direccion">Dirección</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button type="button" variant="outline" onClick={() => setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'))}>
+            {sortDirection === 'asc' ? 'ASC' : 'DESC'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map(p => (
+        {sorted.map(p => (
           <Card key={p.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3 mb-3">
@@ -206,6 +243,14 @@ export default function Proveedores() {
             </CardContent>
           </Card>
         ))}
+
+        {sorted.length === 0 && (
+          <Card className="md:col-span-2">
+            <CardContent className="p-8 text-center text-muted-foreground">
+              No hay proveedores que coincidan con el filtro actual.
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Dialog
@@ -223,11 +268,8 @@ export default function Proveedores() {
           </DialogHeader>
 
           <form onSubmit={handleCreateSubmit} className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-primary">*</span> es obligatorio
-            </p>
             <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre del proveedor <span className="text-primary">*</span></Label>
+              <Label htmlFor="nombre">Nombre del proveedor</Label>
               <Input
                 id="nombre"
                 placeholder="Ej. Compuestos del Norte"
@@ -240,7 +282,7 @@ export default function Proveedores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefono">Teléfono <span className="text-primary">*</span></Label>
+              <Label htmlFor="telefono">Teléfono</Label>
               <Input
                 id="telefono"
                 placeholder="+57 300 123 4567"
@@ -253,7 +295,7 @@ export default function Proveedores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico <span className="text-primary">*</span></Label>
+              <Label htmlFor="email">Correo electrónico</Label>
               <Input
                 id="email"
                 type="email"
@@ -267,7 +309,7 @@ export default function Proveedores() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="direccion">Dirección <span className="text-primary">*</span></Label>
+              <Label htmlFor="direccion">Dirección</Label>
               <Input
                 id="direccion"
                 placeholder="Ej. Zona Industrial, Barranquilla"

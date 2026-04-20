@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
-import type { MovimientoInventario } from '@/lib/mock-data';
+import { apiRequest } from '@/lib/api';
+import type { MovimientoInventario } from '@/lib/types';
 import { Search, ArrowLeftRight, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
 
 type Movimiento = MovimientoInventario;
@@ -24,6 +25,7 @@ export default function Inventario() {
     proveedoresList,
     trabajadoresList,
     deleteEntity,
+    refreshInventoryData,
   } = useAppData();
   const canManage = canEditModule('inventario');
   const [search, setSearch] = useState('');
@@ -157,7 +159,7 @@ export default function Inventario() {
     setEditingMovimiento(null);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -225,42 +227,38 @@ export default function Inventario() {
       return;
     }
 
-    const payload: Omit<MovimientoInventario, 'id'> = {
+    const payload = {
       materia_prima_id: materiaPrimaId,
       proveedor_id: tipo === 'entrada' ? proveedorId : null,
-      usuario_id: user?.id ?? editingMovimiento?.usuario_id ?? null,
       trabajador_produccion_id: tipo === 'salida' ? trabajadorId : null,
       tipo,
       cantidad,
       fecha,
       motivo,
       referencia,
-      materia_prima: materiaPrima,
-      proveedor,
-      usuario: user ?? editingMovimiento?.usuario,
-      trabajador,
     };
 
-    if (editingMovimiento) {
-      setMovimientosList(prev =>
-        prev.map(movimiento =>
-          movimiento.id === editingMovimiento.id
-            ? { ...movimiento, ...payload }
-            : movimiento
-        )
-      );
+    try {
+      if (editingMovimiento) {
+        const updatedMovimiento = await apiRequest<MovimientoInventario>(`/api/inventory/movimientos/${editingMovimiento.id}/`, {
+          method: 'PUT',
+          json: payload,
+        });
+        setMovimientosList(prev => prev.map(movimiento => movimiento.id === editingMovimiento.id ? updatedMovimiento : movimiento));
+      } else {
+        const createdMovimiento = await apiRequest<MovimientoInventario>('/api/inventory/movimientos/', {
+          method: 'POST',
+          json: payload,
+        });
+        setMovimientosList(prev => [createdMovimiento, ...prev]);
+      }
+
+      await refreshInventoryData();
       resetForm();
       setOpenCreate(false);
-      return;
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo guardar el movimiento.');
     }
-
-    const nextId = movimientosList.length
-      ? Math.max(...movimientosList.map(movimiento => movimiento.id)) + 1
-      : 1;
-
-    setMovimientosList(prev => [...prev, { id: nextId, ...payload }]);
-    resetForm();
-    setOpenCreate(false);
   };
 
   const handleEdit = (movimiento: Movimiento) => {
@@ -284,14 +282,19 @@ export default function Inventario() {
     setOpenCreate(true);
   };
 
-  const handleDelete = (movimiento: Movimiento) => {
+  const handleDelete = async (movimiento: Movimiento) => {
     if (!canManage) {
       showPermissionDenied();
       return;
     }
 
     if (!window.confirm(`¿Eliminar el movimiento ${movimiento.referencia || movimiento.id}?`)) return;
-    deleteEntity('movimiento-inventario', movimiento);
+
+    try {
+      await deleteEntity('movimiento-inventario', movimiento);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar el movimiento.');
+    }
   };
 
   return (
