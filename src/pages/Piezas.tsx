@@ -8,16 +8,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ordenes, proyectos, calcularCostoPieza } from '@/lib/mock-data';
+import { calcularCostoPieza } from '@/lib/domain-utils';
 import { useAppData } from '@/contexts/AppDataContext';
+import { apiRequest } from '@/lib/api';
 import { Search, Eye, Puzzle, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-import type { Pieza, PiezaHistorial, PiezaMateriaPrima } from '@/lib/mock-data';
+import type { Pieza, PiezaHistorial, PiezaMateriaPrima } from '@/lib/types';
 
 export default function Piezas() {
   const { user } = useAuth();
-  const { piezasList, setPiezasList, materiasList, usuariosList, deleteEntity } = useAppData();
+  const { piezasList, setPiezasList, materiasList, usuariosList, proyectosList, ordenesList, deleteEntity, refreshProductionData } = useAppData();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Pieza | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
@@ -183,7 +184,7 @@ const matchFechas =
   };
 
   const ordenesProyectoSeleccionado = formData.proyecto_id
-    ? ordenes.filter(orden => orden.proyecto_id === Number(formData.proyecto_id))
+    ? ordenesList.filter(orden => orden.proyecto_id === Number(formData.proyecto_id))
     : [];
 
   const calcularCostoFormulario = () =>
@@ -249,23 +250,7 @@ const matchFechas =
     setMaterialesForm(prev => prev.filter(material => material.id !== materialId));
   };
 
-  const buildHistorialEntry = (accion: PiezaHistorial['accion']): PiezaHistorial => {
-    const nextHistorialId = piezasList.flatMap(pieza => pieza.historial ?? []).length + 1;
-
-    return {
-      id: nextHistorialId,
-      accion,
-      fecha: new Date().toISOString(),
-      usuario_id: user?.id ?? null,
-      usuario: user ?? undefined,
-      descripcion:
-        accion === 'creacion'
-          ? 'Pieza creada desde el formulario de piezas.'
-          : 'Pieza editada desde el formulario de piezas.',
-    };
-  };
-
-  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const traceId = formData.trace_id.trim();
@@ -296,7 +281,7 @@ const matchFechas =
       return;
     }
 
-    const orden = ordenes.find(item => item.id === ordenId);
+    const orden = ordenesList.find(item => item.id === ordenId);
     const usuario = usuariosList.find(item => item.id === usuarioId);
 
     if (!orden || !usuario || orden.proyecto_id !== proyectoId) {
@@ -312,43 +297,36 @@ const matchFechas =
       fecha_gelcoat: fechaGelcoat,
       fecha_qc: fechaQc,
       peso_real: pesoReal,
-      orden,
-      usuario,
-      materias_primas: materialesForm,
+      materias_primas: materialesForm.map(material => ({
+        id: material.id,
+        materia_prima_id: material.materia_prima_id,
+        cantidad_teorica: material.cantidad_teorica,
+        cantidad_real: material.cantidad_real,
+      })),
     };
 
-    if (editingPieza) {
-      const historialActualizado = [...(editingPieza.historial ?? []), buildHistorialEntry('edicion')];
-
-      setPiezasList(prev =>
-        prev.map(pieza =>
-          pieza.id === editingPieza.id
-            ? { ...pieza, ...payload, historial: historialActualizado }
-            : pieza
-        )
-      );
-      if (selected?.id === editingPieza.id) {
-        setSelected(prev => (prev ? { ...prev, ...payload, historial: historialActualizado } : prev));
+    try {
+      if (editingPieza) {
+        const updatedPieza = await apiRequest<Pieza>(`/api/production/piezas/${editingPieza.id}/`, {
+          method: 'PUT',
+          json: payload,
+        });
+        setPiezasList(prev => prev.map(pieza => pieza.id === editingPieza.id ? updatedPieza : pieza));
+        if (selected?.id === editingPieza.id) setSelected(updatedPieza);
+      } else {
+        const createdPieza = await apiRequest<Pieza>('/api/production/piezas/', {
+          method: 'POST',
+          json: payload,
+        });
+        setPiezasList(prev => [createdPieza, ...prev]);
       }
+
+      await refreshProductionData();
       resetForm();
       setOpenCreate(false);
-      return;
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo guardar la pieza.');
     }
-
-    const nextId = piezasList.length
-      ? Math.max(...piezasList.map(pieza => pieza.id)) + 1
-      : 1;
-
-    setPiezasList(prev => [
-      ...prev,
-      {
-        id: nextId,
-        ...payload,
-        historial: [buildHistorialEntry('creacion')],
-      },
-    ]);
-    resetForm();
-    setOpenCreate(false);
   };
 
   const handleEdit = (pieza: Pieza) => {
@@ -370,11 +348,16 @@ const matchFechas =
     setOpenCreate(true);
   };
 
-  const handleDelete = (pieza: Pieza) => {
+  const handleDelete = async (pieza: Pieza) => {
     if (!window.confirm(`¿Eliminar la pieza ${pieza.trace_id || pieza.nombre || pieza.id}?`)) return;
-    deleteEntity('pieza', pieza);
-    if (selected?.id === pieza.id) {
-      setSelected(null);
+
+    try {
+      await deleteEntity('pieza', pieza);
+      if (selected?.id === pieza.id) {
+        setSelected(null);
+      }
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar la pieza.');
     }
   };
 
@@ -580,7 +563,7 @@ const matchFechas =
                     <SelectValue placeholder="Selecciona un proyecto" />
                   </SelectTrigger>
                   <SelectContent>
-                    {proyectos.map(proyecto => (
+                    {proyectosList.map(proyecto => (
                       <SelectItem key={proyecto.id} value={String(proyecto.id)}>
                         {proyecto.nombre}
                       </SelectItem>

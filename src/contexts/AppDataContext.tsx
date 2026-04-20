@@ -1,19 +1,17 @@
-import { createContext, useContext, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiRequest } from '@/lib/api';
 import {
-  materiasPrimas,
-  movimientosInventario,
-  piezas,
-  proveedores,
-  trabajadoresProduccion,
-  usuarios,
   type MateriaPrima,
   type MovimientoInventario,
+  type Orden,
   type Pieza,
   type Proveedor,
+  type Proyecto,
   type TrabajadorProduccion,
+  type UnidadMedida,
   type Usuario,
-} from '@/lib/mock-data';
+} from '@/lib/types';
 
 export type DeletedEntityType =
   | 'pieza'
@@ -25,17 +23,31 @@ export type DeletedEntityType =
 
 type RestorableEntity = Pieza | MateriaPrima | MovimientoInventario | Proveedor | TrabajadorProduccion | Usuario;
 
+type AuditActor = {
+  id: number | null;
+  nombre: string;
+} | null;
+
 export interface DeletedAuditItem {
-  id: string;
+  id: number;
   entityType: DeletedEntityType;
   entityId: number;
   entityLabel: string;
   deletedAt: string;
-  deletedBy: Usuario | null;
-  data: RestorableEntity;
+  deletedBy: AuditActor;
+  restoredAt?: string | null;
+  restoredBy?: AuditActor;
+  isRestored: boolean;
+  data: Record<string, unknown>;
 }
 
 type AppDataContextType = {
+  unidadesList: UnidadMedida[];
+  setUnidadesList: Dispatch<SetStateAction<UnidadMedida[]>>;
+  proyectosList: Proyecto[];
+  setProyectosList: Dispatch<SetStateAction<Proyecto[]>>;
+  ordenesList: Orden[];
+  setOrdenesList: Dispatch<SetStateAction<Orden[]>>;
   piezasList: Pieza[];
   setPiezasList: Dispatch<SetStateAction<Pieza[]>>;
   materiasList: MateriaPrima[];
@@ -49,58 +61,106 @@ type AppDataContextType = {
   usuariosList: Usuario[];
   setUsuariosList: Dispatch<SetStateAction<Usuario[]>>;
   deletedItems: DeletedAuditItem[];
-  deleteEntity: (entityType: DeletedEntityType, entity: RestorableEntity) => void;
-  restoreDeletedItem: (auditId: string) => void;
+  deleteEntity: (entityType: DeletedEntityType, entity: RestorableEntity) => Promise<void>;
+  restoreDeletedItem: (auditId: number) => Promise<void>;
   getStockLevel: (materiaId: number) => number;
+  refreshInventoryData: () => Promise<void>;
+  refreshProductionData: () => Promise<void>;
 };
 
 const AppDataContext = createContext<AppDataContextType>({} as AppDataContextType);
 
-const sortById = <T extends { id: number }>(items: T[]) => [...items].sort((a, b) => a.id - b.id);
-
-const getEntityLabel = (entityType: DeletedEntityType, entity: RestorableEntity) => {
-  switch (entityType) {
-    case 'pieza': {
-      const pieza = entity as Pieza;
-      return [pieza.trace_id, pieza.nombre].filter(Boolean).join(' - ') || `Pieza #${pieza.id}`;
-    }
-    case 'materia-prima':
-      return (entity as MateriaPrima).nombre;
-    case 'movimiento-inventario': {
-      const movimiento = entity as MovimientoInventario;
-      return movimiento.referencia || movimiento.motivo || `Movimiento #${movimiento.id}`;
-    }
-    case 'proveedor':
-      return (entity as Proveedor).nombre;
-    case 'trabajador':
-      return (entity as TrabajadorProduccion).nombre || `Trabajador #${entity.id}`;
-    case 'usuario': {
-      const usuario = entity as Usuario;
-      return `${usuario.nombre} ${usuario.apellido ?? ''}`.trim() || usuario.email || `Usuario #${usuario.id}`;
-    }
-  }
-};
-
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [piezasList, setPiezasList] = useState<Pieza[]>(piezas);
-  const [materiasList, setMateriasList] = useState<MateriaPrima[]>(materiasPrimas);
-  const [movimientosList, setMovimientosList] = useState<MovimientoInventario[]>(movimientosInventario);
-  const [proveedoresList, setProveedoresList] = useState<Proveedor[]>(proveedores);
-  const [trabajadoresList, setTrabajadoresList] = useState<TrabajadorProduccion[]>(trabajadoresProduccion);
-  const [usuariosList, setUsuariosList] = useState<Usuario[]>(usuarios);
+  const [unidadesList, setUnidadesList] = useState<UnidadMedida[]>([]);
+  const [proyectosList, setProyectosList] = useState<Proyecto[]>([]);
+  const [ordenesList, setOrdenesList] = useState<Orden[]>([]);
+  const [piezasList, setPiezasList] = useState<Pieza[]>([]);
+  const [materiasList, setMateriasList] = useState<MateriaPrima[]>([]);
+  const [movimientosList, setMovimientosList] = useState<MovimientoInventario[]>([]);
+  const [proveedoresList, setProveedoresList] = useState<Proveedor[]>([]);
+  const [trabajadoresList, setTrabajadoresList] = useState<TrabajadorProduccion[]>([]);
+  const [usuariosList, setUsuariosList] = useState<Usuario[]>([]);
   const [deletedItems, setDeletedItems] = useState<DeletedAuditItem[]>([]);
 
-  const deleteEntity = (entityType: DeletedEntityType, entity: RestorableEntity) => {
-    const auditItem: DeletedAuditItem = {
-      id: `${entityType}-${entity.id}-${Date.now()}`,
-      entityType,
-      entityId: entity.id,
-      entityLabel: getEntityLabel(entityType, entity),
-      deletedAt: new Date().toISOString(),
-      deletedBy: user,
-      data: entity,
-    };
+  const refreshInventoryData = async () => {
+    if (!user) return;
+
+    const [unidadesResponse, materias, movimientos, proveedoresResponse, trabajadoresResponse] = await Promise.all([
+      apiRequest<UnidadMedida[]>('/api/inventory/unidades-medida/'),
+      apiRequest<MateriaPrima[]>('/api/inventory/materias-primas/'),
+      apiRequest<MovimientoInventario[]>('/api/inventory/movimientos/'),
+      apiRequest<Proveedor[]>('/api/inventory/proveedores/'),
+      apiRequest<TrabajadorProduccion[]>('/api/inventory/trabajadores/'),
+    ]);
+
+    setUnidadesList(unidadesResponse);
+    setMateriasList(materias);
+    setMovimientosList(movimientos);
+    setProveedoresList(proveedoresResponse);
+    setTrabajadoresList(trabajadoresResponse);
+  };
+
+  const refreshProductionData = async () => {
+    if (!user) return;
+
+    const [usersResponse, proyectosResponse, ordenesResponse, piezasResponse] = await Promise.all([
+      apiRequest<Usuario[]>('/api/accounts/users/'),
+      apiRequest<Proyecto[]>('/api/production/proyectos/'),
+      apiRequest<Orden[]>('/api/production/ordenes/'),
+      apiRequest<Pieza[]>('/api/production/piezas/'),
+    ]);
+
+    setUsuariosList(usersResponse);
+    setProyectosList(proyectosResponse);
+    setOrdenesList(ordenesResponse);
+    setPiezasList(piezasResponse);
+  };
+
+  const refreshAuditData = async () => {
+    if (!user) return;
+
+    const auditResponse = await apiRequest<DeletedAuditItem[]>('/api/audit/logs/');
+    setDeletedItems(auditResponse);
+  };
+
+  useEffect(() => {
+    if (!user) {
+      setUnidadesList([]);
+      setProyectosList([]);
+      setOrdenesList([]);
+      setPiezasList([]);
+      setMateriasList([]);
+      setMovimientosList([]);
+      setProveedoresList([]);
+      setTrabajadoresList([]);
+      setUsuariosList([]);
+      setDeletedItems([]);
+      return;
+    }
+
+    void Promise.all([refreshInventoryData(), refreshProductionData(), refreshAuditData()]);
+  }, [user]);
+
+  const buildDeleteEndpoint = (entityType: DeletedEntityType, entityId: number) => {
+    switch (entityType) {
+      case 'pieza':
+        return `/api/production/piezas/${entityId}/`;
+      case 'materia-prima':
+        return `/api/inventory/materias-primas/${entityId}/`;
+      case 'movimiento-inventario':
+        return `/api/inventory/movimientos/${entityId}/`;
+      case 'proveedor':
+        return `/api/inventory/proveedores/${entityId}/`;
+      case 'trabajador':
+        return `/api/inventory/trabajadores/${entityId}/`;
+      case 'usuario':
+        return `/api/accounts/users/${entityId}/`;
+    }
+  };
+
+  const deleteEntity = async (entityType: DeletedEntityType, entity: RestorableEntity) => {
+    await apiRequest(buildDeleteEndpoint(entityType, entity.id), { method: 'DELETE' });
 
     switch (entityType) {
       case 'pieza':
@@ -123,36 +183,32 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         break;
     }
 
-    setDeletedItems(prev => [auditItem, ...prev]);
+    await refreshAuditData();
   };
 
-  const restoreDeletedItem = (auditId: string) => {
+  const restoreDeletedItem = async (auditId: number) => {
     const auditItem = deletedItems.find(item => item.id === auditId);
 
     if (!auditItem) return;
 
-    switch (auditItem.entityType) {
-      case 'pieza':
-        setPiezasList(prev => sortById([...prev, auditItem.data as Pieza]));
-        break;
-      case 'materia-prima':
-        setMateriasList(prev => sortById([...prev, auditItem.data as MateriaPrima]));
-        break;
-      case 'movimiento-inventario':
-        setMovimientosList(prev => sortById([...prev, auditItem.data as MovimientoInventario]));
-        break;
-      case 'proveedor':
-        setProveedoresList(prev => sortById([...prev, auditItem.data as Proveedor]));
-        break;
-      case 'trabajador':
-        setTrabajadoresList(prev => sortById([...prev, auditItem.data as TrabajadorProduccion]));
-        break;
-      case 'usuario':
-        setUsuariosList(prev => sortById([...prev, auditItem.data as Usuario]));
-        break;
+    await apiRequest(`/api/audit/logs/${auditId}/restore/`, {
+      method: 'POST',
+    });
+
+    if (auditItem.entityType === 'pieza' || auditItem.entityType === 'usuario') {
+      await refreshProductionData();
     }
 
-    setDeletedItems(prev => prev.filter(item => item.id !== auditId));
+    if (
+      auditItem.entityType === 'materia-prima' ||
+      auditItem.entityType === 'movimiento-inventario' ||
+      auditItem.entityType === 'proveedor' ||
+      auditItem.entityType === 'trabajador'
+    ) {
+      await refreshInventoryData();
+    }
+
+    await refreshAuditData();
   };
 
   const getStockLevel = (materiaId: number) => {
@@ -173,6 +229,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({
+      unidadesList,
+      setUnidadesList,
+      proyectosList,
+      setProyectosList,
+      ordenesList,
+      setOrdenesList,
       piezasList,
       setPiezasList,
       materiasList,
@@ -189,8 +251,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       deleteEntity,
       restoreDeletedItem,
       getStockLevel,
+      refreshInventoryData,
+      refreshProductionData,
     }),
-    [piezasList, materiasList, movimientosList, proveedoresList, trabajadoresList, usuariosList, deletedItems, user]
+    [unidadesList, proyectosList, ordenesList, piezasList, materiasList, movimientosList, proveedoresList, trabajadoresList, usuariosList, deletedItems]
   );
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

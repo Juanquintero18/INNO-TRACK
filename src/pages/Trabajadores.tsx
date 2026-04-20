@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiRequest } from '@/lib/api';
 import { HardHat, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
 type Trabajador = { id: number; codigo_trabajador: string | null; nombre: string | null };
@@ -32,8 +33,8 @@ export default function Trabajadores() {
   };
 
   const filtered = trabajadores.filter(t =>
-    t.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    t.codigo_trabajador.toLowerCase().includes(search.toLowerCase())
+    (t.nombre ?? '').toLowerCase().includes(search.toLowerCase()) ||
+    (t.codigo_trabajador ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
   const sorted = [...filtered].sort((left, right) => {
@@ -75,7 +76,7 @@ export default function Trabajadores() {
     setEditingTrabajador(null);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -93,7 +94,7 @@ export default function Trabajadores() {
 
     const codigoExiste = trabajadores.some(
       trabajador =>
-        trabajador.codigo_trabajador.toLowerCase() === codigoTrabajador.toLowerCase() &&
+        (trabajador.codigo_trabajador ?? '').toLowerCase() === codigoTrabajador.toLowerCase() &&
         trabajador.id !== editingTrabajador?.id
     );
 
@@ -102,37 +103,28 @@ export default function Trabajadores() {
       return;
     }
 
-    if (editingTrabajador) {
-      setTrabajadores(prev =>
-        prev.map(trabajador =>
-          trabajador.id === editingTrabajador.id
-            ? {
-                ...trabajador,
-                codigo_trabajador: codigoTrabajador,
-                nombre: nombreTrabajador,
-              }
-            : trabajador
-        )
-      );
+    try {
+      const payload = { codigo_trabajador: codigoTrabajador, nombre: nombreTrabajador };
+
+      if (editingTrabajador) {
+        const updatedTrabajador = await apiRequest<Trabajador>(`/api/inventory/trabajadores/${editingTrabajador.id}/`, {
+          method: 'PUT',
+          json: payload,
+        });
+        setTrabajadores(prev => prev.map(trabajador => trabajador.id === editingTrabajador.id ? updatedTrabajador : trabajador));
+      } else {
+        const createdTrabajador = await apiRequest<Trabajador>('/api/inventory/trabajadores/', {
+          method: 'POST',
+          json: payload,
+        });
+        setTrabajadores(prev => [createdTrabajador, ...prev]);
+      }
+
       resetForm();
       setOpenCreate(false);
-      return;
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo guardar el trabajador.');
     }
-
-    const nextId = trabajadores.length
-      ? Math.max(...trabajadores.map(trabajador => trabajador.id)) + 1
-      : 1;
-
-    setTrabajadores(prev => [
-      ...prev,
-      {
-        id: nextId,
-        codigo_trabajador: codigoTrabajador,
-        nombre: nombreTrabajador,
-      },
-    ]);
-    resetForm();
-    setOpenCreate(false);
   };
 
   const handleEdit = (trabajador: Trabajador) => {
@@ -143,21 +135,26 @@ export default function Trabajadores() {
 
     setEditingTrabajador(trabajador);
     setFormData({
-      codigo_trabajador: trabajador.codigo_trabajador,
-      nombre: trabajador.nombre,
+      codigo_trabajador: trabajador.codigo_trabajador ?? '',
+      nombre: trabajador.nombre ?? '',
     });
     setFormError('');
     setOpenCreate(true);
   };
 
-  const handleDelete = (trabajador: Trabajador) => {
+  const handleDelete = async (trabajador: Trabajador) => {
     if (!canManage) {
       showPermissionDenied();
       return;
     }
 
     if (!window.confirm(`¿Eliminar al trabajador ${trabajador.nombre}?`)) return;
-    deleteEntity('trabajador', trabajador);
+
+    try {
+      await deleteEntity('trabajador', trabajador);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar el trabajador.');
+    }
   };
 
   return (

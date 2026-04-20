@@ -17,16 +17,20 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (login(email, password)) {
+    setIsSubmitting(true);
+    const result = await login(email, password);
+    setIsSubmitting(false);
+    if (result.ok) {
       navigate('/dashboard');
     } else {
-      setError('Credenciales incorrectas. Intenta con admin@innolution.com o carlos@innolution.com');
+      setError(result.error ?? 'No se pudo iniciar sesión.');
     }
   };
 
@@ -60,6 +64,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
+                  disabled={isSubmitting}
                   required
                 />
               </div>
@@ -76,6 +81,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
+                  disabled={isSubmitting}
                   required
                 />
               </div>
@@ -85,8 +91,8 @@ export default function Login() {
               <p className="text-sm text-destructive bg-destructive/10 rounded-lg p-3">{error}</p>
             )}
 
-            <Button type="submit" className="w-full h-11 text-base font-semibold">
-              Iniciar Sesión
+            <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isSubmitting}>
+              {isSubmitting ? 'Validando...' : 'Iniciar Sesión'}
             </Button>
           </form>
 

@@ -25,6 +25,7 @@ export default function Auditoria() {
   const [entityFilter, setEntityFilter] = useState<DeletedEntityType | 'todos'>('todos');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [restoringId, setRestoringId] = useState<number | null>(null);
 
   const formatFechaHora = (fecha: string) => {
     const date = new Date(fecha);
@@ -45,7 +46,7 @@ export default function Auditoria() {
     const matchSearch =
       item.entityLabel.toLowerCase().includes(term) ||
       entityTypeLabels[item.entityType].toLowerCase().includes(term) ||
-      `${item.deletedBy?.nombre ?? ''} ${item.deletedBy?.apellido ?? ''}`.toLowerCase().includes(term);
+      `${item.deletedBy?.nombre ?? ''}`.toLowerCase().includes(term);
 
     const matchEntity = entityFilter === 'todos' || item.entityType === entityFilter;
     const fecha = item.deletedAt.slice(0, 10);
@@ -55,6 +56,18 @@ export default function Auditoria() {
 
     return matchSearch && matchEntity && matchFechas;
   });
+
+  const handleRestore = async (auditId: number) => {
+    setRestoringId(auditId);
+
+    try {
+      await restoreDeletedItem(auditId);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo restaurar el registro.');
+    } finally {
+      setRestoringId(null);
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -126,13 +139,13 @@ export default function Auditoria() {
                     </TableCell>
                     <TableCell className="font-medium">{item.entityLabel}</TableCell>
                     <TableCell className="text-muted-foreground">
-                      {item.deletedBy ? `${item.deletedBy.nombre} ${item.deletedBy.apellido ?? ''}`.trim() : 'Usuario no disponible'}
+                      {item.deletedBy?.nombre || 'Usuario no disponible'}
                     </TableCell>
                     <TableCell className="text-muted-foreground">{formatFechaHora(item.deletedAt)}</TableCell>
                     <TableCell className="text-right">
-                      <Button type="button" variant="outline" onClick={() => restoreDeletedItem(item.id)}>
+                      <Button type="button" variant="outline" onClick={() => void handleRestore(item.id)} disabled={restoringId === item.id || item.isRestored}>
                         <RotateCcw className="mr-2 h-4 w-4" />
-                        Deshacer
+                        {item.isRestored ? 'Restaurado' : restoringId === item.id ? 'Restaurando...' : 'Deshacer'}
                       </Button>
                     </TableCell>
                   </TableRow>

@@ -1,10 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 /* This file is the main CSS entry point for the application. It imports Tailwind's base, components, and utilities styles, as well as custom styles and CSS variables for theming. The CSS variables are defined for both light and dark themes, allowing for easy theming throughout the application. Additionally, a custom scrollbar style is included for better aesthetics. */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {

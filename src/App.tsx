@@ -24,7 +24,8 @@ const queryClient = new QueryClient();
 //Componente para proteger rutas que requieren autenticación y, opcionalmente, permisos de administrador
 
 function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
+  if (isLoading) return null;
   if (!user) return <Navigate to="/" replace />;
   if (adminOnly && !isAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
@@ -34,7 +35,9 @@ function ProtectedRoute({ children, adminOnly = false }: { children: React.React
 //Define las rutas de la aplicación, protegiendo las que requieren autenticación y permisos de administrador
 
 function AppRoutes() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
 
   return (
     <Routes>
