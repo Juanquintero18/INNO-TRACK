@@ -40,8 +40,14 @@ backend/
 
 ## Puesta en marcha
 
-1. Crear y activar un entorno virtual.
-2. Instalar dependencias con `pip install -r backend/requirements.txt`.
-3. Copiar `.env.example` a `.env` y ajustar credenciales.
-4. Ejecutar `python backend/manage.py migrate`.
-5. Ejecutar `python backend/manage.py runserver`.
+1. Crear y activar el entorno virtual del proyecto en `.venv`.
+2. Instalar dependencias con `./.venv/Scripts/python.exe -m pip install -r backend/requirements.txt`.
+3. Copiar `.env.example` a `.env` y ajustar credenciales locales.
+4. Ejecutar `./.venv/Scripts/python.exe backend/manage.py migrate`.
+5. Ejecutar `./.venv/Scripts/python.exe backend/manage.py runserver`.
+
+## Nota de entorno
+
+- El backend validado en este repositorio usa `.venv`.
+- Existe un directorio `venv/` en algunas maquinas, pero puede no tener todas las dependencias requeridas.
+- Si aparece `ModuleNotFoundError: No module named 'decouple'`, normalmente se esta usando el entorno equivocado.
