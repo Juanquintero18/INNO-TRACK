@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiRequest } from '@/lib/api';
 import { Users, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
 type Usuario = {
@@ -17,7 +18,7 @@ type Usuario = {
   nombre: string;
   apellido: string | null;
   email: string | null;
-  contrasena: string;
+  contrasena?: string;
   rol: string | null;
 };
 
@@ -101,7 +102,7 @@ export default function Usuarios() {
     setEditingUsuario(null);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -115,8 +116,13 @@ export default function Usuarios() {
     const contrasena = formData.contrasena.trim();
     const rol = formData.rol.trim();
 
-    if (!nombre || !apellido || !email || !contrasena || !rol) {
+    if (!nombre || !apellido || !email || !rol) {
       setFormError('Completa todos los campos del usuario.');
+      return;
+    }
+
+    if (!editingUsuario && !contrasena) {
+      setFormError('La contraseña es obligatoria para crear el usuario.');
       return;
     }
 
@@ -129,43 +135,34 @@ export default function Usuarios() {
       return;
     }
 
-    if (editingUsuario) {
-      setUsuariosList(prev =>
-        prev.map(usuario =>
-          usuario.id === editingUsuario.id
-            ? {
-                ...usuario,
-                nombre,
-                apellido,
-                email,
-                contrasena,
-                rol,
-              }
-            : usuario
-        )
-      );
-      resetForm();
-      setOpenCreate(false);
-      return;
-    }
-
-    const nextId = usuariosList.length
-      ? Math.max(...usuariosList.map(usuario => usuario.id)) + 1
-      : 1;
-
-    setUsuariosList(prev => [
-      ...prev,
-      {
-        id: nextId,
+    try {
+      const payload = {
         nombre,
         apellido,
         email,
-        contrasena,
         rol,
-      },
-    ]);
-    resetForm();
-    setOpenCreate(false);
+        ...(contrasena ? { contrasena } : {}),
+      };
+
+      if (editingUsuario) {
+        const updatedUsuario = await apiRequest<Usuario>(`/api/accounts/users/${editingUsuario.id}/`, {
+          method: 'PUT',
+          json: payload,
+        });
+        setUsuariosList(prev => prev.map(usuario => usuario.id === editingUsuario.id ? updatedUsuario : usuario));
+      } else {
+        const createdUsuario = await apiRequest<Usuario>('/api/accounts/users/', {
+          method: 'POST',
+          json: payload,
+        });
+        setUsuariosList(prev => [createdUsuario, ...prev]);
+      }
+
+      resetForm();
+      setOpenCreate(false);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo guardar el usuario.');
+    }
   };
 
   const handleEdit = (usuario: Usuario) => {
@@ -179,21 +176,26 @@ export default function Usuarios() {
       nombre: usuario.nombre,
       apellido: usuario.apellido,
       email: usuario.email,
-      contrasena: usuario.contrasena,
+      contrasena: '',
       rol: usuario.rol,
     });
     setFormError('');
     setOpenCreate(true);
   };
 
-  const handleDelete = (usuario: Usuario) => {
+  const handleDelete = async (usuario: Usuario) => {
     if (!canManage) {
       showPermissionDenied();
       return;
     }
 
     if (!window.confirm(`¿Eliminar al usuario ${usuario.nombre} ${usuario.apellido ?? ''}?`)) return;
-    deleteEntity('usuario', usuario);
+
+    try {
+      await deleteEntity('usuario', usuario);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar el usuario.');
+    }
   };
 
   return (

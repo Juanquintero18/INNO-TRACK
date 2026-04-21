@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/AppDataContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { calcularCostoPieza } from '@/lib/mock-data';
+import { calcularCostoPieza } from '@/lib/domain-utils';
 import { Puzzle, Package, ArrowLeftRight, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 

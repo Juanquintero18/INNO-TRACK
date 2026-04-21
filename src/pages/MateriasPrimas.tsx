@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { unidadesMedida } from '@/lib/mock-data';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { apiRequest } from '@/lib/api';
 import { Search, Package, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
 
 type MateriaPrima = {
@@ -23,7 +23,7 @@ type MateriaPrima = {
 
 export default function MateriasPrimas() {
   const { canEditModule } = useAuth();
-  const { materiasList, setMateriasList, deleteEntity, getStockLevel } = useAppData();
+  const { materiasList, setMateriasList, unidadesList, deleteEntity, getStockLevel } = useAppData();
   const canManage = canEditModule('materias-primas');
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion'>('nombre');
@@ -135,7 +135,7 @@ export default function MateriasPrimas() {
     setEditingMateria(null);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -169,50 +169,40 @@ export default function MateriasPrimas() {
       return;
     }
 
-    const unidadMedida = unidadesMedida.find(unidad => unidad.id === unidadMedidaId);
+    const unidadMedida = unidadesList.find(unidad => unidad.id === unidadMedidaId);
 
     if (!unidadMedida) {
       setFormError('Selecciona una unidad de medida válida.');
       return;
     }
 
-    if (editingMateria) {
-      setMateriasList(prev =>
-        prev.map(materia =>
-          materia.id === editingMateria.id
-            ? {
-                ...materia,
-                nombre,
-                unidad_medida_id: unidadMedidaId,
-                costo,
-                fecha_actualizacion: fechaActualizacion,
-                unidad_medida: unidadMedida,
-              }
-            : materia
-        )
-      );
-      resetForm();
-      setOpenCreate(false);
-      return;
-    }
-
-    const nextId = materiasList.length
-      ? Math.max(...materiasList.map(materia => materia.id)) + 1
-      : 1;
-
-    setMateriasList(prev => [
-      ...prev,
-      {
-        id: nextId,
+    try {
+      const payload = {
         nombre,
         unidad_medida_id: unidadMedidaId,
         costo,
         fecha_actualizacion: fechaActualizacion,
-        unidad_medida: unidadMedida,
-      },
-    ]);
-    resetForm();
-    setOpenCreate(false);
+      };
+
+      if (editingMateria) {
+        const updatedMateria = await apiRequest<MateriaPrima>(`/api/inventory/materias-primas/${editingMateria.id}/`, {
+          method: 'PUT',
+          json: payload,
+        });
+        setMateriasList(prev => prev.map(materia => materia.id === editingMateria.id ? updatedMateria : materia));
+      } else {
+        const createdMateria = await apiRequest<MateriaPrima>('/api/inventory/materias-primas/', {
+          method: 'POST',
+          json: payload,
+        });
+        setMateriasList(prev => [createdMateria, ...prev]);
+      }
+
+      resetForm();
+      setOpenCreate(false);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : 'No se pudo guardar la materia prima.');
+    }
   };
 
   const handleEdit = (materia: MateriaPrima) => {
@@ -232,14 +222,19 @@ export default function MateriasPrimas() {
     setOpenCreate(true);
   };
 
-  const handleDelete = (materia: MateriaPrima) => {
+  const handleDelete = async (materia: MateriaPrima) => {
     if (!canManage) {
       showPermissionDenied();
       return;
     }
 
     if (!window.confirm(`¿Eliminar la materia prima ${materia.nombre}?`)) return;
-    deleteEntity('materia-prima', materia);
+
+    try {
+      await deleteEntity('materia-prima', materia);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar la materia prima.');
+    }
   };
 
   return (
@@ -328,7 +323,7 @@ export default function MateriasPrimas() {
                     </TableCell>
 
                     <TableCell className="text-right font-semibold">
-                      ${mp.costo.toFixed(2)}
+                      ${(mp.costo ?? 0).toFixed(2)}
                     </TableCell>
 
                     <TableCell className="text-right">
@@ -416,7 +411,7 @@ export default function MateriasPrimas() {
                   <SelectValue placeholder="Selecciona una unidad" />
                 </SelectTrigger>
                 <SelectContent>
-                  {unidadesMedida.map(unidad => (
+                  {unidadesList.map(unidad => (
                     <SelectItem key={unidad.id} value={String(unidad.id)}>
                       {unidad.nombre} ({unidad.abreviatura})
                     </SelectItem>

@@ -7,10 +7,50 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pyre/
+.pytype/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+media/
+staticfiles/
+
 node_modules
 dist
 dist-ssr
+.vite/
+coverage/
 *.local
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
