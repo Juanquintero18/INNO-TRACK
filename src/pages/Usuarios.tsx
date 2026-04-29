@@ -1,3 +1,9 @@
+/**
+ * Pantalla administrativa de usuarios.
+ *
+ * Desde aqui se consultan, crean, editan y eliminan usuarios del sistema,
+ * incluyendo la gestion de rol y credenciales iniciales.
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -22,6 +28,7 @@ type Usuario = {
   rol: string | null;
 };
 
+/** Controla el CRUD de usuarios y sus reglas basicas de validacion. */
 export default function Usuarios() {
   const { canEditModule } = useAuth();
   const { usuariosList, setUsuariosList, deleteEntity } = useAppData();
@@ -40,10 +47,12 @@ export default function Usuarios() {
   });
   const [formError, setFormError] = useState('');
 
+  /** Mensaje estandar para intentos de escritura sin permisos administrativos. */
   const showPermissionDenied = () => {
     window.alert('No tienes permisos para editar en el módulo de Usuarios.');
   };
 
+  // Filtra coincidencias por nombre, apellido, correo o rol.
   const filtered = usuariosList.filter(u =>
     u.nombre.toLowerCase().includes(search.toLowerCase()) ||
     (u.apellido ?? '').toLowerCase().includes(search.toLowerCase()) ||
@@ -51,6 +60,7 @@ export default function Usuarios() {
     (u.rol ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
+  // Ordena la vista segun el campo seleccionado desde la cabecera.
   const sorted = [...filtered].sort((left, right) => {
     const leftValue = (left[sortField] ?? '').toString().toLowerCase();
     const rightValue = (right[sortField] ?? '').toString().toLowerCase();
@@ -66,6 +76,7 @@ export default function Usuarios() {
     return 0;
   });
 
+  /** Cambia el criterio de orden o invierte el sentido del campo actual. */
   const handleSort = (field: 'nombre' | 'apellido' | 'email' | 'rol') => {
     if (sortField === field) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -102,6 +113,7 @@ export default function Usuarios() {
     setEditingUsuario(null);
   };
 
+  /** Valida la unicidad del correo y persiste el usuario en el backend. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

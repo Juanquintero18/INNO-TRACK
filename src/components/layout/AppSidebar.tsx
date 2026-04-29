@@ -1,3 +1,9 @@
+/**
+ * Sidebar de navegacion principal.
+ *
+ * Define enlaces distintos para administrador y operario, y tambien concentra
+ * acciones globales como cerrar sesion y colapsar la navegacion.
+ */
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/logo-inno-transparente. RGB.png';
@@ -16,6 +22,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Navegacion completa disponible para administradores.
 const adminLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/piezas', label: 'Piezas', icon: Puzzle },
@@ -27,6 +34,7 @@ const adminLinks = [
   { to: '/auditoria', label: 'Auditoría', icon: ShieldAlert },
 ];
 
+// Navegacion reducida para operarios.
 const workerLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/piezas', label: 'Piezas', icon: Puzzle },
@@ -40,6 +48,7 @@ type AppSidebarProps = {
   onToggleCollapsed: () => void;
 };
 
+/** Renderiza la barra lateral fija del panel y adapta su contenido al rol. */
 export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
   const { user, logout, isAdmin } = useAuth();
   const links = isAdmin ? adminLinks : workerLinks;

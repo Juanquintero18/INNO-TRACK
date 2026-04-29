@@ -1,3 +1,9 @@
+/**
+ * Pantalla de auditoria de eliminaciones.
+ *
+ * Permite revisar que registros fueron borrados, quien realizo la accion y si
+ * corresponde restaurarlos desde el log persistente del backend.
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldAlert, RotateCcw, Search } from 'lucide-react';
@@ -9,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+// Etiquetas visibles para convertir los tipos tecnicos del backend en textos legibles.
 const entityTypeLabels: Record<DeletedEntityType | 'todos', string> = {
   todos: 'Todos',
   pieza: 'Piezas',
@@ -19,6 +26,7 @@ const entityTypeLabels: Record<DeletedEntityType | 'todos', string> = {
   usuario: 'Usuarios',
 };
 
+/** Lista los borrados auditados y expone la accion de restauracion. */
 export default function Auditoria() {
   const { deletedItems, restoreDeletedItem } = useAppData();
   const [search, setSearch] = useState('');
@@ -27,6 +35,7 @@ export default function Auditoria() {
   const [fechaFin, setFechaFin] = useState('');
   const [restoringId, setRestoringId] = useState<number | null>(null);
 
+  /** Presenta la fecha de auditoria con dia y hora para facilitar trazabilidad. */
   const formatFechaHora = (fecha: string) => {
     const date = new Date(fecha);
 
@@ -41,6 +50,7 @@ export default function Auditoria() {
     }).format(date);
   };
 
+  // Combina busqueda textual, filtro por entidad y filtro por rango de fechas.
   const filtered = deletedItems.filter(item => {
     const term = search.toLowerCase();
     const matchSearch =
@@ -57,6 +67,7 @@ export default function Auditoria() {
     return matchSearch && matchEntity && matchFechas;
   });
 
+  /** Ejecuta la restauracion y bloquea temporalmente el boton del registro activo. */
   const handleRestore = async (auditId: number) => {
     setRestoringId(auditId);
 

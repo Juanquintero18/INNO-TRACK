@@ -1,3 +1,9 @@
+/**
+ * Pantalla de trabajadores de produccion.
+ *
+ * Gestiona el catalogo de operarios usados luego en movimientos de inventario
+ * y trazabilidad de las piezas fabricadas.
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -13,6 +19,7 @@ import { HardHat, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react
 
 type Trabajador = { id: number; codigo_trabajador: string | null; nombre: string | null };
 
+/** Controla la vista, el formulario y las acciones CRUD de trabajadores. */
 export default function Trabajadores() {
   const { canEditModule } = useAuth();
   const { trabajadoresList: trabajadores, setTrabajadoresList: setTrabajadores, deleteEntity } = useAppData();
@@ -28,15 +35,18 @@ export default function Trabajadores() {
   });
   const [formError, setFormError] = useState('');
 
+  /** Mensaje comun cuando el usuario no puede modificar este modulo. */
   const showPermissionDenied = () => {
     window.alert('No tienes permisos para editar en el módulo de Trabajadores.');
   };
 
+  // Filtra por nombre o codigo para localizar rapidamente al operario.
   const filtered = trabajadores.filter(t =>
     (t.nombre ?? '').toLowerCase().includes(search.toLowerCase()) ||
     (t.codigo_trabajador ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
+  // Ordena alfabeticamente por el campo activo.
   const sorted = [...filtered].sort((left, right) => {
     const leftValue = (left[sortField] ?? '').toString().toLowerCase();
     const rightValue = (right[sortField] ?? '').toString().toLowerCase();
@@ -46,6 +56,7 @@ export default function Trabajadores() {
     return 0;
   });
 
+  /** Ajusta el criterio de orden mostrado en la tabla. */
   const handleSort = (field: 'codigo_trabajador' | 'nombre') => {
     if (sortField === field) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -76,6 +87,7 @@ export default function Trabajadores() {
     setEditingTrabajador(null);
   };
 
+  /** Valida duplicados y guarda el trabajador via API. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

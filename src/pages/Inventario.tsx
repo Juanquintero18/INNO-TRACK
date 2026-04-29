@@ -14,8 +14,15 @@ import { apiRequest } from '@/lib/api';
 import type { MovimientoInventario } from '@/lib/types';
 import { Search, ArrowLeftRight, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
 
+/**
+ * Pantalla de movimientos de inventario.
+ *
+ * Reune consulta, filtros, ordenamiento y formulario para registrar entradas,
+ * salidas y ajustes de materias primas dentro del sistema.
+ */
 type Movimiento = MovimientoInventario;
 
+/** Orquesta la gestion visual de movimientos y su sincronizacion con la API. */
 export default function Inventario() {
   const { user, canEditModule } = useAuth();
   const {
@@ -48,10 +55,12 @@ export default function Inventario() {
   });
   const [formError, setFormError] = useState('');
 
+  /** Mensaje comun para bloquear edicion cuando el rol no lo permite. */
   const showPermissionDenied = () => {
     window.alert('No tienes permisos para editar en el módulo de Inventario.');
   };
 
+  /** Convierte fechas ISO del backend a un formato mas legible para la tabla. */
   const formatFecha = (fecha?: string | null) => {
     if (!fecha) return '—';
 
@@ -62,6 +71,7 @@ export default function Inventario() {
     return `${day}/${month}/${year}`;
   };
 
+  // Aplica busqueda textual, filtro por tipo y rango opcional de fechas.
   const filtered = movimientosList.filter(m => {
     const matchSearch =
       (m.materia_prima?.nombre ?? '').toLowerCase().includes(search.toLowerCase()) ||
@@ -80,6 +90,7 @@ export default function Inventario() {
     return matchSearch && matchTipo && matchFechas;
   });
 
+  // Resuelve el valor comparable segun la columna activa de la tabla.
   const sorted = [...filtered].sort((left, right) => {
     const leftValue =
       sortField === 'material'
@@ -116,6 +127,7 @@ export default function Inventario() {
     return 0;
   });
 
+  /** Actualiza el criterio de orden de la grilla. */
   const handleSort = (field: 'fecha' | 'tipo' | 'material' | 'cantidad' | 'responsable' | 'motivo' | 'referencia') => {
     if (sortField === field) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -159,6 +171,7 @@ export default function Inventario() {
     setEditingMovimiento(null);
   };
 
+  /** Valida reglas de negocio del movimiento y persiste la operacion. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

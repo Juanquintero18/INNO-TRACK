@@ -1,4 +1,9 @@
-//descripcion: Pagina de dashboard con resumen de estadísticas, gráficos y alertas para el sistema de costos e inventario
+/**
+ * Dashboard principal del sistema.
+ *
+ * Resume el estado operativo con metricas agregadas, graficos de apoyo y
+ * alertas sobre stock critico para dar contexto al usuario apenas entra.
+ */
 
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,13 +13,9 @@ import { calcularCostoPieza } from '@/lib/domain-utils';
 import { Puzzle, Package, ArrowLeftRight, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-// Colores para los gráficos, definidos como constantes para mantener consistencia y facilitar cambios futuros
-
 const CHART_COLORS = ['hsl(212, 99%, 25%)', 'hsl(212, 80%, 45%)', 'hsl(212, 60%, 60%)', 'hsl(0, 0%, 50%)', 'hsl(142, 71%, 45%)'];
 
-
-// Componente principal del dashboard que muestra estadísticas clave, gráficos de costo por pieza y stock de materiales, alertas de stock bajo y actividad reciente
-
+/** Construye la vista ejecutiva con datos agregados del inventario y la produccion. */
 export default function Dashboard() {
   const { user, isAdmin } = useAuth();
   const { piezasList, materiasList, movimientosList, getStockLevel } = useAppData();
@@ -23,8 +24,7 @@ export default function Dashboard() {
   const costoPromedio = totalPiezas > 0 ? piezasList.reduce((sum, p) => sum + calcularCostoPieza(p), 0) / totalPiezas : 0;
   const totalMovimientos = movimientosList.length;
 
-// Prepara los datos para los gráficos, calculando el costo por pieza y el stock de materiales, y filtrando las materias primas con stock bajo para mostrar alertas
-
+  // Datos base para el grafico comparativo de costo por pieza.
   const costoPorPieza = piezasList.map(p => ({
     name: p.trace_id,
     fullName: p.nombre ?? 'Sin nombre',
@@ -32,8 +32,7 @@ export default function Dashboard() {
     costo: Math.round(calcularCostoPieza(p) * 100) / 100,
   }));
 
-// Para el gráfico de stock de materiales, se toman las primeras 5 materias primas y se calcula su nivel de stock, truncando el nombre si es muy largo para mejorar la visualización
-
+  // Se limita la cantidad de materiales para mantener el grafico legible.
   const materialesStock = materiasList.slice(0, 5).map((mp, index) => {
     const stock = Math.round(getStockLevel(mp.id) * 100) / 100;
 
@@ -72,6 +71,7 @@ export default function Dashboard() {
     show: { opacity: 1, y: 0 },
   };
 
+  /** Dibuja etiquetas dentro de los segmentos del grafico circular cuando hay espacio suficiente. */
   const renderStockLabel = ({
     cx,
     cy,

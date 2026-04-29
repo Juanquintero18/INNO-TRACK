@@ -1,4 +1,9 @@
-//descripcion: Página de login con formulario de autenticación, validación de credenciales y diseño moderno para el sistema de costos e inventario
+/**
+ * Pantalla de inicio de sesion del sistema.
+ *
+ * Recoge credenciales, invoca el flujo de autenticacion del contexto y redirige
+ * al dashboard cuando el backend valida al usuario.
+ */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,9 +15,6 @@ import logo from '@/assets/logo-inno-transparente. RGB.png';
 import { motion } from 'framer-motion';
 import { Lock, Mail } from 'lucide-react';
 
-//componente de login que maneja el estado del formulario, la autenticación y la navegación, con un diseño centrado y animaciones suaves para mejorar la experiencia del usuario
-
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +23,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  /** Ejecuta el login y refleja cualquier error devuelto por la API. */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -33,8 +36,6 @@ export default function Login() {
       setError(result.error ?? 'No se pudo iniciar sesión.');
     }
   };
-
-// El diseño del formulario incluye un logo, campos de entrada con iconos, mensajes de error estilizados y un botón de envío, todo envuelto en un contenedor animado para una apariencia moderna y profesional
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">

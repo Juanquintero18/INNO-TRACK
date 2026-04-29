@@ -1,3 +1,9 @@
+/**
+ * Contexto que concentra los datos compartidos del dominio.
+ *
+ * Desde aqui se cargan catalogos, entidades principales, auditoria y helpers
+ * derivados como el stock calculado de materias primas.
+ */
 import { createContext, useContext, useEffect, useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
@@ -70,6 +76,12 @@ type AppDataContextType = {
 
 const AppDataContext = createContext<AppDataContextType>({} as AppDataContextType);
 
+/**
+ * Provider responsable de sincronizar el frontend con la API del sistema.
+ *
+ * Mantiene en memoria las listas maestras para evitar que cada pagina tenga que
+ * duplicar la logica de carga y actualizacion de datos.
+ */
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [unidadesList, setUnidadesList] = useState<UnidadMedida[]>([]);
@@ -83,6 +95,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [usuariosList, setUsuariosList] = useState<Usuario[]>([]);
   const [deletedItems, setDeletedItems] = useState<DeletedAuditItem[]>([]);
 
+  /** Carga todo el bloque de inventario con peticiones paralelas. */
   const refreshInventoryData = async () => {
     if (!user) return;
 
@@ -101,6 +114,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setTrabajadoresList(trabajadoresResponse);
   };
 
+  /** Carga usuarios, proyectos, ordenes y piezas para el modulo de produccion. */
   const refreshProductionData = async () => {
     if (!user) return;
 
@@ -117,6 +131,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setPiezasList(piezasResponse);
   };
 
+  /** Recupera el historial de eliminaciones restaurables. */
   const refreshAuditData = async () => {
     if (!user) return;
 
@@ -125,6 +140,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // Sin usuario autenticado no se conserva ningun dato para evitar fugas de
+    // informacion entre sesiones.
     if (!user) {
       setUnidadesList([]);
       setProyectosList([]);
@@ -142,6 +159,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     void Promise.all([refreshInventoryData(), refreshProductionData(), refreshAuditData()]);
   }, [user]);
 
+  /** Resuelve el endpoint REST de borrado segun el tipo de entidad. */
   const buildDeleteEndpoint = (entityType: DeletedEntityType, entityId: number) => {
     switch (entityType) {
       case 'pieza':
@@ -159,6 +177,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  /** Ejecuta el borrado remoto, actualiza el estado local y refresca auditoria. */
   const deleteEntity = async (entityType: DeletedEntityType, entity: RestorableEntity) => {
     await apiRequest(buildDeleteEndpoint(entityType, entity.id), { method: 'DELETE' });
 
@@ -186,6 +205,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     await refreshAuditData();
   };
 
+  /** Restaura una entidad eliminada y vuelve a sincronizar los modulos afectados. */
   const restoreDeletedItem = async (auditId: number) => {
     const auditItem = deletedItems.find(item => item.id === auditId);
 
@@ -211,6 +231,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     await refreshAuditData();
   };
 
+  /** Calcula stock disponible a partir de entradas, salidas y ajustes. */
   const getStockLevel = (materiaId: number) => {
     const entradas = movimientosList
       .filter(movimiento => movimiento.materia_prima_id === materiaId && movimiento.tipo === 'entrada')
@@ -227,6 +248,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return entradas - salidas + ajustes;
   };
 
+  // useMemo evita recrear el objeto del contexto cuando su contenido no cambia.
   const value = useMemo(
     () => ({
       unidadesList,

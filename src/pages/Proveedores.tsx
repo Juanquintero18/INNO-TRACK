@@ -11,8 +11,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
 import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
+/**
+ * Pantalla de proveedores.
+ *
+ * Centraliza el directorio de empresas proveedoras y las operaciones CRUD que
+ * alimentan los movimientos de entrada al inventario.
+ */
 type Proveedor = { id: number; nombre: string; telefono: string | null; email: string | null; direccion: string | null };
 
+/** Administra proveedores con busqueda, orden y formulario modal. */
 export default function Proveedores() {
   const { canEditModule } = useAuth();
   const { proveedoresList, setProveedoresList, deleteEntity } = useAppData();
@@ -30,10 +37,12 @@ export default function Proveedores() {
   });
   const [formError, setFormError] = useState('');
 
+  /** Mensaje estandar para operaciones bloqueadas por permisos. */
   const showPermissionDenied = () => {
     window.alert('No tienes permisos para editar en el módulo de Proveedores.');
   };
 
+  // Permite localizar proveedores por cualquier dato de contacto.
   const filtered = proveedoresList.filter(proveedor => {
     const term = search.toLowerCase();
 
@@ -45,6 +54,7 @@ export default function Proveedores() {
     );
   });
 
+  // Mantiene el listado ordenado segun el selector superior.
   const sorted = [...filtered].sort((left, right) => {
     const leftValue = (left[sortField] ?? '').toString().toLowerCase();
     const rightValue = (right[sortField] ?? '').toString().toLowerCase();
@@ -54,6 +64,7 @@ export default function Proveedores() {
     return 0;
   });
 
+  /** Alterna el orden o cambia la columna principal de ordenamiento. */
   const handleSortFieldChange = (value: 'nombre' | 'email' | 'telefono' | 'direccion') => {
     if (sortField === value) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -70,6 +81,7 @@ export default function Proveedores() {
     setEditingProveedor(null);
   };
 
+  /** Valida datos obligatorios y persistencia del proveedor. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

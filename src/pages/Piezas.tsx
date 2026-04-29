@@ -16,6 +16,12 @@ import { useAuth } from '@/contexts/AuthContext';
 
 import type { Pieza, PiezaHistorial, PiezaMateriaPrima } from '@/lib/types';
 
+/**
+ * Pantalla de piezas fabricadas.
+ *
+ * Es el modulo mas completo del frontend: consulta piezas, registra materiales
+ * asociados, calcula costos y mantiene la trazabilidad de produccion.
+ */
 export default function Piezas() {
   const { user } = useAuth();
   const { piezasList, setPiezasList, materiasList, usuariosList, proyectosList, ordenesList, deleteEntity, refreshProductionData } = useAppData();
@@ -46,6 +52,7 @@ export default function Piezas() {
   });
   const [materialFormError, setMaterialFormError] = useState('');
 
+  /** Formatea fechas con hora para eventos del historial y trazabilidad. */
   const formatFechaHora = (fecha?: string | null) => {
     if (!fecha) return '—';
 
@@ -62,6 +69,7 @@ export default function Piezas() {
     }).format(date);
   };
 
+  /** Formatea fechas simples para campos operativos y tablas. */
   const formatFecha = (fecha?: string | null) => {
     if (!fecha) return '—';
 
@@ -74,6 +82,7 @@ export default function Piezas() {
 
   const term = search.toLowerCase();
 
+  // Filtra piezas por texto y por ventana temporal de control de calidad.
   const filtered = piezasList.filter(p => {
     const matchSearch =
       (p.nombre ?? '').toLowerCase().includes(term) ||
@@ -93,6 +102,7 @@ const matchFechas =
     return matchSearch && matchFechas;
   });
 
+  // Calcula el valor comparable por columna, incluyendo costo derivado y estado.
   const sorted = [...filtered].sort((left, right) => {
     const leftCosto = calcularCostoPieza(left);
     const rightCosto = calcularCostoPieza(right);
@@ -136,6 +146,7 @@ const matchFechas =
     return 0;
   });
 
+  /** Cambia la columna de orden o invierte el sentido actual. */
   const handleSort = (field: 'trace_id' | 'nombre' | 'proyecto' | 'orden' | 'fecha_gelcoat' | 'fecha_qc' | 'peso_real' | 'costo' | 'estado') => {
     if (sortField === field) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -187,6 +198,7 @@ const matchFechas =
     ? ordenesList.filter(orden => orden.proyecto_id === Number(formData.proyecto_id))
     : [];
 
+  /** Resume el costo estimado del formulario a partir de sus materiales cargados. */
   const calcularCostoFormulario = () =>
     materialesForm.reduce((total, material) => {
       const cantidad = material.cantidad_real ?? material.cantidad_teorica ?? 0;
@@ -194,6 +206,7 @@ const matchFechas =
       return total + cantidad * costo;
     }, 0);
 
+  /** Agrega una materia prima al formulario evitando duplicados y cantidades invalidas. */
   const handleAddMaterial = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -250,6 +263,7 @@ const matchFechas =
     setMaterialesForm(prev => prev.filter(material => material.id !== materialId));
   };
 
+  /** Valida la pieza, sincroniza materiales y persiste alta o edicion. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

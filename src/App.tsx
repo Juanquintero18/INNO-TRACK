@@ -1,4 +1,9 @@
-// src/App.tsx
+/**
+ * Punto de entrada del frontend.
+ *
+ * Aqui se conectan los providers globales, el router y las rutas protegidas
+ * que dividen la experiencia entre login, panel principal y modulos internos.
+ */
 
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -21,8 +26,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-//Componente para proteger rutas que requieren autenticación y, opcionalmente, permisos de administrador
-
+/**
+ * Envuelve rutas privadas y aplica dos validaciones basicas:
+ * 1. El usuario debe estar autenticado.
+ * 2. Algunas rutas exigen rol de administrador.
+ */
 function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
   const { user, isAdmin, isLoading } = useAuth();
   if (isLoading) return null;
@@ -31,9 +39,13 @@ function ProtectedRoute({ children, adminOnly = false }: { children: React.React
   return <>{children}</>;
 }
 
-
-//Define las rutas de la aplicación, protegiendo las que requieren autenticación y permisos de administrador
-
+/**
+ * Declara el arbol de rutas principal.
+ *
+ * Las rutas internas viven dentro de AppLayout para reutilizar la misma
+ * estructura visual, mientras que las rutas de autenticacion se resuelven
+ * fuera del layout.
+ */
 function AppRoutes() {
   const { user, isLoading } = useAuth();
 
@@ -57,9 +69,12 @@ function AppRoutes() {
   );
 }
 
-//Componente principal de la aplicación que envuelve todo en los proveedores necesarios para el manejo de estado, autenticación y enrutamiento
-
-
+/**
+ * Ensambla los providers transversales del frontend.
+ *
+ * El orden importa: el router debe envolver a las paginas, AuthProvider expone
+ * el usuario actual y AppDataProvider consume ese estado para cargar datos.
+ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -76,9 +91,4 @@ const App = () => (
   </QueryClientProvider>
 );
 
-//Exporta el componente principal de la aplicación
-
 export default App;
-
-
-//backend:

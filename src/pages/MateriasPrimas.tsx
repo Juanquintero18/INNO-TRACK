@@ -1,3 +1,9 @@
+/**
+ * Pantalla de gestion de materias primas.
+ *
+ * Reune consulta, ordenamiento, filtros por fecha y el formulario de creacion
+ * o edicion de cada material del inventario.
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -21,6 +27,7 @@ type MateriaPrima = {
   unidad_medida?: { id: number; nombre: string; abreviatura: string | null };
 };
 
+/** Administra el CRUD visual de materias primas y su lectura operativa. */
 export default function MateriasPrimas() {
   const { canEditModule } = useAuth();
   const { materiasList, setMateriasList, unidadesList, deleteEntity, getStockLevel } = useAppData();
@@ -40,10 +47,12 @@ export default function MateriasPrimas() {
   });
   const [formError, setFormError] = useState('');
 
+  /** Mensaje comun cuando un usuario intenta editar sin permisos suficientes. */
   const showPermissionDenied = () => {
     window.alert('No tienes permisos para editar en el módulo de Materias Primas.');
   };
 
+  /** Formatea fechas ISO del backend para mostrarlas en formato local. */
   const formatFecha = (fecha?: string | null) => {
     if (!fecha) return '—';
 
@@ -54,6 +63,7 @@ export default function MateriasPrimas() {
     return `${day}/${month}/${year}`;
   };
 
+  // Aplica busqueda por nombre y rango opcional de fechas de actualizacion.
   const filtered = materiasList.filter(mp => {
     const matchSearch = mp.nombre.toLowerCase().includes(search.toLowerCase());
     const fechaFiltro = mp.fecha_actualizacion;
@@ -68,6 +78,7 @@ export default function MateriasPrimas() {
     return matchSearch && matchFechas;
   });
 
+  // Resuelve el criterio de orden segun el campo actualmente seleccionado.
   const sorted = [...filtered].sort((left, right) => {
     const leftValue =
       sortField === 'unidad'
@@ -96,6 +107,7 @@ export default function MateriasPrimas() {
     return 0;
   });
 
+  /** Alterna el sentido de orden o activa un nuevo campo de ordenamiento. */
   const handleSort = (field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion') => {
     if (sortField === field) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
@@ -135,6 +147,7 @@ export default function MateriasPrimas() {
     setEditingMateria(null);
   };
 
+  /** Valida el formulario y sincroniza el alta o la edicion con la API. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

@@ -1,3 +1,9 @@
+/**
+ * Layout principal de las rutas privadas.
+ *
+ * Combina la barra lateral, un encabezado colapsable y el outlet donde React
+ * Router inyecta cada pagina del sistema.
+ */
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AppSidebar } from './AppSidebar';
@@ -6,6 +12,7 @@ import logo from '@/assets/logo-inno-transparente. RGB.png';
 import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/** Administra la estructura visual comun de todo el panel autenticado. */
 export function AppLayout() {
   const { user } = useAuth();
   const [showTopBar, setShowTopBar] = useState(true);
