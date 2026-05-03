@@ -1,6 +1,10 @@
 from django.db import models
 
 
+DEFAULT_STOCK_CRITICO_MAX = 20
+DEFAULT_STOCK_BAJO_MAX = 50
+
+
 class UnidadMedida(models.Model):
     nombre = models.CharField(max_length=50)
     abreviatura = models.CharField(max_length=10, blank=True, null=True)
@@ -49,6 +53,45 @@ class MateriaPrima(models.Model):
         managed = False
         db_table = "materia_prima"
         ordering = ["id"]
+
+
+class MateriaPrimaStabilityThreshold(models.Model):
+    materia_prima = models.OneToOneField(
+        MateriaPrima,
+        on_delete=models.CASCADE,
+        related_name="stability_config",
+        db_column="materia_prima_id",
+    )
+    stock_critico_max = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=DEFAULT_STOCK_CRITICO_MAX,
+    )
+    stock_bajo_max = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=DEFAULT_STOCK_BAJO_MAX,
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "materia_prima_estabilidad"
+        ordering = ["materia_prima_id"]
+
+
+class MateriaPrimaPiezaConfig(models.Model):
+    materia_prima = models.OneToOneField(
+        MateriaPrima,
+        on_delete=models.CASCADE,
+        related_name="pieza_config",
+        db_column="materia_prima_id",
+    )
+    enabled_for_piezas = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "materia_prima_pieza_config"
+        ordering = ["materia_prima_id"]
 
 
 class MovimientoInventario(models.Model):

@@ -10,6 +10,7 @@ import type { Usuario } from '@/lib/types';
 
 export type AppModule =
   | 'dashboard'
+  | 'proyectos'
   | 'piezas'
   | 'inventario'
   | 'materias-primas'
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Usuario | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isAdmin = user?.rol === 'administrador';
+  const isAlmacenista = user?.rol === 'almacenista';
 
   // Los operarios tienen una vista mas restringida y solo pueden editar piezas.
   const workerViewModules: AppModule[] = [
@@ -49,6 +51,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ];
 
   const workerEditModules: AppModule[] = ['dashboard', 'piezas'];
+
+  const almacenistaViewModules: AppModule[] = [
+    'dashboard',
+    'piezas',
+    'inventario',
+    'materias-primas',
+    'proveedores',
+    'trabajadores',
+  ];
+
+  const almacenistaEditModules: AppModule[] = ['inventario', 'proveedores', 'materias-primas'];
 
   useEffect(() => {
     // Al recargar la pagina, la app intenta recuperar el usuario a partir del
@@ -100,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const canAccessModule = (module: AppModule) => {
     if (!user) return false;
     if (isAdmin) return true;
+    if (isAlmacenista) return almacenistaViewModules.includes(module);
     return workerViewModules.includes(module);
   };
 
@@ -107,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const canEditModule = (module: AppModule) => {
     if (!user) return false;
     if (isAdmin) return true;
+    if (isAlmacenista) return almacenistaEditModules.includes(module);
     return workerEditModules.includes(module);
   };
 

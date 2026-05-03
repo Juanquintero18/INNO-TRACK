@@ -57,6 +57,11 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
       if (typeof payload?.detail === 'string') message = payload.detail;
       else if (typeof payload?.non_field_errors?.[0] === 'string') message = payload.non_field_errors[0];
       else if (typeof payload?.[0] === 'string') message = payload[0];
+      else if (payload && typeof payload === 'object') {
+        const firstValue = Object.values(payload)[0];
+        if (typeof firstValue === 'string') message = firstValue;
+        else if (Array.isArray(firstValue) && typeof firstValue[0] === 'string') message = firstValue[0];
+      }
     } catch {
       // No JSON body.
     }

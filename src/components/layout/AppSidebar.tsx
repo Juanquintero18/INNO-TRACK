@@ -5,9 +5,12 @@
  * acciones globales como cerrar sesion y colapsar la navegacion.
  */
 import { NavLink } from 'react-router-dom';
+import type { ComponentType } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import type { AppModule } from '@/contexts/AuthContext';
 import logo from '@/assets/logo-inno-transparente. RGB.png';
 import {
+  FolderKanban,
   LayoutDashboard,
   Puzzle,
   ShieldAlert,
@@ -22,25 +25,16 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Navegacion completa disponible para administradores.
-const adminLinks = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/piezas', label: 'Piezas', icon: Puzzle },
-  { to: '/materias-primas', label: 'Materias Primas', icon: Package },
-  { to: '/inventario', label: 'Inventario', icon: ArrowLeftRight },
-  { to: '/proveedores', label: 'Proveedores', icon: Truck },
-  { to: '/trabajadores', label: 'Trabajadores', icon: HardHat },
-  { to: '/usuarios', label: 'Usuarios', icon: Users },
-  { to: '/auditoria', label: 'Auditoría', icon: ShieldAlert },
-];
-
-// Navegacion reducida para operarios.
-const workerLinks = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/piezas', label: 'Piezas', icon: Puzzle },
-  { to: '/materias-primas', label: 'Materias Primas', icon: Package },
-  { to: '/inventario', label: 'Inventario', icon: ArrowLeftRight },
-  { to: '/trabajadores', label: 'Trabajadores', icon: HardHat },
+const allLinks: Array<{ to: string; label: string; icon: ComponentType<{ className?: string }>; module: AppModule }> = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { to: '/proyectos', label: 'Proyectos', icon: FolderKanban, module: 'proyectos' },
+  { to: '/piezas', label: 'Piezas', icon: Puzzle, module: 'piezas' },
+  { to: '/materias-primas', label: 'Materias Primas', icon: Package, module: 'materias-primas' },
+  { to: '/inventario', label: 'Inventario', icon: ArrowLeftRight, module: 'inventario' },
+  { to: '/proveedores', label: 'Proveedores', icon: Truck, module: 'proveedores' },
+  { to: '/trabajadores', label: 'Trabajadores', icon: HardHat, module: 'trabajadores' },
+  { to: '/usuarios', label: 'Usuarios', icon: Users, module: 'usuarios' },
+  { to: '/auditoria', label: 'Auditoría', icon: ShieldAlert, module: 'auditoria' },
 ];
 
 type AppSidebarProps = {
@@ -50,8 +44,8 @@ type AppSidebarProps = {
 
 /** Renderiza la barra lateral fija del panel y adapta su contenido al rol. */
 export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
-  const { user, logout, isAdmin } = useAuth();
-  const links = isAdmin ? adminLinks : workerLinks;
+  const { user, logout, canAccessModule } = useAuth();
+  const links = allLinks.filter(link => canAccessModule(link.module));
 
   return (
     <aside

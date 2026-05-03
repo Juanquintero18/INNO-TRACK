@@ -11,10 +11,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import type { AppModule } from "@/contexts/AuthContext";
 import { AppDataProvider } from "@/contexts/AppDataContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Proyectos from "./pages/Proyectos";
 import Piezas from "./pages/Piezas";
 import Auditoria from "./pages/Auditoria";
 import MateriasPrimas from "./pages/MateriasPrimas";
@@ -27,15 +29,19 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 /**
- * Envuelve rutas privadas y aplica dos validaciones basicas:
- * 1. El usuario debe estar autenticado.
- * 2. Algunas rutas exigen rol de administrador.
+ * Envuelve rutas privadas y aplica validaciones de sesion y acceso por modulo.
  */
-function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
-  const { user, isAdmin, isLoading } = useAuth();
+function ProtectedRoute({
+  children,
+  module,
+}: {
+  children: React.ReactNode;
+  module?: AppModule;
+}) {
+  const { user, isLoading, canAccessModule } = useAuth();
   if (isLoading) return null;
   if (!user) return <Navigate to="/" replace />;
-  if (adminOnly && !isAdmin) return <Navigate to="/dashboard" replace />;
+  if (module && !canAccessModule(module)) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
 
@@ -55,14 +61,15 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
       <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/piezas" element={<Piezas />} />
-        <Route path="/auditoria" element={<ProtectedRoute adminOnly><Auditoria /></ProtectedRoute>} />
-        <Route path="/materias-primas" element={<MateriasPrimas />} />
-        <Route path="/inventario" element={<Inventario />} />
-        <Route path="/proveedores" element={<ProtectedRoute adminOnly><Proveedores /></ProtectedRoute>} />
-        <Route path="/trabajadores" element={<Trabajadores />} />
-        <Route path="/usuarios" element={<ProtectedRoute adminOnly><Usuarios /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute module="dashboard"><Dashboard /></ProtectedRoute>} />
+        <Route path="/proyectos" element={<ProtectedRoute module="proyectos"><Proyectos /></ProtectedRoute>} />
+        <Route path="/piezas" element={<ProtectedRoute module="piezas"><Piezas /></ProtectedRoute>} />
+        <Route path="/auditoria" element={<ProtectedRoute module="auditoria"><Auditoria /></ProtectedRoute>} />
+        <Route path="/materias-primas" element={<ProtectedRoute module="materias-primas"><MateriasPrimas /></ProtectedRoute>} />
+        <Route path="/inventario" element={<ProtectedRoute module="inventario"><Inventario /></ProtectedRoute>} />
+        <Route path="/proveedores" element={<ProtectedRoute module="proveedores"><Proveedores /></ProtectedRoute>} />
+        <Route path="/trabajadores" element={<ProtectedRoute module="trabajadores"><Trabajadores /></ProtectedRoute>} />
+        <Route path="/usuarios" element={<ProtectedRoute module="usuarios"><Usuarios /></ProtectedRoute>} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

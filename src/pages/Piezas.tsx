@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -6,15 +6,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { calcularCostoPieza, calcularPesoTeoricoPieza } from '@/lib/domain-utils';
 import { useAppData } from '@/contexts/AppDataContext';
 import { apiRequest } from '@/lib/api';
-import { Search, Eye, Puzzle, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
+import { Search, Eye, Puzzle, Plus, Pencil, Trash2, ArrowUpDown, SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-import type { Pieza, PiezaHistorial, PiezaMateriaPrima } from '@/lib/types';
+import type { MateriaPrima, Pieza, PiezaHistorial, PiezaMateriaPrima } from '@/lib/types';
+
+const historialFieldLabels: Record<string, string> = {
+  trace_id: 'Trace ID',
+  nombre: 'Nombre',
+  orden_id: 'Orden',
+  usuario_id: 'Usuario responsable',
+  fecha_gelcoat: 'Fecha gelcoat',
+  fecha_qc: 'Fecha QC',
+  peso_real: 'Peso real',
+};
+
+const materialChangeLabels: Record<'agregado' | 'eliminado' | 'actualizado', string> = {
+  agregado: 'Material agregado',
+  eliminado: 'Material eliminado',
+  actualizado: 'Material actualizado',
+};
 
 /**
  * Pantalla de piezas fabricadas.
@@ -23,12 +40,16 @@ import type { Pieza, PiezaHistorial, PiezaMateriaPrima } from '@/lib/types';
  * asociados, calcula costos y mantiene la trazabilidad de produccion.
  */
 export default function Piezas() {
-  const { user } = useAuth();
-  const { piezasList, setPiezasList, materiasList, usuariosList, proyectosList, ordenesList, deleteEntity, refreshProductionData } = useAppData();
+  const { user, canEditModule } = useAuth();
+  const isAdmin = user?.rol === 'administrador';
+  const canManage = canEditModule('piezas');
+  const { piezasList, setPiezasList, materiasList, setMateriasList, usuariosList, proyectosList, ordenesList, deleteEntity, refreshProductionData } = useAppData();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Pieza | null>(null);
+  const [selectedHistorial, setSelectedHistorial] = useState<PiezaHistorial | null>(null);
   const [openCreate, setOpenCreate] = useState(false);
   const [openMaterialsModal, setOpenMaterialsModal] = useState(false);
+  const [openMaterialConfigModal, setOpenMaterialConfigModal] = useState(false);
   const [editingPieza, setEditingPieza] = useState<Pieza | null>(null);
   const [sortField, setSortField] = useState<'trace_id' | 'nombre' | 'proyecto' | 'orden' | 'fecha_gelcoat' | 'fecha_qc' | 'peso_real' | 'costo' | 'estado'>('trace_id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -51,6 +72,71 @@ export default function Piezas() {
     cantidad: '',
   });
   const [materialFormError, setMaterialFormError] = useState('');
+  const [materialConfigEnabledIds, setMaterialConfigEnabledIds] = useState<number[]>([]);
+  const [materialConfigError, setMaterialConfigError] = useState('');
+  const [isSavingMaterialConfig, setIsSavingMaterialConfig] = useState(false);
+
+  const showPermissionDenied = () => {
+    window.alert('No tienes permisos para editar en el módulo de Piezas.');
+  };
+
+  const showAdminOnly = () => {
+    window.alert('Solo el administrador puede configurar los materiales habilitados para piezas.');
+  };
+
+  // Compatibilidad: si el backend no envía la bandera (por despliegue parcial),
+  // se asume habilitada para no bloquear producción.
+  const isMateriaEnabledForPiezas = (materia: MateriaPrima) => materia.enabled_for_piezas !== false;
+
+  const ordenLabelById = useMemo(
+    () => new Map(ordenesList.map(orden => [orden.id, orden.codigo_orden || `Orden #${orden.id}`])),
+    [ordenesList]
+  );
+
+  const usuarioLabelById = useMemo(
+    () => new Map(
+      usuariosList.map(usuario => [
+        usuario.id,
+        `${usuario.nombre} ${usuario.apellido ?? ''}`.trim() || usuario.email || `Usuario #${usuario.id}`,
+      ])
+    ),
+    [usuariosList]
+  );
+
+  const sortedMateriasForConfig = useMemo(
+    () => [...materiasList].sort((left, right) => left.nombre.localeCompare(right.nombre)),
+    [materiasList]
+  );
+
+  const availableMateriasForPieceForm = useMemo(() => {
+    const alreadyAddedIds = new Set(
+      materialesForm
+        .map(material => material.materia_prima_id)
+        .filter((id): id is number => typeof id === 'number')
+    );
+
+    return materiasList
+      .filter(materia => isMateriaEnabledForPiezas(materia) && !alreadyAddedIds.has(materia.id))
+      .sort((left, right) => left.nombre.localeCompare(right.nombre));
+  }, [materiasList, materialesForm]);
+
+  const usedMateriasBeingDisabled = useMemo(() => {
+    const enabledDraft = new Set(materialConfigEnabledIds);
+
+    return materiasList.filter(
+      materia =>
+        isMateriaEnabledForPiezas(materia) &&
+        !enabledDraft.has(materia.id) &&
+        (materia.piezas_usage_count ?? 0) > 0
+    );
+  }, [materiasList, materialConfigEnabledIds]);
+
+  const disabledMateriasInCurrentPiece = useMemo(() => {
+    return materialesForm
+      .map(material => material.materia_prima)
+      .filter((materia): materia is MateriaPrima => Boolean(materia) && materia.enabled_for_piezas === false)
+      .map(materia => materia.nombre);
+  }, [materialesForm]);
 
   /** Formatea fechas con hora para eventos del historial y trazabilidad. */
   const formatFechaHora = (fecha?: string | null) => {
@@ -79,6 +165,32 @@ export default function Piezas() {
 
     return `${day}/${month}/${year}`;
   };
+
+  const formatHistorialValue = (field: string, value: string | number | null | undefined) => {
+    if (value === null || value === undefined || value === '') return 'No registrado';
+
+    if ((field === 'fecha_gelcoat' || field === 'fecha_qc') && typeof value === 'string') {
+      return formatFecha(value);
+    }
+
+    if (field === 'orden_id') {
+      const id = Number(value);
+      return ordenLabelById.get(id) || `Orden #${id}`;
+    }
+
+    if (field === 'usuario_id') {
+      const id = Number(value);
+      return usuarioLabelById.get(id) || `Usuario #${id}`;
+    }
+
+    if (field === 'peso_real') {
+      return `${value} kg`;
+    }
+
+    return String(value);
+  };
+
+  const formatMaterialCantidad = (value: string | null | undefined) => value ?? 'No registrado';
 
   const term = search.toLowerCase();
 
@@ -175,6 +287,79 @@ const matchFechas =
     </button>
   );
 
+  const openMaterialsConfig = () => {
+    if (!isAdmin) {
+      showAdminOnly();
+      return;
+    }
+
+    setMaterialConfigEnabledIds(
+      materiasList.filter(materia => isMateriaEnabledForPiezas(materia)).map(materia => materia.id)
+    );
+    setMaterialConfigError('');
+    setOpenMaterialConfigModal(true);
+  };
+
+  const handleMaterialConfigToggle = (materiaId: number, checked: boolean | 'indeterminate') => {
+    setMaterialConfigEnabledIds(prev => {
+      if (checked === true) {
+        if (prev.includes(materiaId)) return prev;
+        return [...prev, materiaId];
+      }
+
+      return prev.filter(id => id !== materiaId);
+    });
+    if (materialConfigError) setMaterialConfigError('');
+  };
+
+  const saveMaterialsConfig = async () => {
+    if (!isAdmin) {
+      showAdminOnly();
+      return;
+    }
+
+    if (materialConfigEnabledIds.length === 0) {
+      setMaterialConfigError('Debes dejar al menos una materia prima habilitada para piezas.');
+      return;
+    }
+
+    if (usedMateriasBeingDisabled.length > 0) {
+      const warningLines = usedMateriasBeingDisabled
+        .map(materia => `- ${materia.nombre} (${materia.piezas_usage_count} pieza(s))`)
+        .join('\n');
+
+      const confirmed = window.confirm(
+        `Atención: estás deshabilitando materiales ya usados en piezas existentes.\n\n${warningLines}\n\n` +
+          'Esto impedirá agregarlos en nuevas piezas o nuevas ediciones. ¿Deseas continuar?'
+      );
+
+      if (!confirmed) return;
+    }
+
+    setIsSavingMaterialConfig(true);
+    setMaterialConfigError('');
+
+    try {
+      const updatedMaterias = await apiRequest<MateriaPrima[]>('/api/inventory/materias-primas/piezas-materiales/', {
+        method: 'PUT',
+        json: { enabled_materia_ids: materialConfigEnabledIds },
+      });
+
+      setMateriasList(updatedMaterias);
+      setOpenMaterialConfigModal(false);
+    } catch (error) {
+      if (error instanceof Error && /no encontrado/i.test(error.message)) {
+        setMaterialConfigError(
+          'El backend activo no reconoce este endpoint todavía. Reinicia el servidor backend y vuelve a intentar.'
+        );
+      } else {
+        setMaterialConfigError(error instanceof Error ? error.message : 'No se pudo guardar la configuración de materiales.');
+      }
+    } finally {
+      setIsSavingMaterialConfig(false);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       trace_id: '',
@@ -230,6 +415,11 @@ const matchFechas =
       return;
     }
 
+    if (materiaPrima.enabled_for_piezas === false) {
+      setMaterialFormError('Esa materia prima está deshabilitada para nuevas piezas.');
+      return;
+    }
+
     const materialExistente = materialesForm.some(
       material => material.materia_prima_id === materiaPrimaId
     );
@@ -266,6 +456,11 @@ const matchFechas =
   /** Valida la pieza, sincroniza materiales y persiste alta o edicion. */
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
 
     const traceId = formData.trace_id.trim();
     const nombre = formData.nombre.trim();
@@ -344,6 +539,11 @@ const matchFechas =
   };
 
   const handleEdit = (pieza: Pieza) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
     setEditingPieza(pieza);
     setFormData({
       trace_id: pieza.trace_id ?? '',
@@ -363,6 +563,11 @@ const matchFechas =
   };
 
   const handleDelete = async (pieza: Pieza) => {
+    if (!canManage) {
+      showPermissionDenied();
+      return;
+    }
+
     if (!window.confirm(`¿Eliminar la pieza ${pieza.trace_id || pieza.nombre || pieza.id}?`)) return;
 
     try {
@@ -414,10 +619,19 @@ const matchFechas =
           </div>
         </div>
 
-        <Button type="button" onClick={() => setOpenCreate(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nueva pieza
-        </Button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {isAdmin && (
+            <Button type="button" variant="outline" onClick={openMaterialsConfig}>
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              Configurar materiales
+            </Button>
+          )}
+
+          <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva pieza
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -494,23 +708,27 @@ const matchFechas =
                           <Eye className="w-4 h-4" />
                         </Button>
 
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleEdit(pieza)}
-                          title="Editar"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
+                        {canManage && (
+                          <>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleEdit(pieza)}
+                              title="Editar"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
 
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => handleDelete(pieza)}
-                          title="Eliminar"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => handleDelete(pieza)}
+                              title="Eliminar"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -683,11 +901,31 @@ const matchFechas =
                     Agrega los materiales y la cantidad para calcular el costo total.
                   </p>
                 </div>
-                <Button type="button" variant="outline" onClick={() => setOpenMaterialsModal(true)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setOpenMaterialsModal(true)}
+                  disabled={availableMateriasForPieceForm.length === 0}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Añadir materiales
                 </Button>
               </div>
+
+              {disabledMateriasInCurrentPiece.length > 0 && (
+                <div className="rounded-lg border border-amber-300/60 bg-amber-50 p-3 text-sm text-amber-900">
+                  <p className="font-semibold">Atención: esta pieza incluye materiales deshabilitados</p>
+                  <p className="mt-1">
+                    Puedes conservarlos, pero no podrás agregarlos nuevamente si los quitas.
+                  </p>
+                </div>
+              )}
+
+              {availableMateriasForPieceForm.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  No hay materias primas habilitadas disponibles para agregar en este momento.
+                </p>
+              )}
 
               {materialesForm.length > 0 ? (
                 <div className="rounded-lg border border-border">
@@ -759,6 +997,109 @@ const matchFechas =
       </Dialog>
 
       <Dialog
+        open={openMaterialConfigModal}
+        onOpenChange={open => {
+          setOpenMaterialConfigModal(open);
+          if (!open) {
+            setMaterialConfigError('');
+            setIsSavingMaterialConfig(false);
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] w-[calc(100vw-2rem)] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Configurar materias primas para piezas</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="rounded-lg border border-border bg-muted/20 p-4 text-sm">
+              <p className="font-medium text-foreground">Control de uso en formularios de piezas</p>
+              <p className="mt-1 text-muted-foreground">
+                Esta configuración define qué materias primas se pueden agregar en creación o edición de piezas.
+                Los materiales deshabilitados no aparecerán en los formularios.
+              </p>
+            </div>
+
+            {usedMateriasBeingDisabled.length > 0 && (
+              <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+                <p className="font-semibold">Advertencia crítica</p>
+                <p className="mt-1">
+                  Estás deshabilitando materias primas que ya se usan en piezas existentes.
+                  Confirma con cuidado antes de guardar:
+                </p>
+                <ul className="mt-2 list-disc pl-5">
+                  {usedMateriasBeingDisabled.map(materia => (
+                    <li key={materia.id}>
+                      {materia.nombre} ({materia.piezas_usage_count} pieza(s))
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="rounded-lg border border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Habilitada</TableHead>
+                    <TableHead>Materia prima</TableHead>
+                    <TableHead className="text-right">Uso en piezas</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sortedMateriasForConfig.map(materia => (
+                    <TableRow key={materia.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={materialConfigEnabledIds.includes(materia.id)}
+                          onCheckedChange={checked => handleMaterialConfigToggle(materia.id, checked)}
+                          aria-label={`Habilitar ${materia.nombre} para piezas`}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-foreground">{materia.nombre}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Unidad: {materia.unidad_medida?.abreviatura ?? '—'}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant={materia.piezas_usage_count > 0 ? 'secondary' : 'outline'}>
+                          {materia.piezas_usage_count} pieza(s)
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {materialConfigError && (
+              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {materialConfigError}
+              </p>
+            )}
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
+                Habilitadas: {materialConfigEnabledIds.length} de {materiasList.length}
+              </p>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setOpenMaterialConfigModal(false)}>
+                  Cancelar
+                </Button>
+                <Button type="button" onClick={saveMaterialsConfig} disabled={isSavingMaterialConfig}>
+                  {isSavingMaterialConfig ? 'Guardando...' : 'Guardar configuración'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
         open={openMaterialsModal}
         onOpenChange={open => {
           setOpenMaterialsModal(open);
@@ -790,13 +1131,18 @@ const matchFechas =
                   <SelectValue placeholder="Selecciona un material" />
                 </SelectTrigger>
                 <SelectContent>
-                  {materiasList.map(materia => (
+                  {availableMateriasForPieceForm.map(materia => (
                     <SelectItem key={materia.id} value={String(materia.id)}>
                       {materia.nombre}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {availableMateriasForPieceForm.length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  No hay materias primas habilitadas disponibles para nuevas piezas.
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -926,7 +1272,7 @@ const matchFechas =
                   <div className="space-y-3">
                     {[...selected.historial].sort((a, b) => b.fecha.localeCompare(a.fecha)).map(item => (
                       <div key={item.id} className="rounded-lg bg-muted/40 p-3">
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <Badge variant={item.accion === 'creacion' ? 'default' : 'secondary'}>
@@ -939,9 +1285,19 @@ const matchFechas =
                             <p className="text-sm text-muted-foreground">{item.descripcion}</p>
                           </div>
 
-                          <span className="text-sm text-muted-foreground">
-                            {formatFechaHora(item.fecha)}
-                          </span>
+                          <div className="flex flex-col items-start gap-2 sm:items-end">
+                            <span className="text-sm text-muted-foreground">
+                              {formatFechaHora(item.fecha)}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedHistorial(item)}
+                            >
+                              {item.detalle?.legacy ? 'Ver resumen' : item.accion === 'edicion' ? 'Ver cambios' : 'Ver detalle'}
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -952,6 +1308,153 @@ const matchFechas =
                   </p>
                 )}
               </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!selectedHistorial} onOpenChange={open => !open && setSelectedHistorial(null)}>
+        <DialogContent className="max-h-[90vh] w-[calc(100vw-2rem)] max-w-4xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Detalle del cambio</DialogTitle>
+          </DialogHeader>
+
+          {selectedHistorial && (
+            <div className="space-y-5">
+              <div className="grid grid-cols-1 gap-3 rounded-lg border border-border p-4 text-sm md:grid-cols-3">
+                <div>
+                  <p className="text-muted-foreground">Acción</p>
+                  <p className="font-medium">{selectedHistorial.accion === 'creacion' ? 'Creación' : 'Edición'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Usuario</p>
+                  <p className="font-medium">
+                    {selectedHistorial.usuario ? `${selectedHistorial.usuario.nombre} ${selectedHistorial.usuario.apellido ?? ''}`.trim() : 'Usuario no disponible'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Fecha</p>
+                  <p className="font-medium">{formatFechaHora(selectedHistorial.fecha)}</p>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-border p-4">
+                <p className="text-sm text-muted-foreground">Resumen</p>
+                <p className="mt-1 text-sm font-medium text-foreground">{selectedHistorial.descripcion}</p>
+              </div>
+
+              {selectedHistorial.detalle ? (
+                selectedHistorial.detalle.legacy ? (
+                  <div className="rounded-lg border border-amber-300/60 bg-amber-50 p-4">
+                    <h3 className="text-sm font-semibold text-amber-900">Resumen histórico</h3>
+                    <p className="mt-1 text-sm text-amber-900/90">
+                      Este evento se registró antes de habilitar la comparación detallada por campos.
+                      Desde esta versión, los nuevos cambios ya mostrarán el antes y después completo.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {selectedHistorial.detalle.field_changes && selectedHistorial.detalle.field_changes.length > 0 ? (
+                      <div className="rounded-lg border border-border p-4">
+                        <h3 className="mb-3 text-sm font-semibold">Campos modificados</h3>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Campo</TableHead>
+                              <TableHead>Antes</TableHead>
+                              <TableHead>Después</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {selectedHistorial.detalle.field_changes.map(change => (
+                              <TableRow key={change.field}>
+                                <TableCell className="font-medium">{change.label || historialFieldLabels[change.field] || change.field}</TableCell>
+                                <TableCell>{formatHistorialValue(change.field, change.before)}</TableCell>
+                                <TableCell>{formatHistorialValue(change.field, change.after)}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : null}
+
+                    {selectedHistorial.detalle.material_changes && selectedHistorial.detalle.material_changes.length > 0 ? (
+                      <div className="rounded-lg border border-border p-4">
+                        <h3 className="mb-3 text-sm font-semibold">Cambios en materias primas</h3>
+                        <div className="space-y-3">
+                          {selectedHistorial.detalle.material_changes.map((change, index) => (
+                            <div key={`${change.materia_prima_id ?? 'sin-id'}-${index}`} className="rounded-lg bg-muted/40 p-3">
+                              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                                <div>
+                                  <p className="font-medium text-foreground">{change.materia_prima_nombre || 'Materia prima no disponible'}</p>
+                                  <p className="text-sm text-muted-foreground">{materialChangeLabels[change.change_type]}</p>
+                                </div>
+                                <Badge variant="secondary">{change.materia_prima_id ? `ID ${change.materia_prima_id}` : 'Sin ID'}</Badge>
+                              </div>
+
+                              <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                                <div className="rounded-md border border-border/70 bg-background p-3">
+                                  <p className="mb-2 font-medium text-foreground">Antes</p>
+                                  <p className="text-muted-foreground">Cant. teórica: {formatMaterialCantidad(change.before?.cantidad_teorica)}</p>
+                                  <p className="text-muted-foreground">Cant. real: {formatMaterialCantidad(change.before?.cantidad_real)}</p>
+                                </div>
+                                <div className="rounded-md border border-border/70 bg-background p-3">
+                                  <p className="mb-2 font-medium text-foreground">Después</p>
+                                  <p className="text-muted-foreground">Cant. teórica: {formatMaterialCantidad(change.after?.cantidad_teorica)}</p>
+                                  <p className="text-muted-foreground">Cant. real: {formatMaterialCantidad(change.after?.cantidad_real)}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {selectedHistorial.detalle.accion === 'creacion' && selectedHistorial.detalle.initial ? (
+                      <div className="rounded-lg border border-border p-4">
+                        <h3 className="mb-3 text-sm font-semibold">Estado inicial de la pieza</h3>
+                        <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                          <div>
+                            <p className="text-muted-foreground">Trace ID</p>
+                            <p className="font-medium">{formatHistorialValue('trace_id', selectedHistorial.detalle.initial.trace_id)}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Nombre</p>
+                            <p className="font-medium">{formatHistorialValue('nombre', selectedHistorial.detalle.initial.nombre)}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Orden</p>
+                            <p className="font-medium">{formatHistorialValue('orden_id', selectedHistorial.detalle.initial.orden_id)}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Usuario responsable</p>
+                            <p className="font-medium">{formatHistorialValue('usuario_id', selectedHistorial.detalle.initial.usuario_id)}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Fecha gelcoat</p>
+                            <p className="font-medium">{formatHistorialValue('fecha_gelcoat', selectedHistorial.detalle.initial.fecha_gelcoat)}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Fecha QC</p>
+                            <p className="font-medium">{formatHistorialValue('fecha_qc', selectedHistorial.detalle.initial.fecha_qc)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {selectedHistorial.detalle.accion === 'edicion' &&
+                    (!selectedHistorial.detalle.field_changes?.length && !selectedHistorial.detalle.material_changes?.length) ? (
+                      <p className="text-sm text-muted-foreground">
+                        No se detectaron cambios en los campos principales ni en las materias primas para esta edición.
+                      </p>
+                    ) : null}
+                  </>
+                )
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No hay detalle disponible para este registro de historial.
+                </p>
+              )}
             </div>
           )}
         </DialogContent>

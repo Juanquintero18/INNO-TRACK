@@ -9,7 +9,10 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppData } from '@/contexts/AppDataContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { calcularCostoPieza } from '@/lib/domain-utils';
+import {
+  calcularCostoPieza,
+  getStockStabilityMeta,
+} from '@/lib/domain-utils';
 import { Puzzle, Package, ArrowLeftRight, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -17,7 +20,7 @@ const CHART_COLORS = ['hsl(212, 99%, 25%)', 'hsl(212, 80%, 45%)', 'hsl(212, 60%,
 
 /** Construye la vista ejecutiva con datos agregados del inventario y la produccion. */
 export default function Dashboard() {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
   const { piezasList, materiasList, movimientosList, getStockLevel } = useAppData();
 
   const totalPiezas = piezasList.length;
@@ -32,28 +35,43 @@ export default function Dashboard() {
     costo: Math.round(calcularCostoPieza(p) * 100) / 100,
   }));
 
-  // Se limita la cantidad de materiales para mantener el grafico legible.
-  const materialesStock = materiasList.slice(0, 5).map((mp, index) => {
+  const materialesClasificados = materiasList
+    .map(mp => {
+      const stock = Math.round(getStockLevel(mp.id) * 100) / 100;
+      const stabilityMeta = getStockStabilityMeta(mp, stock);
+
+      return {
+        id: mp.id,
+        name: mp.nombre.length > 15 ? mp.nombre.slice(0, 15) + '…' : mp.nombre,
+        fullName: mp.nombre,
+        stock,
+        unit: mp.unidad_medida?.abreviatura ?? '',
+        statusLabel: stabilityMeta.label,
+        statusClass: stabilityMeta.toneClass,
+        statusRank: stabilityMeta.rank,
+        helperText: stabilityMeta.helperText,
+      };
+    })
+    .sort((left, right) => {
+      if (left.statusRank !== right.statusRank) return left.statusRank - right.statusRank;
+      if (left.stock !== right.stock) return left.stock - right.stock;
+      return left.fullName.localeCompare(right.fullName);
+    });
+
+  // Se limita la cantidad de materiales del grafico para mantenerlo legible.
+  const materialesStock = materialesClasificados.slice(0, 5).map((mp, index) => {
     const stock = Math.round(getStockLevel(mp.id) * 100) / 100;
 
     return {
-      id: mp.id,
-      name: mp.nombre.length > 15 ? mp.nombre.slice(0, 15) + '…' : mp.nombre,
-      fullName: mp.nombre,
-      stock,
-      unit: mp.unidad_medida?.abreviatura ?? '',
+      ...mp,
       color: CHART_COLORS[index % CHART_COLORS.length],
-      statusLabel: stock < 20 ? 'Critico' : stock < 50 ? 'Bajo' : 'Estable',
-      statusClass:
-        stock < 20
-          ? 'bg-destructive/10 text-destructive'
-          : stock < 50
-            ? 'bg-warning/10 text-warning'
-            : 'bg-success/10 text-success',
+      stock,
     };
   });
 
-  const lowStock = materiasList.filter(mp => getStockLevel(mp.id) < 20);
+  const criticalMaterials = materialesClasificados.filter(material => material.statusRank === 0);
+  const lowMaterials = materialesClasificados.filter(material => material.statusRank === 1);
+  const stableMaterials = materialesClasificados.filter(material => material.statusRank === 2);
 
   const stats = [
     { label: 'Piezas Registradas', value: totalPiezas, icon: Puzzle, color: 'text-primary' },
@@ -245,23 +263,58 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Low stock alert */}
-      {isAdmin && lowStock.length > 0 && (
-        <Card className="border-warning/30 bg-warning/5">
+      {/* Stock status overview */}
+      {materiasList.length > 0 && (
+        <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2 text-warning">
+            <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
-              Alertas de Stock Bajo
+              Estado del Stock por Materia Prima
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {lowStock.map(mp => (
-                <div key={mp.id} className="flex items-center justify-between py-2 px-3 rounded-lg bg-background">
-                  <span className="text-sm font-medium text-foreground">{mp.nombre}</span>
-                  <span className="text-sm text-muted-foreground">
-                    Stock: {getStockLevel(mp.id).toFixed(1)} {mp.unidad_medida?.abreviatura}
-                  </span>
+            <div className="space-y-5">
+              {[
+                { title: 'Crítico', items: criticalMaterials, toneClass: 'text-destructive', badgeClass: 'bg-destructive/10 text-destructive' },
+                { title: 'Bajo', items: lowMaterials, toneClass: 'text-warning', badgeClass: 'bg-warning/10 text-warning' },
+                { title: 'Estable', items: stableMaterials, toneClass: 'text-success', badgeClass: 'bg-success/10 text-success' },
+              ].map(section => (
+                <div key={section.title} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className={`text-sm font-semibold ${section.toneClass}`}>{section.title}</p>
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${section.badgeClass}`}>
+                      {section.items.length}
+                    </span>
+                  </div>
+
+                  {section.items.length === 0 ? (
+                    <div className="rounded-lg border border-dashed px-3 py-4 text-sm text-muted-foreground">
+                      No hay materiales en este rango.
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {section.items.map(material => (
+                        <div key={material.id} className="flex items-center justify-between gap-4 rounded-lg border bg-background px-3 py-3">
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-foreground">{material.fullName}</span>
+                              <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${material.statusClass}`}>
+                                {material.statusLabel}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{material.helperText}</p>
+                          </div>
+
+                          <div className="shrink-0 text-right">
+                            <p className="text-sm font-semibold text-foreground">
+                              {material.stock} {material.unit}
+                            </p>
+                            <p className="text-xs text-muted-foreground">Stock actual</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

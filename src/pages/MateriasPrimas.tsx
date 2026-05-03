@@ -16,16 +16,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
-import { Search, Package, Plus, Pencil, Trash2, ArrowUpDown } from 'lucide-react';
-
-type MateriaPrima = {
-  id: number;
-  unidad_medida_id: number | null;
-  nombre: string;
-  costo: number | null;
-  fecha_actualizacion: string | null;
-  unidad_medida?: { id: number; nombre: string; abreviatura: string | null };
-};
+import {
+  formatThresholdValue,
+  getMateriaPrimaStabilityThresholds,
+  getStockStabilityMeta,
+} from '@/lib/domain-utils';
+import type { MateriaPrima } from '@/lib/types';
+import { Search, Package, Plus, Pencil, Trash2, ArrowUpDown, Gauge, ShieldCheck, ShieldAlert, Activity } from 'lucide-react';
 
 /** Administra el CRUD visual de materias primas y su lectura operativa. */
 export default function MateriasPrimas() {
@@ -33,10 +30,12 @@ export default function MateriasPrimas() {
   const { materiasList, setMateriasList, unidadesList, deleteEntity, getStockLevel } = useAppData();
   const canManage = canEditModule('materias-primas');
   const [search, setSearch] = useState('');
-  const [sortField, setSortField] = useState<'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion'>('nombre');
+  const [sortField, setSortField] = useState<'nombre' | 'unidad' | 'costo' | 'stock' | 'estabilidad' | 'fecha_actualizacion'>('nombre');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [openCreate, setOpenCreate] = useState(false);
+  const [openStabilityConfig, setOpenStabilityConfig] = useState(false);
   const [editingMateria, setEditingMateria] = useState<MateriaPrima | null>(null);
+  const [stabilityMateria, setStabilityMateria] = useState<MateriaPrima | null>(null);
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [formData, setFormData] = useState({
@@ -46,6 +45,12 @@ export default function MateriasPrimas() {
     fecha_actualizacion: '',
   });
   const [formError, setFormError] = useState('');
+  const [stabilityFormData, setStabilityFormData] = useState({
+    stock_critico_max: '',
+    stock_bajo_max: '',
+  });
+  const [stabilityError, setStabilityError] = useState('');
+  const [isSavingStability, setIsSavingStability] = useState(false);
 
   /** Mensaje comun cuando un usuario intenta editar sin permisos suficientes. */
   const showPermissionDenied = () => {
@@ -80,11 +85,18 @@ export default function MateriasPrimas() {
 
   // Resuelve el criterio de orden segun el campo actualmente seleccionado.
   const sorted = [...filtered].sort((left, right) => {
+    const leftStock = getStockLevel(left.id);
+    const rightStock = getStockLevel(right.id);
+    const leftStability = getStockStabilityMeta(left, leftStock);
+    const rightStability = getStockStabilityMeta(right, rightStock);
+
     const leftValue =
       sortField === 'unidad'
         ? (left.unidad_medida?.nombre ?? '').toLowerCase()
+        : sortField === 'estabilidad'
+          ? leftStability.rank
         : sortField === 'stock'
-          ? getStockLevel(left.id)
+          ? leftStock
           : sortField === 'costo'
             ? left.costo ?? 0
             : sortField === 'fecha_actualizacion'
@@ -94,13 +106,22 @@ export default function MateriasPrimas() {
     const rightValue =
       sortField === 'unidad'
         ? (right.unidad_medida?.nombre ?? '').toLowerCase()
+        : sortField === 'estabilidad'
+          ? rightStability.rank
         : sortField === 'stock'
-          ? getStockLevel(right.id)
+          ? rightStock
           : sortField === 'costo'
             ? right.costo ?? 0
             : sortField === 'fecha_actualizacion'
               ? right.fecha_actualizacion ?? ''
               : (right.nombre ?? '').toLowerCase();
+
+    if (sortField === 'estabilidad' && leftValue === rightValue) {
+      if (leftStock !== rightStock) return sortDirection === 'asc' ? leftStock - rightStock : rightStock - leftStock;
+      return sortDirection === 'asc'
+        ? left.nombre.localeCompare(right.nombre)
+        : right.nombre.localeCompare(left.nombre);
+    }
 
     if (leftValue < rightValue) return sortDirection === 'asc' ? -1 : 1;
     if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
@@ -108,7 +129,7 @@ export default function MateriasPrimas() {
   });
 
   /** Alterna el sentido de orden o activa un nuevo campo de ordenamiento. */
-  const handleSort = (field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion') => {
+  const handleSort = (field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'estabilidad' | 'fecha_actualizacion') => {
     if (sortField === field) {
       setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
       return;
@@ -120,7 +141,7 @@ export default function MateriasPrimas() {
 
   const renderSortableHeader = (
     label: string,
-    field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'fecha_actualizacion',
+    field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'estabilidad' | 'fecha_actualizacion',
     alignRight = false,
   ) => (
     <button
@@ -145,6 +166,15 @@ export default function MateriasPrimas() {
     });
     setFormError('');
     setEditingMateria(null);
+  };
+
+  const resetStabilityForm = () => {
+    setStabilityMateria(null);
+    setStabilityFormData({
+      stock_critico_max: '',
+      stock_bajo_max: '',
+    });
+    setStabilityError('');
   };
 
   /** Valida el formulario y sincroniza el alta o la edicion con la API. */
@@ -250,6 +280,69 @@ export default function MateriasPrimas() {
     }
   };
 
+  const getStabilityIcon = (state: 'critico' | 'bajo' | 'estable') => {
+    if (state === 'critico') return ShieldAlert;
+    if (state === 'bajo') return Activity;
+    return ShieldCheck;
+  };
+
+  const handleOpenStabilityConfig = (materia: MateriaPrima) => {
+    const thresholds = getMateriaPrimaStabilityThresholds(materia);
+    setStabilityMateria(materia);
+    setStabilityFormData({
+      stock_critico_max: String(thresholds.stock_critico_max),
+      stock_bajo_max: String(thresholds.stock_bajo_max),
+    });
+    setStabilityError('');
+    setOpenStabilityConfig(true);
+  };
+
+  const handleStabilitySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!canManage || !stabilityMateria) {
+      showPermissionDenied();
+      return;
+    }
+
+    const critico = Number(stabilityFormData.stock_critico_max);
+    const bajo = Number(stabilityFormData.stock_bajo_max);
+
+    if (Number.isNaN(critico) || Number.isNaN(bajo)) {
+      setStabilityError('Completa ambos umbrales de estabilidad.');
+      return;
+    }
+
+    if (critico < 0) {
+      setStabilityError('El límite crítico no puede ser negativo.');
+      return;
+    }
+
+    if (bajo <= critico) {
+      setStabilityError('El límite de stock bajo debe ser mayor que el crítico.');
+      return;
+    }
+
+    setIsSavingStability(true);
+
+    try {
+      const updatedMateria = await apiRequest<MateriaPrima>(`/api/inventory/materias-primas/${stabilityMateria.id}/stability-thresholds/`, {
+        method: 'PUT',
+        json: {
+          stock_critico_max: critico,
+          stock_bajo_max: bajo,
+        },
+      });
+      setMateriasList(prev => prev.map(materia => materia.id === updatedMateria.id ? updatedMateria : materia));
+      setOpenStabilityConfig(false);
+      resetStabilityForm();
+    } catch (error) {
+      setStabilityError(error instanceof Error ? error.message : 'No se pudo guardar la configuración de estabilidad.');
+    } finally {
+      setIsSavingStability(false);
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -299,14 +392,42 @@ export default function MateriasPrimas() {
 
       <Card>
         <CardHeader className="pb-3">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar material..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-9"
-            />
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative max-w-sm flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar material..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">Vista rápida:</span>
+              <Button
+                type="button"
+                size="sm"
+                variant={sortField === 'estabilidad' ? 'default' : 'outline'}
+                onClick={() => {
+                  setSortField('estabilidad');
+                  setSortDirection('asc');
+                }}
+              >
+                Priorizar críticos
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={sortField === 'nombre' ? 'default' : 'outline'}
+                onClick={() => {
+                  setSortField('nombre');
+                  setSortDirection('asc');
+                }}
+              >
+                Orden alfabético
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
@@ -318,6 +439,7 @@ export default function MateriasPrimas() {
                 <TableHead>{renderSortableHeader('Unidad', 'unidad')}</TableHead>
                 <TableHead className="text-right">{renderSortableHeader('Costo Unitario', 'costo', true)}</TableHead>
                 <TableHead className="text-right">{renderSortableHeader('Stock Actual', 'stock', true)}</TableHead>
+                <TableHead>{renderSortableHeader('Estabilidad', 'estabilidad')}</TableHead>
                 <TableHead>{renderSortableHeader('Última Actualización', 'fecha_actualizacion')}</TableHead>
                 {canManage && <TableHead className="text-right">Acciones</TableHead>}
               </TableRow>
@@ -326,6 +448,8 @@ export default function MateriasPrimas() {
             <TableBody>
               {sorted.map(mp => {
                 const stock = getStockLevel(mp.id);
+                const stabilityMeta = getStockStabilityMeta(mp, stock);
+                const StabilityIcon = getStabilityIcon(stabilityMeta.state);
 
                 return (
                   <TableRow key={mp.id}>
@@ -340,9 +464,29 @@ export default function MateriasPrimas() {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      <span className={stock < 20 ? 'text-destructive font-semibold' : ''}>
+                      <span className={stabilityMeta.state === 'critico' ? 'text-destructive font-semibold' : ''}>
                         {stock.toFixed(1)} {mp.unidad_medida?.abreviatura}
                       </span>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="space-y-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenStabilityConfig(mp)}
+                          disabled={!canManage}
+                          className={`h-auto min-w-[170px] justify-start gap-3 px-3 py-2 ${stabilityMeta.buttonClass}`}
+                        >
+                          <StabilityIcon className="h-4 w-4" />
+                          <span className="flex flex-col items-start leading-tight">
+                            <span className="text-xs font-semibold uppercase tracking-wide">Semáforo</span>
+                            <span className="text-sm font-semibold">{stabilityMeta.label}</span>
+                          </span>
+                        </Button>
+                        <p className="text-xs text-muted-foreground">{stabilityMeta.helperText}</p>
+                      </div>
                     </TableCell>
 
                     <TableCell className="text-muted-foreground">
@@ -379,6 +523,93 @@ export default function MateriasPrimas() {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog
+        open={openStabilityConfig}
+        onOpenChange={open => {
+          setOpenStabilityConfig(open);
+          if (!open) resetStabilityForm();
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              Configurar estabilidad de {stabilityMateria?.nombre}
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleStabilitySubmit} className="space-y-4">
+            <div className="rounded-lg border bg-muted/20 p-4 text-sm text-muted-foreground">
+              Define los límites para clasificar el stock de esta materia prima. El rango estable se calcula automáticamente por encima del límite de stock bajo.
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="stock_critico_max">Crítico hasta</Label>
+                <Input
+                  id="stock_critico_max"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={stabilityFormData.stock_critico_max}
+                  onChange={e => {
+                    setStabilityFormData(prev => ({ ...prev, stock_critico_max: e.target.value }));
+                    if (stabilityError) setStabilityError('');
+                  }}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stock_bajo_max">Bajo hasta</Label>
+                <Input
+                  id="stock_bajo_max"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={stabilityFormData.stock_bajo_max}
+                  onChange={e => {
+                    setStabilityFormData(prev => ({ ...prev, stock_bajo_max: e.target.value }));
+                    if (stabilityError) setStabilityError('');
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 rounded-lg border bg-background p-4 text-sm sm:grid-cols-3">
+              <div>
+                <p className="font-medium text-destructive">Crítico</p>
+                <p className="text-muted-foreground">Hasta {formatThresholdValue(Number(stabilityFormData.stock_critico_max || 0))}</p>
+              </div>
+              <div>
+                <p className="font-medium text-warning">Bajo</p>
+                <p className="text-muted-foreground">
+                  Mayor que {formatThresholdValue(Number(stabilityFormData.stock_critico_max || 0))} y hasta {formatThresholdValue(Number(stabilityFormData.stock_bajo_max || 0))}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-success">Estable</p>
+                <p className="text-muted-foreground">Mayor que {formatThresholdValue(Number(stabilityFormData.stock_bajo_max || 0))}</p>
+              </div>
+            </div>
+
+            {stabilityError && (
+              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {stabilityError}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" type="button" onClick={() => setOpenStabilityConfig(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isSavingStability}>
+                <Gauge className="mr-2 h-4 w-4" />
+                {isSavingStability ? 'Guardando...' : 'Guardar estabilidad'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={openCreate}

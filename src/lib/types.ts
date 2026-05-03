@@ -37,6 +37,11 @@ export interface TrabajadorProduccion {
   nombre: string | null;
 }
 
+export interface MateriaPrimaStabilityThresholds {
+  stock_critico_max: number;
+  stock_bajo_max: number;
+}
+
 export interface MateriaPrima {
   id: number;
   unidad_medida_id: number | null;
@@ -44,6 +49,9 @@ export interface MateriaPrima {
   costo: number | null;
   fecha_actualizacion: string | null;
   unidad_medida?: UnidadMedida;
+  stability_thresholds: MateriaPrimaStabilityThresholds;
+  enabled_for_piezas: boolean;
+  piezas_usage_count: number;
 }
 
 export interface Orden {
@@ -55,6 +63,54 @@ export interface Orden {
   proyecto?: Proyecto;
 }
 
+export interface PiezaHistorialMaterialState {
+  cantidad_teorica: string | null;
+  cantidad_real: string | null;
+}
+
+export interface PiezaHistorialMaterialChange {
+  change_type: 'agregado' | 'eliminado' | 'actualizado';
+  materia_prima_id: number | null;
+  materia_prima_nombre: string | null;
+  before: PiezaHistorialMaterialState | null;
+  after: PiezaHistorialMaterialState | null;
+}
+
+export interface PiezaHistorialFieldChange {
+  field: string;
+  label: string;
+  before: string | number | null;
+  after: string | number | null;
+}
+
+export interface PiezaHistorialSnapshot {
+  trace_id: string | null;
+  nombre: string | null;
+  orden_id: number | null;
+  usuario_id: number | null;
+  fecha_gelcoat: string | null;
+  fecha_qc: string | null;
+  peso_real: string | null;
+  materias_primas: Array<{
+    materia_prima_id: number | null;
+    materia_prima_nombre: string | null;
+    cantidad_teorica: string | null;
+    cantidad_real: string | null;
+  }>;
+}
+
+export interface PiezaHistorialDetalle {
+  schema: 'pieza_historial_v1';
+  accion: 'creacion' | 'edicion';
+  summary: string;
+  legacy?: boolean;
+  field_changes?: PiezaHistorialFieldChange[];
+  material_changes?: PiezaHistorialMaterialChange[];
+  before?: PiezaHistorialSnapshot;
+  after?: PiezaHistorialSnapshot;
+  initial?: PiezaHistorialSnapshot;
+}
+
 export interface PiezaHistorial {
   id: number;
   accion: 'creacion' | 'edicion';
@@ -62,6 +118,7 @@ export interface PiezaHistorial {
   usuario_id: number | null;
   usuario?: Usuario;
   descripcion: string;
+  detalle?: PiezaHistorialDetalle | null;
 }
 
 export interface PiezaMateriaPrima {
@@ -103,4 +160,42 @@ export interface MovimientoInventario {
   proveedor?: Proveedor;
   usuario?: Usuario;
   trabajador?: TrabajadorProduccion;
+}
+
+export interface MovimientoImportPreviewRow {
+  row_number: number;
+  status: 'valid' | 'error';
+  errors: string[];
+  values: {
+    materia_prima: string;
+    tipo: string;
+    cantidad: string;
+    fecha: string;
+    proveedor: string;
+    trabajador: string;
+    motivo: string;
+    referencia: string;
+  };
+  resolved: {
+    materia_prima: string | null;
+    proveedor: string | null;
+    trabajador: string | null;
+  };
+}
+
+export interface MovimientoImportPreview {
+  file_name: string;
+  file_errors: string[];
+  header_observations: string[];
+  total_rows: number;
+  valid_rows: number;
+  invalid_rows: number;
+  can_import: boolean;
+  rows: MovimientoImportPreviewRow[];
+}
+
+export interface MovimientoImportCommitResult {
+  created_count: number;
+  created_ids: number[];
+  preview: MovimientoImportPreview;
 }
