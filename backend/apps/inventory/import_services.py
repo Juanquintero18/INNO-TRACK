@@ -31,6 +31,7 @@ TEMPLATE_HEADERS = [
 
 CANONICAL_HEADERS = set(TEMPLATE_HEADERS)
 
+# Acepta variaciones reales de encabezados para reducir rechazos por formato.
 HEADER_ALIASES = {
     "materia_prima": "materia_prima",
     "materiaprima": "materia_prima",
@@ -98,6 +99,7 @@ def _build_header_observation(raw_text: str, canonical: str) -> str | None:
 
 def _resolve_header(value: object) -> tuple[str, str | None]:
     raw_text = _cell_to_text(value)
+    # Estrategia en capas: exacto -> alias -> fuzzy para soportar plantillas ruidosas.
     candidates = {
         _normalize_text(raw_text),
         _normalize_lookup_key(raw_text),
@@ -235,6 +237,7 @@ def _read_xls_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]
 
 
 def _rows_from_matrix(rows: list[list[object]]) -> tuple[list[tuple[int, dict[str, object]]], list[str]]:
+    # Ignora filas vacías para estabilizar la numeración de errores por archivo.
     non_empty_rows = [row for row in rows if any(_cell_to_text(cell) for cell in row)]
     if not non_empty_rows:
         return [], []
@@ -246,6 +249,7 @@ def _rows_from_matrix(rows: list[list[object]]) -> tuple[list[tuple[int, dict[st
     parsed_rows: list[tuple[int, dict[str, object]]] = []
 
     for row_offset, row in enumerate(non_empty_rows[1:], start=2):
+        # Se rellena con None cuando faltan columnas para mantener mapeo por cabecera.
         values = row + [None] * max(0, len(headers) - len(row))
         parsed_rows.append(
             (
@@ -329,6 +333,7 @@ def _build_lookup_maps() -> tuple[
     dict[str, TrabajadorProduccion],
     dict[str, str],
 ]:
+    # Precarga catálogos en memoria para validar cientos de filas en O(1) por campo.
     materias: dict[str, MateriaPrima] = {}
     materia_aliases: dict[str, str] = {}
     proveedores: dict[str, Proveedor] = {}
@@ -377,6 +382,7 @@ def _build_row_preview(
     trabajadores: dict[str, TrabajadorProduccion],
     trabajador_aliases: dict[str, str],
 ) -> tuple[dict[str, object], dict[str, object] | None]:
+    # La vista previa conserva valores originales del archivo para explicar errores al usuario.
     display_values = {
         "materia_prima": _cell_to_text(raw_row.get("materia_prima")),
         "tipo": _cell_to_text(raw_row.get("tipo")),
@@ -463,6 +469,7 @@ def _build_row_preview(
             "motivo": motivo,
             "referencia": referencia,
         }
+        # El serializer centraliza reglas de negocio y evita duplicar validaciones aquí.
         serializer = MovimientoInventarioSerializer(data=payload)
         if not serializer.is_valid():
             errors.extend(_flatten_serializer_errors(serializer.errors))
@@ -482,6 +489,7 @@ def _build_row_preview(
 
 
 def analyze_movimiento_import(file_name: str, file_bytes: bytes) -> tuple[dict[str, object], list[dict[str, object]]]:
+    # Preview y commit comparten exactamente este análisis para evitar diferencias.
     source_rows, header_observations = _read_source_rows(file_name, file_bytes)
     materias, materia_aliases, proveedores, proveedor_aliases, trabajadores, trabajador_aliases = _build_lookup_maps()
     preview_rows: list[dict[str, object]] = []
@@ -537,6 +545,7 @@ def import_movimientos(file_name: str, file_bytes: bytes, user: AppUser | None) 
 
     created_ids: list[int] = []
 
+    # Si una fila falla al guardar, la transacción revierte todo el lote.
     for payload in payloads:
         serializer = MovimientoInventarioSerializer(data=payload)
         serializer.is_valid(raise_exception=True)

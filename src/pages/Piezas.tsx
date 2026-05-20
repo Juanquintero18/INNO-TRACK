@@ -33,6 +33,8 @@ const materialChangeLabels: Record<'agregado' | 'eliminado' | 'actualizado', str
   actualizado: 'Material actualizado',
 };
 
+const BOGOTA_TIMEZONE = 'America/Bogota';
+
 /**
  * Pantalla de piezas fabricadas.
  *
@@ -115,6 +117,7 @@ export default function Piezas() {
         .filter((id): id is number => typeof id === 'number')
     );
 
+    // Catálogo disponible para el selector: solo habilitadas y no repetidas en el formulario actual.
     return materiasList
       .filter(materia => isMateriaEnabledForPiezas(materia) && !alreadyAddedIds.has(materia.id))
       .sort((left, right) => left.nombre.localeCompare(right.nombre));
@@ -123,6 +126,7 @@ export default function Piezas() {
   const usedMateriasBeingDisabled = useMemo(() => {
     const enabledDraft = new Set(materialConfigEnabledIds);
 
+    // Detecta impacto antes de guardar configuración para advertir sobre piezas existentes.
     return materiasList.filter(
       materia =>
         isMateriaEnabledForPiezas(materia) &&
@@ -152,6 +156,7 @@ export default function Piezas() {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: BOGOTA_TIMEZONE,
     }).format(date);
   };
 
@@ -219,6 +224,7 @@ const matchFechas =
     const leftCosto = calcularCostoPieza(left);
     const rightCosto = calcularCostoPieza(right);
 
+    // Normaliza valor comparable por columna para usar un único comparador de ordenamiento.
     const leftValue =
       sortField === 'proyecto'
         ? (left.orden?.proyecto?.nombre ?? '').toLowerCase()

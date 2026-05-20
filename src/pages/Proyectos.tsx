@@ -135,6 +135,7 @@ export default function Proyectos() {
   }, [proyectosList, selectedProyectoId]);
 
   const orderCountByProjectId = useMemo(
+    // Métrica derivada para tabla y validaciones de borrado sin recalcular por fila.
     () => new Map(proyectosList.map(proyecto => [
       proyecto.id,
       ordenesList.filter(orden => orden.proyecto_id === proyecto.id).length,
@@ -388,6 +389,7 @@ export default function Proyectos() {
       return;
     }
 
+    // Guardrail de UI alineado con la regla de negocio: no borrar con dependencias.
     const relatedOrders = ordenesList.filter(orden => orden.proyecto_id === proyecto.id);
 
     if (relatedOrders.length > 0) {
@@ -432,6 +434,7 @@ export default function Proyectos() {
       return;
     }
 
+    // Guardrail equivalente para evitar borrar órdenes con piezas asociadas.
     const relatedPieces = piezasList.filter(pieza => pieza.orden_id === orden.id);
     const projectLabel = proyectosList.find(proyecto => proyecto.id === orden.proyecto_id)?.nombre || `Proyecto #${orden.proyecto_id}`;
 
@@ -572,6 +575,7 @@ export default function Proyectos() {
     }
 
     const duplicateOrderCode = ordenesList.some(
+      // El código de orden se exige único dentro del mismo proyecto.
       orden =>
         orden.proyecto_id === proyectoId &&
         (orden.codigo_orden ?? '').toLowerCase() === codigoOrden.toLowerCase() &&

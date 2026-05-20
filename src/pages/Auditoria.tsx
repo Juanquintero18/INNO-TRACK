@@ -109,13 +109,19 @@ const humanizeToken = (value: string) => value
   .replace(/\b\w/g, char => char.toUpperCase());
 
 const isDateLikeField = (fieldName: string) => fieldName.startsWith('fecha') || fieldName.endsWith('_at');
+const BOGOTA_TIMEZONE = 'America/Bogota';
 
 const formatDateValue = (value: string) => {
+  const hasTime = value.includes('T') || /\b\d{2}:\d{2}/.test(value);
+
+  if (!hasTime && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split('-');
+    return `${day}/${month}/${year}`;
+  }
+
   const parsedDate = new Date(value);
 
   if (Number.isNaN(parsedDate.getTime())) return null;
-
-  const hasTime = value.includes('T') || /\b\d{2}:\d{2}/.test(value);
 
   return new Intl.DateTimeFormat('es-CO', hasTime ? {
     day: '2-digit',
@@ -123,10 +129,12 @@ const formatDateValue = (value: string) => {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: BOGOTA_TIMEZONE,
   } : {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
+    timeZone: BOGOTA_TIMEZONE,
   }).format(parsedDate);
 };
 
@@ -288,6 +296,7 @@ export default function Auditoria() {
   const [detailItem, setDetailItem] = useState<DeletedAuditItem | null>(null);
 
   const activeReferenceMaps = useMemo(() => ({
+    // Índices en memoria para resolver IDs a etiquetas sin recalcular en cada celda.
     usuario_id: new Map(
       usuariosList.map(usuario => [
         usuario.id,
@@ -321,6 +330,7 @@ export default function Auditoria() {
   }), [materiasList, ordenesList, piezasList, proyectosList, proveedoresList, trabajadoresList, unidadesList, usuariosList]);
 
   const deletedReferenceMaps = useMemo(() => {
+    // Fallback: si la referencia ya no existe activa, intentamos resolverla desde el propio log.
     const buildDeletedLabelMap = (entityType: DeletedEntityType) => new Map(
       deletedItems
         .filter(item => item.entityType === entityType)
@@ -392,6 +402,7 @@ export default function Auditoria() {
         };
       }
 
+      // Prioriza entidad activa; si ya fue borrada, cae al mapa de eliminados.
       const activeLabel = activeReferenceMaps[fieldName as keyof typeof activeReferenceMaps]?.get(numericId);
       const deletedLabel = deletedReferenceMaps[fieldName as keyof typeof deletedReferenceMaps]?.get(numericId);
       const resolvedLabel = activeLabel || deletedLabel;

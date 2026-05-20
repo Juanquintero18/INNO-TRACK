@@ -39,6 +39,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+      <Button
+        type="button"
+        variant="ghost"
+        className="fixed bottom-4 left-4 z-20 h-8 px-3 text-xs font-normal text-muted-foreground/70 bg-card/20 border border-border/40 backdrop-blur-sm hover:bg-card/40 hover:text-foreground"
+      >
+        Politicas de privacidad
+      </Button>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,13 +103,16 @@ export default function Login() {
             <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isSubmitting}>
               {isSubmitting ? 'Validando...' : 'Iniciar Sesión'}
             </Button>
-          </form>
 
-          <div className="mt-6 p-3 rounded-lg bg-muted/50 text-xs text-muted-foreground">
-            <p className="font-medium mb-1">Credenciales:</p>
-            <p>Admin: admin@innolution.com</p>
-            <p>Trabajador: carlos@innolution.com</p>
-          </div>
+            <div className="flex flex-col items-start gap-1">
+              <Button type="button" variant="link" className="h-auto p-0 text-sm font-medium text-primary/90">
+                ¿Olvidaste tu contraseña?
+              </Button>
+              <Button type="button" variant="link" className="h-auto p-0 text-sm font-medium text-primary/90">
+                ¿Deseas registrarte?
+              </Button>
+            </div>
+          </form>
         </div>
       </motion.div>
     </div>

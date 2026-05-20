@@ -1,4 +1,6 @@
 import json
+from datetime import timezone as datetime_timezone
+from zoneinfo import ZoneInfo
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
@@ -12,6 +14,7 @@ from apps.production.models import Orden, Pieza, PiezaHistorial, PiezaMateriaPri
 
 
 PIEZA_HISTORIAL_SCHEMA = "pieza_historial_v1"
+BOGOTA_TIMEZONE = ZoneInfo("America/Bogota")
 TRACKED_PIEZA_FIELDS = (
     "trace_id",
     "nombre",
@@ -77,6 +80,7 @@ class PiezaMateriaPrimaSerializer(serializers.ModelSerializer):
 class PiezaHistorialSerializer(serializers.ModelSerializer):
     descripcion = serializers.SerializerMethodField()
     detalle = serializers.SerializerMethodField()
+    fecha = serializers.SerializerMethodField()
     usuario = AppUserSerializer(read_only=True)
     usuario_id = serializers.IntegerField(source="usuario.id", read_only=True)
 
@@ -102,6 +106,20 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
 
         setattr(obj, cache_attr, payload)
         return payload
+
+    def get_fecha(self, obj: PiezaHistorial) -> str | None:
+        fecha = obj.fecha
+
+        if fecha is None:
+            return None
+
+        # La columna legacy "pieza_historial.fecha" es timestamp sin zona.
+        # Se guardaba con hora UTC y al serializar se interpretaba como local,
+        # provocando un desfase de +5h en Colombia.
+        if timezone.is_naive(fecha):
+            fecha = fecha.replace(tzinfo=datetime_timezone.utc)
+
+        return fecha.astimezone(BOGOTA_TIMEZONE).isoformat()
 
     def _build_legacy_payload(self, obj: PiezaHistorial) -> dict:
         raw_description = (obj.descripcion or "").strip()
@@ -295,6 +313,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         def material_key(material: dict) -> str:
             material_id = material.get("materia_prima_id")
             material_name = material.get("materia_prima_nombre") or ""
+            # Mezcla ID y nombre para conservar rastreo incluso con datos legacy incompletos.
             return f"{material_id}|{material_name}"
 
         before_map = {material_key(item): item for item in before_materials}
@@ -302,6 +321,7 @@ class PiezaSerializer(serializers.ModelSerializer):
 
         material_changes: list[dict] = []
 
+        # Unión ordenada para detectar altas, bajas y cambios aunque cambie el orden original.
         for key in sorted(set(before_map) | set(after_map)):
             before_item = before_map.get(key)
             after_item = after_map.get(key)
@@ -414,6 +434,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         if request is not None and getattr(request, "user", None) is not None and getattr(request.user, "is_authenticated", False):
             actor = request.user
 
+        # Se guarda snapshot final para que el historial refleje el estado persistido.
         current_snapshot = after_snapshot or self._build_pieza_snapshot(pieza)
         payload = self._build_historial_payload(accion, before_snapshot=before_snapshot, after_snapshot=current_snapshot)
 
@@ -426,6 +447,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        # Create y update comparten validación + sincronización para mantener trazabilidad consistente.
         materiales_data = validated_data.pop("materias_primas", [])
         self._validate_materials_for_piece(None, materiales_data)
         pieza = Pieza.objects.create(**validated_data)

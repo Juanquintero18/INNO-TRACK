@@ -93,6 +93,7 @@ class MateriaPrimaViewSet(BaseInventoryViewSet):
         existing_ids = set(MateriaPrima.objects.values_list("id", flat=True))
         unknown_ids = sorted(enabled_ids - existing_ids)
 
+        # Se valida antes de la transacción para no dejar cambios parciales por IDs inválidos.
         if unknown_ids:
             unknown_text = ", ".join(str(item) for item in unknown_ids)
             return Response(
@@ -103,6 +104,7 @@ class MateriaPrimaViewSet(BaseInventoryViewSet):
         disabled_ids = existing_ids - enabled_ids
 
         with transaction.atomic():
+            # Ausencia de config = habilitada. Solo persistimos explícitamente las deshabilitadas.
             MateriaPrimaPiezaConfig.objects.filter(materia_prima_id__in=enabled_ids).delete()
 
             for materia_id in disabled_ids:
@@ -111,6 +113,7 @@ class MateriaPrimaViewSet(BaseInventoryViewSet):
                     defaults={"enabled_for_piezas": False},
                 )
 
+        # Respuesta autoritativa para sincronizar el estado completo en frontend.
         refreshed_data = MateriaPrimaSerializer(self.get_queryset(), many=True).data
         return Response(refreshed_data, status=status.HTTP_200_OK)
 
