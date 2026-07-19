@@ -2,6 +2,12 @@
 
 ## Project info
 
+## Documentacion tecnica en espanol
+
+- Indice de documentacion: [docs/README.md](docs/README.md)
+- Arquitectura y flujo: [docs/arquitectura-sistema.md](docs/arquitectura-sistema.md)
+- Resumen API: [docs/api-resumen.md](docs/api-resumen.md)
+
 
 ## How can I edit this code?
 
