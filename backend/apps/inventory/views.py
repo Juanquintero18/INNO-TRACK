@@ -1,3 +1,8 @@
+"""Vistas REST del módulo de inventario.
+
+Incluye CRUD de catálogos, movimientos y endpoints de importación masiva.
+"""
+
 from django.db import transaction
 from django.db.models import Count
 from rest_framework import status
@@ -38,30 +43,41 @@ from apps.inventory.serializers import (
 
 
 class BaseInventoryViewSet(ModelViewSet):
+    """Base CRUD con borrado auditado para entidades de inventario."""
+
     permission_classes = [AdminWritePermission]
 
     def perform_destroy(self, instance):
+        """Registra auditoría antes de eliminar definitivamente."""
         create_audit_log(instance, self.request.user)
         instance.delete()
 
 
 class UnidadMedidaViewSet(BaseInventoryViewSet):
+    """CRUD de unidades de medida."""
+
     queryset = UnidadMedida.objects.all()
     serializer_class = UnidadMedidaSerializer
 
 
 class ProveedorViewSet(BaseInventoryViewSet):
+    """CRUD de proveedores con escritura para admin/almacenista."""
+
     permission_classes = [AdminOrAlmacenistaWritePermission]
     queryset = Proveedor.objects.all()
     serializer_class = ProveedorSerializer
 
 
 class TrabajadorProduccionViewSet(BaseInventoryViewSet):
+    """CRUD del catálogo de trabajadores de producción."""
+
     queryset = TrabajadorProduccion.objects.all()
     serializer_class = TrabajadorProduccionSerializer
 
 
 class MateriaPrimaViewSet(BaseInventoryViewSet):
+    """CRUD de materias primas y acciones de configuración asociadas."""
+
     permission_classes = [AdminOrAlmacenistaWritePermission]
     queryset = MateriaPrima.objects.select_related("unidad_medida", "stability_config", "pieza_config").annotate(
         piezas_usage_count=Count("piezas_materia_prima", distinct=True)
@@ -70,6 +86,7 @@ class MateriaPrimaViewSet(BaseInventoryViewSet):
 
     @action(detail=True, methods=["put"], url_path="stability-thresholds")
     def stability_thresholds(self, request, pk=None):
+        """Actualiza umbrales de estabilidad de una materia prima puntual."""
         materia = self.get_object()
         config, _created = MateriaPrimaStabilityThreshold.objects.get_or_create(
             materia_prima=materia,
@@ -86,6 +103,7 @@ class MateriaPrimaViewSet(BaseInventoryViewSet):
 
     @action(detail=False, methods=["put"], url_path="piezas-materiales", permission_classes=[AdminWritePermission])
     def piezas_materiales(self, request):
+        """Define qué materias primas quedan habilitadas para nuevas piezas."""
         serializer = MateriaPrimaPiezasMaterialesSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -119,6 +137,8 @@ class MateriaPrimaViewSet(BaseInventoryViewSet):
 
 
 class MovimientoInventarioViewSet(BaseInventoryViewSet):
+    """CRUD de movimientos; fija usuario actor en create/update."""
+
     permission_classes = [AdminOrAlmacenistaWritePermission]
     queryset = MovimientoInventario.objects.select_related(
         "materia_prima",
@@ -129,17 +149,22 @@ class MovimientoInventarioViewSet(BaseInventoryViewSet):
     serializer_class = MovimientoInventarioSerializer
 
     def perform_create(self, serializer):
+        """Asigna automáticamente el usuario autenticado al crear."""
         serializer.save(usuario=self.request.user)
 
     def perform_update(self, serializer):
+        """Actualiza usuario actor en cada modificación de movimiento."""
         serializer.save(usuario=self.request.user)
 
 
 class MovimientoInventarioImportBaseView(APIView):
+    """Base para endpoints de importación con parser multipart."""
+
     permission_classes = [AdminOrAlmacenistaWritePermission]
     parser_classes = [MultiPartParser, FormParser]
 
     def _get_uploaded_file(self):
+        """Obtiene el archivo subido o responde con error de validación."""
         uploaded_file = self.request.FILES.get("file")
         if uploaded_file is None:
             return None, Response({"detail": "Selecciona un archivo Excel o CSV."}, status=status.HTTP_400_BAD_REQUEST)
@@ -147,13 +172,18 @@ class MovimientoInventarioImportBaseView(APIView):
 
 
 class MovimientoInventarioImportTemplateView(APIView):
+    """Entrega plantilla oficial de importación de movimientos."""
+
     permission_classes = [AdminOrAlmacenistaWritePermission]
 
     def get(self, _request):
+        """Descarga de archivo ejemplo para carga masiva."""
         return build_movimiento_import_template_response()
 
 
 class MovimientoInventarioImportPreviewView(MovimientoInventarioImportBaseView):
+    """Valida archivo de importación y retorna vista previa detallada."""
+
     def post(self, request):
         uploaded_file, error_response = self._get_uploaded_file()
         if error_response is not None:
@@ -168,6 +198,8 @@ class MovimientoInventarioImportPreviewView(MovimientoInventarioImportBaseView):
 
 
 class MovimientoInventarioImportCommitView(MovimientoInventarioImportBaseView):
+    """Confirma importación y crea movimientos en lote atómico."""
+
     def post(self, request):
         uploaded_file, error_response = self._get_uploaded_file()
         if error_response is not None:

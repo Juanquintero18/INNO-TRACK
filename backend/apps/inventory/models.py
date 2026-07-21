@@ -1,3 +1,8 @@
+"""Modelos del dominio de inventario.
+
+Incluye catálogos base, configuraciones de estabilidad y movimientos.
+"""
+
 from django.db import models
 
 
@@ -6,6 +11,8 @@ DEFAULT_STOCK_BAJO_MAX = 50
 
 
 class UnidadMedida(models.Model):
+    """Catálogo de unidades de medida para materias primas."""
+
     nombre = models.CharField(max_length=50)
     abreviatura = models.CharField(max_length=10, blank=True, null=True)
 
@@ -16,6 +23,8 @@ class UnidadMedida(models.Model):
 
 
 class Proveedor(models.Model):
+    """Catálogo maestro de proveedores de materias primas."""
+
     nombre = models.CharField(max_length=100)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     email = models.CharField(max_length=150, blank=True, null=True)
@@ -28,6 +37,8 @@ class Proveedor(models.Model):
 
 
 class TrabajadorProduccion(models.Model):
+    """Catálogo de trabajadores usados en salidas de inventario."""
+
     codigo_trabajador = models.CharField(max_length=50, blank=True, null=True)
     nombre = models.CharField(max_length=100, blank=True, null=True)
 
@@ -38,6 +49,8 @@ class TrabajadorProduccion(models.Model):
 
 
 class MateriaPrima(models.Model):
+    """Entidad principal de material con costo y fecha de actualización."""
+
     unidad_medida = models.ForeignKey(
         UnidadMedida,
         on_delete=models.DO_NOTHING,
@@ -56,6 +69,8 @@ class MateriaPrima(models.Model):
 
 
 class MateriaPrimaStabilityThreshold(models.Model):
+    """Umbrales de clasificación de stock por materia prima."""
+
     materia_prima = models.OneToOneField(
         MateriaPrima,
         on_delete=models.CASCADE,
@@ -80,6 +95,8 @@ class MateriaPrimaStabilityThreshold(models.Model):
 
 
 class MateriaPrimaPiezaConfig(models.Model):
+    """Controla si una materia puede usarse en nuevas piezas."""
+
     materia_prima = models.OneToOneField(
         MateriaPrima,
         on_delete=models.CASCADE,
@@ -95,6 +112,8 @@ class MateriaPrimaPiezaConfig(models.Model):
 
 
 class MovimientoInventario(models.Model):
+    """Registro de entradas, salidas y ajustes de inventario."""
+
     materia_prima = models.ForeignKey(
         MateriaPrima,
         on_delete=models.DO_NOTHING,

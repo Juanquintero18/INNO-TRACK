@@ -1,7 +1,11 @@
+"""Modelos del dominio de producción y trazabilidad de piezas."""
+
 from django.db import models
 
 
 class Proyecto(models.Model):
+    """Proyecto productivo que agrupa múltiples órdenes."""
+
     nombre = models.CharField(max_length=100)
     codigo = models.CharField(max_length=50, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
@@ -16,6 +20,8 @@ class Proyecto(models.Model):
 
 
 class Orden(models.Model):
+    """Orden de producción asociada opcionalmente a un proyecto."""
+
     proyecto = models.ForeignKey(
         Proyecto,
         on_delete=models.DO_NOTHING,
@@ -34,6 +40,8 @@ class Orden(models.Model):
 
 
 class Pieza(models.Model):
+    """Entidad fabricada con datos de trazabilidad y control de calidad."""
+
     orden = models.ForeignKey(
         Orden,
         on_delete=models.DO_NOTHING,
@@ -61,6 +69,8 @@ class Pieza(models.Model):
 
 
 class PiezaMateriaPrima(models.Model):
+    """Relación de consumo teórico/real de materias por pieza."""
+
     pieza = models.ForeignKey(
         Pieza,
         on_delete=models.DO_NOTHING,
@@ -85,6 +95,8 @@ class PiezaMateriaPrima(models.Model):
 
 
 class PiezaHistorial(models.Model):
+    """Bitácora histórica de eventos de creación/edición en piezas."""
+
     pieza = models.ForeignKey(
         Pieza,
         on_delete=models.DO_NOTHING,

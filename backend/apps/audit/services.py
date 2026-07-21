@@ -1,3 +1,9 @@
+"""Servicios de auditoría para snapshot, borrado lógico y restauración.
+
+Este módulo encapsula la lógica transversal que evita duplicar reglas de
+auditoría dentro de cada ViewSet de dominio.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -15,12 +21,16 @@ from apps.production.models import Pieza, PiezaHistorial, PiezaMateriaPrima
 
 
 def _actor_name(user: AppUser | None) -> str:
+    """Obtiene una etiqueta legible del usuario que ejecuta la acción."""
+
     if user is None:
         return ""
     return f"{user.nombre} {user.apellido or ''}".strip() or user.email or f"Usuario #{user.pk}"
 
 
 def _serialize_instance(instance) -> dict[str, Any]:
+    """Serializa campos concretos del modelo a un dict JSON-safe."""
+
     data: dict[str, Any] = {}
 
     for field in instance._meta.concrete_fields:
@@ -30,6 +40,8 @@ def _serialize_instance(instance) -> dict[str, Any]:
 
 
 def _serialize_pieza(instance: Pieza) -> dict[str, Any]:
+    """Serializa pieza con sus relaciones hijas para restauración completa."""
+
     pieza_data = _serialize_instance(instance)
     pieza_data["materias_primas"] = [_serialize_instance(item) for item in instance.materias_primas.all().order_by("id")]
     pieza_data["historial"] = [_serialize_instance(item) for item in instance.historial.all().order_by("id")]
@@ -37,6 +49,8 @@ def _serialize_pieza(instance: Pieza) -> dict[str, Any]:
 
 
 def build_entity_snapshot(instance) -> tuple[str, dict[str, Any]]:
+    """Normaliza tipo de entidad y snapshot según su modelo de origen."""
+
     if isinstance(instance, Pieza):
         return AuditLog.ENTITY_PIEZA, _serialize_pieza(instance)
     if isinstance(instance, MateriaPrima):
@@ -53,6 +67,8 @@ def build_entity_snapshot(instance) -> tuple[str, dict[str, Any]]:
 
 
 def build_entity_label(entity_type: str, snapshot: dict[str, Any]) -> str:
+    """Construye una etiqueta amigable para mostrar en la bitácora."""
+
     if entity_type == AuditLog.ENTITY_PIEZA:
         return " - ".join(filter(None, [snapshot.get("trace_id"), snapshot.get("nombre")])) or f"Pieza #{snapshot['id']}"
     if entity_type == AuditLog.ENTITY_MATERIA_PRIMA:
@@ -73,6 +89,8 @@ def build_entity_label(entity_type: str, snapshot: dict[str, Any]) -> str:
 
 
 def create_audit_log(instance, user: AppUser | None) -> AuditLog:
+    """Crea un registro de auditoría al momento de eliminar una entidad."""
+
     entity_type, snapshot = build_entity_snapshot(instance)
 
     return AuditLog.objects.create(
@@ -88,31 +106,45 @@ def create_audit_log(instance, user: AppUser | None) -> AuditLog:
 
 @dataclass
 class RestoreResult:
+    """Respuesta mínima de restauración para la capa de API."""
+
     entity_type: str
     entity_id: int
 
 
 def _restore_materia_prima(snapshot: dict[str, Any]) -> None:
+    """Restaura una materia prima desde snapshot."""
+
     MateriaPrima.objects.create(**snapshot)
 
 
 def _restore_movimiento(snapshot: dict[str, Any]) -> None:
+    """Restaura un movimiento de inventario desde snapshot."""
+
     MovimientoInventario.objects.create(**snapshot)
 
 
 def _restore_proveedor(snapshot: dict[str, Any]) -> None:
+    """Restaura un proveedor desde snapshot."""
+
     Proveedor.objects.create(**snapshot)
 
 
 def _restore_trabajador(snapshot: dict[str, Any]) -> None:
+    """Restaura un trabajador desde snapshot."""
+
     TrabajadorProduccion.objects.create(**snapshot)
 
 
 def _restore_usuario(snapshot: dict[str, Any]) -> None:
+    """Restaura un usuario desde snapshot."""
+
     AppUser.objects.create(**snapshot)
 
 
 def _restore_pieza(snapshot: dict[str, Any]) -> None:
+    """Restaura pieza con sus materiales e historial asociados."""
+
     materiales = snapshot.pop("materias_primas", [])
     historial = snapshot.pop("historial", [])
     Pieza.objects.create(**snapshot)
@@ -126,6 +158,11 @@ def _restore_pieza(snapshot: dict[str, Any]) -> None:
 
 @transaction.atomic
 def restore_audit_log(audit_log: AuditLog, user: AppUser | None) -> RestoreResult:
+    """Restaura una entidad auditada y marca el log como restaurado.
+
+    La operación es atómica para evitar restauraciones parciales.
+    """
+
     if audit_log.restored_at is not None:
         raise ValueError("Este registro ya fue restaurado.")
 

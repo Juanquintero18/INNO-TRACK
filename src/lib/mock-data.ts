@@ -1,4 +1,4 @@
-// Mock data aligned with the PostgreSQL schema in innotrack.sql
+// Datos de ejemplo alineados con el esquema PostgreSQL definido en innotrack.sql.
 
 export interface Proyecto {
   id: number;

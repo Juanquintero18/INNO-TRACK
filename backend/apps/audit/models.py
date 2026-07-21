@@ -1,7 +1,11 @@
+"""Modelo de auditoría para eliminaciones y restauraciones."""
+
 from django.db import models
 
 
 class AuditLog(models.Model):
+    """Bitácora persistente de borrados y restauraciones de entidades."""
+
     ACTION_DELETE = "delete"
 
     ENTITY_PIEZA = "pieza"

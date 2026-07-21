@@ -1,3 +1,9 @@
+"""Servicios para importación masiva de movimientos de inventario.
+
+Soporta archivos CSV/XLS/XLSX, normaliza encabezados, construye una vista
+previa de validación y confirma el lote en una sola transacción.
+"""
+
 from __future__ import annotations
 
 import csv
@@ -70,6 +76,8 @@ DATE_FORMATS = (
 
 
 def _normalize_text(value: object) -> str:
+    """Normaliza texto para comparaciones tolerantes a mayúsculas/acentos."""
+
     if value is None:
         return ""
     text = str(value).strip()
@@ -79,6 +87,8 @@ def _normalize_text(value: object) -> str:
 
 
 def _normalize_lookup_key(value: object) -> str:
+    """Genera una clave de búsqueda estable removiendo ruido común."""
+
     normalized = _normalize_text(value)
     normalized = re.sub(r"[-_/\\.]+", " ", normalized)
     normalized = re.sub(r"[^a-z0-9\s]", "", normalized)
@@ -86,10 +96,14 @@ def _normalize_lookup_key(value: object) -> str:
 
 
 def _compact_lookup_key(value: object) -> str:
+    """Versión compacta de la clave para matching flexible."""
+
     return _normalize_lookup_key(value).replace(" ", "")
 
 
 def _build_header_observation(raw_text: str, canonical: str) -> str | None:
+    """Informa cuándo una cabecera fue reinterpretada por alias/fuzzy."""
+
     if not raw_text:
         return None
     if _normalize_lookup_key(raw_text) == _normalize_lookup_key(canonical):
@@ -98,6 +112,8 @@ def _build_header_observation(raw_text: str, canonical: str) -> str | None:
 
 
 def _resolve_header(value: object) -> tuple[str, str | None]:
+    """Resuelve cabecera de archivo hacia la cabecera canónica del sistema."""
+
     raw_text = _cell_to_text(value)
     # Estrategia en capas: exacto -> alias -> fuzzy para soportar plantillas ruidosas.
     candidates = {
@@ -150,6 +166,8 @@ def _resolve_header(value: object) -> tuple[str, str | None]:
 
 
 def _cell_to_text(value: object) -> str:
+    """Convierte cualquier celda a representación textual consistente."""
+
     if value is None:
         return ""
     if isinstance(value, datetime):
@@ -160,6 +178,8 @@ def _cell_to_text(value: object) -> str:
 
 
 def _parse_decimal(value: object) -> Decimal:
+    """Parsea cantidades permitiendo distintos formatos numéricos."""
+
     if value is None or str(value).strip() == "":
         raise ValueError("La cantidad es obligatoria.")
 
@@ -180,6 +200,8 @@ def _parse_decimal(value: object) -> Decimal:
 
 
 def _parse_date(value: object) -> str:
+    """Parsea fecha y retorna formato ISO para persistencia."""
+
     if value is None or str(value).strip() == "":
         raise ValueError("La fecha es obligatoria.")
 
@@ -200,6 +222,8 @@ def _parse_date(value: object) -> str:
 
 
 def _read_csv_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]]], list[str]]:
+    """Lee un CSV y lo transforma al formato interno fila/campos."""
+
     decoded_text: str
     try:
         decoded_text = file_bytes.decode("utf-8-sig")
@@ -212,6 +236,8 @@ def _read_csv_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]
 
 
 def _read_openpyxl_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]]], list[str]]:
+    """Lee un archivo XLSX/XLSM con openpyxl."""
+
     workbook = load_workbook(BytesIO(file_bytes), read_only=True, data_only=True)
     worksheet = workbook.active
     rows = [list(row) for row in worksheet.iter_rows(values_only=True)]
@@ -219,6 +245,8 @@ def _read_openpyxl_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, ob
 
 
 def _read_xls_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]]], list[str]]:
+    """Lee un archivo XLS legado usando xlrd."""
+
     workbook = xlrd.open_workbook(file_contents=file_bytes)
     worksheet = workbook.sheet_by_index(0)
     rows: list[list[object]] = []
@@ -237,6 +265,8 @@ def _read_xls_rows(file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]
 
 
 def _rows_from_matrix(rows: list[list[object]]) -> tuple[list[tuple[int, dict[str, object]]], list[str]]:
+    """Mapea matriz cruda a filas numeradas con cabeceras normalizadas."""
+
     # Ignora filas vacías para estabilizar la numeración de errores por archivo.
     non_empty_rows = [row for row in rows if any(_cell_to_text(cell) for cell in row)]
     if not non_empty_rows:
@@ -266,6 +296,8 @@ def _rows_from_matrix(rows: list[list[object]]) -> tuple[list[tuple[int, dict[st
 
 
 def _read_source_rows(file_name: str, file_bytes: bytes) -> tuple[list[tuple[int, dict[str, object]]], list[str]]:
+    """Despacha el lector según extensión de archivo cargado."""
+
     extension = file_name.rsplit(".", 1)[-1].lower() if "." in file_name else ""
 
     if extension == "csv":
@@ -279,6 +311,8 @@ def _read_source_rows(file_name: str, file_bytes: bytes) -> tuple[list[tuple[int
 
 
 def _register_lookup_value(lookup: dict[str, object], aliases: dict[str, str], raw_value: object, instance: object) -> None:
+    """Registra múltiples variantes de un valor para resolución flexible."""
+
     display_value = _cell_to_text(raw_value)
     keys = {
         _normalize_text(raw_value),
@@ -294,6 +328,8 @@ def _register_lookup_value(lookup: dict[str, object], aliases: dict[str, str], r
 
 
 def _find_lookup_value(raw_value: object, lookup: dict[str, object]) -> object | None:
+    """Busca una referencia de catálogo usando distintas normalizaciones."""
+
     for key in (_normalize_text(raw_value), _normalize_lookup_key(raw_value), _compact_lookup_key(raw_value)):
         if key and key in lookup:
             return lookup[key]
@@ -301,6 +337,8 @@ def _find_lookup_value(raw_value: object, lookup: dict[str, object]) -> object |
 
 
 def _find_closest_alias(raw_value: object, aliases: dict[str, str]) -> str | None:
+    """Sugiere el alias más cercano para mejorar mensajes de validación."""
+
     compact_target = _compact_lookup_key(raw_value)
     if not compact_target:
         return None
@@ -320,6 +358,8 @@ def _find_closest_alias(raw_value: object, aliases: dict[str, str]) -> str | Non
 
 
 def _build_catalog_error(entity_label: str, suggestion: str | None, generic_message: str) -> str:
+    """Construye mensajes de error enriquecidos con sugerencia opcional."""
+
     if suggestion:
         return f"{generic_message} ¿Quisiste decir '{suggestion}'?"
     return generic_message
@@ -333,6 +373,8 @@ def _build_lookup_maps() -> tuple[
     dict[str, TrabajadorProduccion],
     dict[str, str],
 ]:
+    """Precarga catálogos de referencia para validar filas eficientemente."""
+
     # Precarga catálogos en memoria para validar cientos de filas en O(1) por campo.
     materias: dict[str, MateriaPrima] = {}
     materia_aliases: dict[str, str] = {}
@@ -359,6 +401,8 @@ def _build_lookup_maps() -> tuple[
 
 
 def _flatten_serializer_errors(detail: object) -> list[str]:
+    """Aplana errores anidados de serializer a una lista simple de mensajes."""
+
     if isinstance(detail, dict):
         messages: list[str] = []
         for value in detail.values():
@@ -382,6 +426,8 @@ def _build_row_preview(
     trabajadores: dict[str, TrabajadorProduccion],
     trabajador_aliases: dict[str, str],
 ) -> tuple[dict[str, object], dict[str, object] | None]:
+    """Valida una fila de importación y retorna preview + payload persistible."""
+
     # La vista previa conserva valores originales del archivo para explicar errores al usuario.
     display_values = {
         "materia_prima": _cell_to_text(raw_row.get("materia_prima")),
@@ -489,6 +535,8 @@ def _build_row_preview(
 
 
 def analyze_movimiento_import(file_name: str, file_bytes: bytes) -> tuple[dict[str, object], list[dict[str, object]]]:
+    """Analiza el archivo completo y produce preview + payloads válidos."""
+
     # Preview y commit comparten exactamente este análisis para evitar diferencias.
     source_rows, header_observations = _read_source_rows(file_name, file_bytes)
     materias, materia_aliases, proveedores, proveedor_aliases, trabajadores, trabajador_aliases = _build_lookup_maps()
@@ -529,12 +577,16 @@ def analyze_movimiento_import(file_name: str, file_bytes: bytes) -> tuple[dict[s
 
 
 def build_movimiento_import_preview(file_name: str, file_bytes: bytes) -> dict[str, object]:
+    """Endpoint helper: solo genera la vista previa, sin persistir cambios."""
+
     preview, _payloads = analyze_movimiento_import(file_name, file_bytes)
     return preview
 
 
 @transaction.atomic
 def import_movimientos(file_name: str, file_bytes: bytes, user: AppUser | None) -> dict[str, object]:
+    """Importa el lote completo de movimientos con rollback ante cualquier error."""
+
     preview, payloads = analyze_movimiento_import(file_name, file_bytes)
 
     if not preview["can_import"]:
@@ -560,6 +612,8 @@ def import_movimientos(file_name: str, file_bytes: bytes, user: AppUser | None) 
 
 
 def build_movimiento_import_template_response() -> HttpResponse:
+    """Genera una plantilla Excel de referencia para carga masiva."""
+
     workbook = Workbook()
     worksheet = workbook.active
     worksheet.title = "movimientos"

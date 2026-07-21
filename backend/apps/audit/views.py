@@ -1,3 +1,5 @@
+"""Vistas de consulta y restauración de registros auditados."""
+
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,12 +11,15 @@ from apps.audit.services import restore_audit_log
 
 
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """Expone logs de auditoría y acción de restauración por registro."""
+
     permission_classes = [AdminWritePermission]
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
 
     @action(detail=True, methods=["post"])
     def restore(self, request, pk=None):
+        """Restaura entidad original desde snapshot del log seleccionado."""
         audit_log = self.get_object()
 
         try:

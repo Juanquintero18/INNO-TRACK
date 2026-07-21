@@ -1,3 +1,9 @@
+/**
+ * Contratos TypeScript del dominio compartidos entre páginas y contextos.
+ *
+ * Mantener este archivo alineado con serializers del backend evita
+ * inconsistencias de tipado en tiempo de desarrollo.
+ */
 export interface Proyecto {
   id: number;
   nombre: string;
@@ -100,6 +106,7 @@ export interface PiezaHistorialSnapshot {
 }
 
 export interface PiezaHistorialDetalle {
+  // Schema versionado para mantener compatibilidad con registros legacy.
   schema: 'pieza_historial_v1';
   accion: 'creacion' | 'edicion';
   summary: string;
@@ -184,6 +191,7 @@ export interface MovimientoImportPreviewRow {
 }
 
 export interface MovimientoImportPreview {
+  // Resumen integral de validación previo a confirmar la importación.
   file_name: string;
   file_errors: string[];
   header_observations: string[];
@@ -195,6 +203,7 @@ export interface MovimientoImportPreview {
 }
 
 export interface MovimientoImportCommitResult {
+  // Resultado de ejecución del commit con IDs creados y preview base.
   created_count: number;
   created_ids: number[];
   preview: MovimientoImportPreview;

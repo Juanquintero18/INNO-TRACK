@@ -1,14 +1,20 @@
+"""Serializers de auditoría para exponer logs en formato frontend-friendly."""
+
 from rest_framework import serializers
 
 from apps.audit.models import AuditLog
 
 
 class AuditActorSerializer(serializers.Serializer):
+    """Representa un actor de auditoría (eliminación o restauración)."""
+
     id = serializers.IntegerField(allow_null=True)
     nombre = serializers.CharField(allow_blank=True)
 
 
 class AuditLogSerializer(serializers.ModelSerializer):
+    """Mapea campos de AuditLog a nombres consistentes con el frontend."""
+
     deletedBy = serializers.SerializerMethodField()
     restoredBy = serializers.SerializerMethodField()
     entityType = serializers.CharField(source="entity_type")
@@ -36,16 +42,19 @@ class AuditLogSerializer(serializers.ModelSerializer):
         ]
 
     def get_deletedBy(self, obj: AuditLog):
+        """Construye el actor que ejecutó la eliminación."""
         return {
             "id": obj.deleted_by_id,
             "nombre": obj.deleted_by_nombre,
         }
 
     def get_restoredBy(self, obj: AuditLog):
+        """Retorna actor de restauración solo cuando el log ya fue restaurado."""
         return {
             "id": obj.restored_by_id,
             "nombre": obj.restored_by_nombre,
         } if obj.restored_at else None
 
     def get_isRestored(self, obj: AuditLog):
+        """Bandera booleana derivada del timestamp de restauración."""
         return obj.restored_at is not None

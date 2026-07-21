@@ -1,3 +1,9 @@
+"""Configuración principal de Django para INNO_TRACK.
+
+Este archivo define apps instaladas, middleware, base de datos, autenticación
+de la API y parámetros operativos de entorno.
+"""
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -6,10 +12,12 @@ from decouple import Csv, config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Claves y flags principales de ejecución.
 SECRET_KEY = config("DJANGO_SECRET_KEY", default="change-me")
 DEBUG = config("DJANGO_DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 
+# Registro de componentes de Django y apps de dominio del proyecto.
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -26,6 +34,7 @@ INSTALLED_APPS = [
     "apps.production",
 ]
 
+# Cadena de middlewares HTTP; CORS se evalúa antes del resto de capas.
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -57,6 +66,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+# Parámetros de conexión a PostgreSQL obtenidos desde variables de entorno.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -75,16 +85,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# Localización por defecto para fechas/horas y textos.
 LANGUAGE_CODE = "es-co"
 TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_TZ = True
 
+# Archivos estáticos de Django (admin y assets server-side).
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Configuración global de DRF: auth por token propio y acceso autenticado.
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "apps.accounts.authentication.AppUserTokenAuthentication",
@@ -97,6 +110,7 @@ REST_FRAMEWORK = {
 
 API_TOKEN_MAX_AGE_SECONDS = config("API_TOKEN_MAX_AGE_SECONDS", default=60 * 60 * 8, cast=int)
 
+# Orígenes permitidos para frontend local durante desarrollo.
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
     default="http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080",

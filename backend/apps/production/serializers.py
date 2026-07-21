@@ -1,3 +1,9 @@
+"""Serializers del dominio de producción.
+
+Incluye proyectos/órdenes/piezas y la lógica de historial detallado para
+trazabilidad de cambios en piezas y materiales asociados.
+"""
+
 import json
 from datetime import timezone as datetime_timezone
 from zoneinfo import ZoneInfo
@@ -36,12 +42,16 @@ PIEZA_FIELD_LABELS = {
 
 
 class ProyectoSerializer(serializers.ModelSerializer):
+    """Serializer CRUD de proyectos."""
+
     class Meta:
         model = Proyecto
         fields = "__all__"
 
 
 class OrdenSerializer(serializers.ModelSerializer):
+    """Serializer de órdenes con referencia expandida al proyecto."""
+
     proyecto = ProyectoSerializer(read_only=True)
     proyecto_id = serializers.PrimaryKeyRelatedField(
         source="proyecto",
@@ -56,6 +66,8 @@ class OrdenSerializer(serializers.ModelSerializer):
 
 
 class PiezaMateriaPrimaSerializer(serializers.ModelSerializer):
+    """Serializa relación pieza-materia prima con cantidades teórica/real."""
+
     materia_prima = MateriaPrimaSerializer(read_only=True)
     pieza_id = serializers.IntegerField(source="pieza.id", read_only=True)
     materia_prima_id = serializers.PrimaryKeyRelatedField(
@@ -78,6 +90,8 @@ class PiezaMateriaPrimaSerializer(serializers.ModelSerializer):
 
 
 class PiezaHistorialSerializer(serializers.ModelSerializer):
+    """Expone historial de piezas con compatibilidad entre esquemas legacy/v1."""
+
     descripcion = serializers.SerializerMethodField()
     detalle = serializers.SerializerMethodField()
     fecha = serializers.SerializerMethodField()
@@ -89,6 +103,7 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
         fields = ["id", "accion", "fecha", "descripcion", "detalle", "usuario", "usuario_id"]
 
     def _get_payload(self, obj: PiezaHistorial) -> dict | None:
+        """Lee y cachea payload estructurado cuando existe en descripcion."""
         cache_attr = "_historial_payload_cache"
 
         if hasattr(obj, cache_attr):
@@ -108,6 +123,7 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
         return payload
 
     def get_fecha(self, obj: PiezaHistorial) -> str | None:
+        """Normaliza fecha histórica y la serializa en zona horaria de Bogotá."""
         fecha = obj.fecha
 
         if fecha is None:
@@ -122,6 +138,7 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
         return fecha.astimezone(BOGOTA_TIMEZONE).isoformat()
 
     def _build_legacy_payload(self, obj: PiezaHistorial) -> dict:
+        """Construye estructura v1 para registros antiguos sin diff detallado."""
         raw_description = (obj.descripcion or "").strip()
         default_summary = (
             "Creación registrada en una versión anterior del historial. "
@@ -149,6 +166,7 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
         }
 
     def get_descripcion(self, obj: PiezaHistorial) -> str:
+        """Entrega resumen legible del evento de historial."""
         payload = self.get_detalle(obj)
 
         if payload and isinstance(payload.get("summary"), str):
@@ -157,6 +175,7 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
         return obj.descripcion
 
     def get_detalle(self, obj: PiezaHistorial):
+        """Retorna payload estructurado, o reconstrucción legacy si aplica."""
         payload = self._get_payload(obj)
         if payload is not None:
             return payload
@@ -164,6 +183,8 @@ class PiezaHistorialSerializer(serializers.ModelSerializer):
 
 
 class PiezaSerializer(serializers.ModelSerializer):
+    """Serializer principal de pieza con sincronización y trazabilidad."""
+
     orden = OrdenSerializer(read_only=True)
     orden_id = serializers.PrimaryKeyRelatedField(
         source="orden",
@@ -199,6 +220,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         ]
 
     def _is_enabled_for_piezas(self, materia_prima: MateriaPrima) -> bool:
+        """Indica si una materia puede agregarse a nuevas piezas."""
         try:
             config = materia_prima.pieza_config
         except MateriaPrimaPiezaConfig.DoesNotExist:
@@ -207,6 +229,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         return bool(config.enabled_for_piezas)
 
     def _validate_materials_for_piece(self, pieza: Pieza | None, materiales_data: list[dict] | None) -> None:
+        """Evita asociar materias deshabilitadas en nuevas asignaciones."""
         if materiales_data is None:
             return
 
@@ -243,18 +266,21 @@ class PiezaSerializer(serializers.ModelSerializer):
             )
 
     def _sync_materials(self, pieza: Pieza, materiales_data: list[dict]) -> None:
+        """Reemplaza materiales de una pieza con el estado enviado por cliente."""
         pieza.materias_primas.all().delete()
 
         for material_data in materiales_data:
             PiezaMateriaPrima.objects.create(pieza=pieza, **material_data)
 
     def _serialize_material_value(self, value):
+        """Normaliza valores numéricos para snapshots JSON."""
         if value is None:
             return None
 
         return str(value)
 
     def _build_materials_snapshot(self, pieza: Pieza) -> list[dict]:
+        """Toma foto de materiales actuales para auditoría de cambios."""
         materials_snapshot: list[dict] = []
 
         for material in pieza.materias_primas.select_related("materia_prima").all().order_by("materia_prima_id", "id"):
@@ -277,6 +303,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         return materials_snapshot
 
     def _build_pieza_snapshot(self, pieza: Pieza) -> dict:
+        """Construye snapshot completo del estado funcional de la pieza."""
         return {
             "trace_id": pieza.trace_id,
             "nombre": pieza.nombre,
@@ -289,6 +316,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         }
 
     def _build_field_changes(self, before_snapshot: dict, after_snapshot: dict) -> list[dict]:
+        """Calcula diferencias campo a campo entre snapshots."""
         field_changes: list[dict] = []
 
         for field_name in TRACKED_PIEZA_FIELDS:
@@ -310,6 +338,8 @@ class PiezaSerializer(serializers.ModelSerializer):
         return field_changes
 
     def _build_material_changes(self, before_materials: list[dict], after_materials: list[dict]) -> list[dict]:
+        """Detecta altas, bajas y actualizaciones en materias primas."""
+
         def material_key(material: dict) -> str:
             material_id = material.get("materia_prima_id")
             material_name = material.get("materia_prima_nombre") or ""
@@ -384,6 +414,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         return material_changes
 
     def _build_historial_payload(self, accion: str, before_snapshot: dict | None, after_snapshot: dict) -> dict:
+        """Genera payload estructurado del evento de historial a persistir."""
         if accion == "creacion":
             material_count = len(after_snapshot.get("materias_primas", []))
 
@@ -428,6 +459,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         }
 
     def _append_historial(self, pieza: Pieza, accion: str, before_snapshot: dict | None = None, after_snapshot: dict | None = None) -> None:
+        """Persiste evento de historial después de create/update exitoso."""
         request = self.context.get("request")
         actor = None
 
@@ -447,6 +479,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        """Crea pieza, sincroniza materiales y registra historial de creación."""
         # Create y update comparten validación + sincronización para mantener trazabilidad consistente.
         materiales_data = validated_data.pop("materias_primas", [])
         self._validate_materials_for_piece(None, materiales_data)
@@ -457,6 +490,7 @@ class PiezaSerializer(serializers.ModelSerializer):
         return pieza
 
     def update(self, instance, validated_data):
+        """Actualiza pieza, recalcula snapshot y registra historial de edición."""
         materiales_data = validated_data.pop("materias_primas", None)
         before_snapshot = self._build_pieza_snapshot(instance)
 

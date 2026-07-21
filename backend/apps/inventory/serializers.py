@@ -1,3 +1,9 @@
+"""Serializers del dominio de inventario.
+
+Incluye reglas de validación de stock, serialización de catálogos y
+configuraciones de estabilidad/materiales habilitados para piezas.
+"""
+
 from decimal import Decimal
 
 from rest_framework import serializers
@@ -17,24 +23,32 @@ from apps.accounts.serializers import AppUserSerializer
 
 
 class UnidadMedidaSerializer(serializers.ModelSerializer):
+    """Serializa unidad de medida tal como se persiste en base de datos."""
+
     class Meta:
         model = UnidadMedida
         fields = "__all__"
 
 
 class ProveedorSerializer(serializers.ModelSerializer):
+    """Serializer CRUD para proveedores."""
+
     class Meta:
         model = Proveedor
         fields = "__all__"
 
 
 class TrabajadorProduccionSerializer(serializers.ModelSerializer):
+    """Serializer CRUD para trabajadores de producción."""
+
     class Meta:
         model = TrabajadorProduccion
         fields = "__all__"
 
 
 class MateriaPrimaSerializer(serializers.ModelSerializer):
+    """Expone materia prima junto con configuración de estabilidad y uso."""
+
     stability_thresholds = serializers.SerializerMethodField()
     enabled_for_piezas = serializers.SerializerMethodField()
     piezas_usage_count = serializers.SerializerMethodField()
@@ -47,6 +61,7 @@ class MateriaPrimaSerializer(serializers.ModelSerializer):
     )
 
     def get_stability_thresholds(self, obj: MateriaPrima):
+        """Retorna umbrales configurados o valores por defecto del dominio."""
         try:
             config = obj.stability_config
         except MateriaPrimaStabilityThreshold.DoesNotExist:
@@ -61,6 +76,7 @@ class MateriaPrimaSerializer(serializers.ModelSerializer):
         return MateriaPrimaStabilityThresholdSerializer(config).data
 
     def get_enabled_for_piezas(self, obj: MateriaPrima):
+        """Indica si la materia está habilitada para nuevas piezas."""
         try:
             config = obj.pieza_config
         except MateriaPrimaPiezaConfig.DoesNotExist:
@@ -69,6 +85,7 @@ class MateriaPrimaSerializer(serializers.ModelSerializer):
         return bool(config.enabled_for_piezas)
 
     def get_piezas_usage_count(self, obj: MateriaPrima):
+        """Cuenta en cuántas piezas está referenciada la materia prima."""
         annotated_value = getattr(obj, "piezas_usage_count", None)
         if annotated_value is not None:
             return int(annotated_value)
@@ -91,11 +108,14 @@ class MateriaPrimaSerializer(serializers.ModelSerializer):
 
 
 class MateriaPrimaStabilityThresholdSerializer(serializers.ModelSerializer):
+    """Valida y serializa umbrales de estabilidad de inventario."""
+
     class Meta:
         model = MateriaPrimaStabilityThreshold
         fields = ["stock_critico_max", "stock_bajo_max"]
 
     def validate(self, attrs):
+        """Asegura coherencia entre umbral crítico y umbral bajo."""
         critico = attrs.get("stock_critico_max", getattr(self.instance, "stock_critico_max", DEFAULT_STOCK_CRITICO_MAX))
         bajo = attrs.get("stock_bajo_max", getattr(self.instance, "stock_bajo_max", DEFAULT_STOCK_BAJO_MAX))
 
@@ -109,6 +129,8 @@ class MateriaPrimaStabilityThresholdSerializer(serializers.ModelSerializer):
 
 
 class MateriaPrimaPiezasMaterialesSerializer(serializers.Serializer):
+    """Payload para actualizar el conjunto permitido de materias en piezas."""
+
     enabled_materia_ids = serializers.ListField(
         child=serializers.IntegerField(min_value=1),
         allow_empty=False,
@@ -116,6 +138,8 @@ class MateriaPrimaPiezasMaterialesSerializer(serializers.Serializer):
 
 
 class MovimientoInventarioSerializer(serializers.ModelSerializer):
+    """Serializa movimientos y aplica validación de stock proyectado."""
+
     materia_prima = MateriaPrimaSerializer(read_only=True)
     proveedor = ProveedorSerializer(read_only=True)
     trabajador = TrabajadorProduccionSerializer(source="trabajador_produccion", read_only=True)
@@ -141,6 +165,7 @@ class MovimientoInventarioSerializer(serializers.ModelSerializer):
     usuario_id = serializers.PrimaryKeyRelatedField(source="usuario", read_only=True)
 
     def _movement_delta(self, tipo: str | None, cantidad: Decimal | None) -> Decimal:
+        """Convierte tipo de movimiento a delta aritmético sobre stock."""
         amount = cantidad or Decimal("0")
 
         if tipo == "entrada":
@@ -152,6 +177,7 @@ class MovimientoInventarioSerializer(serializers.ModelSerializer):
         return Decimal("0")
 
     def _current_stock_without_instance(self, materia_prima: MateriaPrima) -> Decimal:
+        """Calcula stock acumulado excluyendo instancia en edición (si existe)."""
         movimientos = MovimientoInventario.objects.filter(materia_prima=materia_prima)
 
         if self.instance and self.instance.pk:
@@ -164,6 +190,7 @@ class MovimientoInventarioSerializer(serializers.ModelSerializer):
         return stock
 
     def validate(self, attrs):
+        """Evita guardar movimientos que dejen el stock en negativo."""
         attrs = super().validate(attrs)
 
         materia_prima = attrs.get("materia_prima", getattr(self.instance, "materia_prima", None))

@@ -1,3 +1,9 @@
+"""Autenticación por token firmado para la API.
+
+El token se firma con `django.core.signing`, evita estado en servidor y se
+valida con expiración configurable en settings.
+"""
+
 from django.conf import settings
 from django.core import signing
 from django.core.signing import BadSignature, SignatureExpired
@@ -11,6 +17,8 @@ TOKEN_SALT = "accounts.api.token"
 
 
 def build_access_token(user: AppUser) -> str:
+    """Construye token de acceso con identidad y rol del usuario."""
+
     payload = {
         "user_id": user.pk,
         "email": user.email,
@@ -20,14 +28,19 @@ def build_access_token(user: AppUser) -> str:
 
 
 def read_access_token(token: str) -> dict:
+    """Decodifica y valida expiración del token firmado."""
+
     max_age = getattr(settings, "API_TOKEN_MAX_AGE_SECONDS", 60 * 60 * 8)
     return signing.loads(token, salt=TOKEN_SALT, max_age=max_age)
 
 
 class AppUserTokenAuthentication(BaseAuthentication):
+    """Backend DRF que autentica peticiones con header Bearer <token>."""
+
     keyword = "Bearer"
 
     def authenticate(self, request):
+        """Valida formato, firma, expiración y existencia del usuario."""
         auth = get_authorization_header(request).split()
 
         if not auth:
