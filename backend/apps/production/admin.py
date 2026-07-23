@@ -1,3 +1,5 @@
+"""Registro de modelos de producción en el admin de Django."""
+
 from django.contrib import admin
 
 from apps.production.models import Orden, Pieza, PiezaHistorial, PiezaMateriaPrima, Proyecto

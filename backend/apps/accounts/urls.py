@@ -1,3 +1,5 @@
+"""Rutas del módulo accounts basadas en router de DRF."""
+
 from rest_framework.routers import DefaultRouter
 
 from apps.accounts.views import AppUserViewSet

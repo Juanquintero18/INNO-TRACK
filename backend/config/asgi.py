@@ -1,3 +1,5 @@
+"""Entrada ASGI para ejecución asíncrona del backend Django."""
+
 import os
 
 from django.core.asgi import get_asgi_application

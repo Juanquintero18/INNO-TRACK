@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+"""Punto de entrada CLI para comandos de administración de Django."""
+
 import os
 import sys
 
 
 def main() -> None:
+    """Configura settings y delega ejecución al comando solicitado."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     try:
         from django.core.management import execute_from_command_line

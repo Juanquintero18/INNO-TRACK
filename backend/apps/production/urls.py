@@ -1,3 +1,5 @@
+"""Rutas del módulo production registradas con router DRF."""
+
 from rest_framework.routers import DefaultRouter
 
 from apps.production.views import (

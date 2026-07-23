@@ -1,3 +1,5 @@
+"""Ruteo principal de la API y endpoints globales del backend."""
+
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
@@ -6,6 +8,7 @@ from apps.accounts.views import CurrentUserView, LoginView, RefreshTokenView
 
 
 def healthcheck(_request):
+    """Endpoint liviano para verificar disponibilidad del servicio."""
     return JsonResponse({"status": "ok", "service": "backend"})
 
 

@@ -1,3 +1,5 @@
+"""Entrada WSGI para despliegues síncronos del backend Django."""
+
 import os
 
 from django.core.wsgi import get_wsgi_application

@@ -1,3 +1,5 @@
+"""Rutas del módulo audit para consulta y restauración de logs."""
+
 from rest_framework.routers import DefaultRouter
 
 from apps.audit.views import AuditLogViewSet

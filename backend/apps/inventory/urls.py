@@ -1,3 +1,5 @@
+"""Rutas del módulo inventory para CRUD e importación de movimientos."""
+
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
