@@ -1,1 +1,1 @@
-# Backend apps package.
+# Paquete de aplicaciones de dominio del backend.
