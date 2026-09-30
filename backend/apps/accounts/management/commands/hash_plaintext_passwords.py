@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 
 from apps.accounts.models import AppUser
 
-
+#esto hace que el comando se pueda ejecutar con: python manage.py hash_plaintext_passwords
 class Command(BaseCommand):
     help = "Convierte contrasenas en texto plano de la tabla usuario a hashes compatibles con Django."
 
