@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { buildSheet, toExcelDate } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { ArrowUpDown, FolderKanban, ListOrdered, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import type { Orden, Proyecto } from '@/lib/types';
 
@@ -255,6 +257,41 @@ export default function Proyectos() {
     if (leftValue > rightValue) return orderSortDirection === 'asc' ? 1 : -1;
     return 0;
   });
+
+  // Exporta los proyectos visibles y, en una segunda hoja, todas sus ordenes
+  // (no solo las del proyecto seleccionado en pantalla).
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Proyectos',
+      rows: sortedProyectos,
+      columns: [
+        { header: 'Código', value: proyecto => proyecto.codigo },
+        { header: 'Nombre', value: proyecto => proyecto.nombre },
+        { header: 'Descripción', value: proyecto => proyecto.descripcion },
+        { header: 'Estado', value: proyecto => formatStatusLabel(proyecto.estado) },
+        { header: 'Fecha inicio', value: proyecto => toExcelDate(proyecto.fecha_inicio) },
+        { header: 'Fecha fin', value: proyecto => toExcelDate(proyecto.fecha_fin) },
+        { header: 'Órdenes', value: proyecto => orderCountByProjectId.get(proyecto.id) ?? 0 },
+      ],
+    }),
+    buildSheet({
+      name: 'Órdenes',
+      rows: sortedProyectos.flatMap(proyecto =>
+        ordenesList
+          .filter(orden => orden.proyecto_id === proyecto.id)
+          .sort((left, right) => (right.fecha_creacion ?? '').localeCompare(left.fecha_creacion ?? ''))
+          .map(orden => ({ proyecto, orden }))
+      ),
+      columns: [
+        { header: 'Código proyecto', value: ({ proyecto }) => proyecto.codigo },
+        { header: 'Proyecto', value: ({ proyecto }) => proyecto.nombre },
+        { header: 'Código orden', value: ({ orden }) => orden.codigo_orden },
+        { header: 'Fecha creación', value: ({ orden }) => toExcelDate(orden.fecha_creacion) },
+        { header: 'Estado', value: ({ orden }) => formatStatusLabel(orden.estado) },
+        { header: 'Piezas', value: ({ orden }) => pieceCountByOrderId.get(orden.id) ?? 0 },
+      ],
+    }),
+  ];
 
   const resetProjectForm = () => {
     setProjectFormData({
@@ -630,6 +667,8 @@ export default function Proyectos() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <ExportExcelButton fileName="proyectos" getSheets={getExportSheets} />
+
           <Button type="button" variant="outline" onClick={handleCreateOrden}>
             <Plus className="w-4 h-4 mr-2" />
             Nueva orden

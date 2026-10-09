@@ -16,6 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { buildSheet, EXCEL_FORMATS, toExcelDate } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import {
   formatThresholdValue,
   getMateriaPrimaStabilityThresholds,
@@ -127,6 +129,33 @@ export default function MateriasPrimas() {
     if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
+
+  /** Exporta el catalogo visible junto con su stock y umbrales de estabilidad. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Materias primas',
+      rows: sorted,
+      columns: [
+        { header: 'Material', value: mp => mp.nombre },
+        { header: 'Unidad', value: mp => mp.unidad_medida?.nombre },
+        { header: 'Abreviatura', value: mp => mp.unidad_medida?.abreviatura },
+        { header: 'Costo unitario', value: mp => mp.costo ?? 0, format: EXCEL_FORMATS.money },
+        { header: 'Stock actual', value: mp => getStockLevel(mp.id), format: EXCEL_FORMATS.decimal },
+        { header: 'Estabilidad', value: mp => getStockStabilityMeta(mp, getStockLevel(mp.id)).label },
+        {
+          header: 'Stock crítico hasta',
+          value: mp => getMateriaPrimaStabilityThresholds(mp).stock_critico_max,
+          format: EXCEL_FORMATS.decimal,
+        },
+        {
+          header: 'Stock bajo hasta',
+          value: mp => getMateriaPrimaStabilityThresholds(mp).stock_bajo_max,
+          format: EXCEL_FORMATS.decimal,
+        },
+        { header: 'Última actualización', value: mp => toExcelDate(mp.fecha_actualizacion) },
+      ],
+    }),
+  ];
 
   /** Alterna el sentido de orden o activa un nuevo campo de ordenamiento. */
   const handleSort = (field: 'nombre' | 'unidad' | 'costo' | 'stock' | 'estabilidad' | 'fecha_actualizacion') => {
@@ -382,12 +411,16 @@ export default function MateriasPrimas() {
           </div>
         </div>
 
-        {canManage && (
-          <Button type="button" onClick={() => setOpenCreate(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Nuevo registro
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <ExportExcelButton fileName="materias_primas" getSheets={getExportSheets} />
+
+          {canManage && (
+            <Button type="button" onClick={() => setOpenCreate(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo registro
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card>

@@ -15,6 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { buildSheet } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { HardHat, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
 type Trabajador = { id: number; codigo_trabajador: string | null; nombre: string | null };
@@ -55,6 +57,18 @@ export default function Trabajadores() {
     if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
+
+  /** Exporta el listado con el filtro y el orden que estan en pantalla. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Trabajadores',
+      rows: sorted,
+      columns: [
+        { header: 'Código', value: trabajador => trabajador.codigo_trabajador },
+        { header: 'Nombre', value: trabajador => trabajador.nombre },
+      ],
+    }),
+  ];
 
   /** Ajusta el criterio de orden mostrado en la tabla. */
   const handleSort = (field: 'codigo_trabajador' | 'nombre') => {
@@ -179,12 +193,16 @@ export default function Trabajadores() {
           <p className="text-muted-foreground mt-1">Personal asignado a la línea de producción</p>
         </div>
 
-        {canManage && (
-          <Button type="button" onClick={() => setOpenCreate(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Nuevo trabajador
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <ExportExcelButton fileName="trabajadores" getSheets={getExportSheets} />
+
+          {canManage && (
+            <Button type="button" onClick={() => setOpenCreate(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo trabajador
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card>

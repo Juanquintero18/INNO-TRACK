@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { calcularCostoPieza, calcularPesoTeoricoPieza } from '@/lib/domain-utils';
 import { useAppData } from '@/contexts/AppDataContext';
 import { apiRequest } from '@/lib/api';
+import { buildSheet, EXCEL_FORMATS, toExcelDate } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Search, Eye, Puzzle, Plus, Pencil, Trash2, ArrowUpDown, SlidersHorizontal } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -263,6 +265,44 @@ const matchFechas =
     if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
+
+  /** Exporta las piezas visibles y, en una segunda hoja, el detalle de sus materiales. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Piezas',
+      rows: sorted,
+      columns: [
+        { header: 'Trace ID', value: pieza => pieza.trace_id },
+        { header: 'Nombre', value: pieza => pieza.nombre },
+        { header: 'Proyecto', value: pieza => pieza.orden?.proyecto?.nombre },
+        { header: 'Orden', value: pieza => pieza.orden?.codigo_orden },
+        { header: 'Fecha Gelcoat', value: pieza => toExcelDate(pieza.fecha_gelcoat) },
+        { header: 'Fecha QC', value: pieza => toExcelDate(pieza.fecha_qc) },
+        { header: 'Peso real (kg)', value: pieza => pieza.peso_real, format: EXCEL_FORMATS.decimal },
+        { header: 'Peso teórico (kg)', value: pieza => calcularPesoTeoricoPieza(pieza), format: EXCEL_FORMATS.decimal },
+        { header: 'Costo total', value: pieza => calcularCostoPieza(pieza), format: EXCEL_FORMATS.money },
+        { header: 'Estado', value: pieza => (pieza.fecha_qc ? 'Completada' : 'En proceso') },
+      ],
+    }),
+    buildSheet({
+      name: 'Materiales por pieza',
+      rows: sorted.flatMap(pieza => (pieza.materias_primas ?? []).map(material => ({ pieza, material }))),
+      columns: [
+        { header: 'Trace ID', value: ({ pieza }) => pieza.trace_id },
+        { header: 'Pieza', value: ({ pieza }) => pieza.nombre },
+        { header: 'Material', value: ({ material }) => material.materia_prima?.nombre },
+        { header: 'Cant. teórica', value: ({ material }) => material.cantidad_teorica, format: EXCEL_FORMATS.decimal },
+        { header: 'Cant. real', value: ({ material }) => material.cantidad_real, format: EXCEL_FORMATS.decimal },
+        { header: 'Costo unit.', value: ({ material }) => material.materia_prima?.costo ?? 0, format: EXCEL_FORMATS.money },
+        {
+          header: 'Subtotal',
+          value: ({ material }) =>
+            (material.cantidad_real ?? material.cantidad_teorica ?? 0) * (material.materia_prima?.costo ?? 0),
+          format: EXCEL_FORMATS.money,
+        },
+      ],
+    }),
+  ];
 
   /** Cambia la columna de orden o invierte el sentido actual. */
   const handleSort = (field: 'trace_id' | 'nombre' | 'proyecto' | 'orden' | 'fecha_gelcoat' | 'fecha_qc' | 'peso_real' | 'costo' | 'estado') => {
@@ -626,6 +666,8 @@ const matchFechas =
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2">
+          <ExportExcelButton fileName="piezas" getSheets={getExportSheets} />
+
           {isAdmin && (
             <Button type="button" variant="outline" onClick={openMaterialsConfig}>
               <SlidersHorizontal className="w-4 h-4 mr-2" />

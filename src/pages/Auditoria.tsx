@@ -8,6 +8,8 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, ShieldAlert, RotateCcw, Search } from 'lucide-react';
 import { useAppData, type DeletedAuditItem, type DeletedEntityType } from '@/contexts/AppDataContext';
+import { buildSheet, EXCEL_FORMATS, toExcelDateTime } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -684,6 +686,23 @@ export default function Auditoria() {
     return matchSearch && matchEntity && matchFechas;
   });
 
+  /** Exporta el log filtrado, incluyendo si cada registro ya fue restaurado. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Auditoría',
+      rows: filtered,
+      columns: [
+        { header: 'Módulo', value: item => entityTypeLabels[item.entityType] },
+        { header: 'Registro eliminado', value: item => item.entityLabel },
+        { header: 'Eliminado por', value: item => item.deletedBy?.nombre || 'Usuario no disponible' },
+        { header: 'Fecha de eliminación', value: item => toExcelDateTime(item.deletedAt), format: EXCEL_FORMATS.dateTime },
+        { header: 'Estado', value: item => (item.isRestored ? 'Restaurado' : 'Eliminado') },
+        { header: 'Restaurado por', value: item => item.restoredBy?.nombre },
+        { header: 'Fecha de restauración', value: item => toExcelDateTime(item.restoredAt), format: EXCEL_FORMATS.dateTime },
+      ],
+    }),
+  ];
+
   /** Ejecuta la restauracion y bloquea temporalmente el boton del registro activo. */
   const handleRestore = async (auditId: number) => {
     setRestoringId(auditId);
@@ -742,7 +761,10 @@ export default function Auditoria() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between gap-3 text-sm text-muted-foreground">
             <span>Registros eliminados: {deletedItems.length}</span>
-            <span>Resultados filtrados: {filtered.length}</span>
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <span>Resultados filtrados: {filtered.length}</span>
+              <ExportExcelButton fileName="auditoria_eliminaciones" getSheets={getExportSheets} />
+            </div>
           </div>
         </CardHeader>
 

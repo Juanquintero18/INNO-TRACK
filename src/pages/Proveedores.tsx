@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { buildSheet } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
 /**
@@ -63,6 +65,20 @@ export default function Proveedores() {
     if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
+
+  /** Exporta el directorio con el filtro y el orden que estan en pantalla. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Proveedores',
+      rows: sorted,
+      columns: [
+        { header: 'Nombre', value: proveedor => proveedor.nombre },
+        { header: 'Teléfono', value: proveedor => proveedor.telefono },
+        { header: 'Correo', value: proveedor => proveedor.email },
+        { header: 'Dirección', value: proveedor => proveedor.direccion },
+      ],
+    }),
+  ];
 
   /** Alterna el orden o cambia la columna principal de ordenamiento. */
   const handleSortFieldChange = (value: 'nombre' | 'email' | 'telefono' | 'direccion') => {
@@ -177,10 +193,14 @@ export default function Proveedores() {
           <p className="text-muted-foreground mt-1">Directorio de proveedores de materias primas</p>
         </div>
 
-        <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo proveedor
-        </Button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <ExportExcelButton fileName="proveedores" getSheets={getExportSheets} />
+
+          <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo proveedor
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

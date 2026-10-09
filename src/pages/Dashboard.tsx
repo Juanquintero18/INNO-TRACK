@@ -13,6 +13,8 @@ import {
   calcularCostoPieza,
   getStockStabilityMeta,
 } from '@/lib/domain-utils';
+import { buildSheet, EXCEL_FORMATS, toExcelDate } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Puzzle, Package, ArrowLeftRight, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -80,6 +82,53 @@ export default function Dashboard() {
     { label: 'Costo Promedio', value: `$${costoPromedio.toFixed(2)}`, icon: DollarSign, color: 'text-success' },
   ];
 
+  /** Exporta las mismas cifras que alimentan las tarjetas, graficos y listados. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Resumen',
+      rows: [
+        { indicador: 'Piezas Registradas', valor: totalPiezas },
+        { indicador: 'Materias Primas', valor: materiasList.length },
+        { indicador: 'Movimientos', valor: totalMovimientos },
+        { indicador: 'Costo Promedio', valor: Math.round(costoPromedio * 100) / 100 },
+      ],
+      columns: [
+        { header: 'Indicador', value: row => row.indicador },
+        { header: 'Valor', value: row => row.valor },
+      ],
+    }),
+    buildSheet({
+      name: 'Costo por pieza',
+      rows: costoPorPieza,
+      columns: [
+        { header: 'Trace ID', value: pieza => pieza.name },
+        { header: 'Nombre', value: pieza => pieza.fullName },
+        { header: 'Costo', value: pieza => pieza.costo, format: EXCEL_FORMATS.money },
+      ],
+    }),
+    buildSheet({
+      name: 'Estado del stock',
+      rows: materialesClasificados,
+      columns: [
+        { header: 'Material', value: material => material.fullName },
+        { header: 'Stock actual', value: material => material.stock, format: EXCEL_FORMATS.decimal },
+        { header: 'Unidad', value: material => material.unit },
+        { header: 'Estado', value: material => material.statusLabel },
+      ],
+    }),
+    buildSheet({
+      name: 'Actividad reciente',
+      rows: movimientosList.slice(-5).reverse(),
+      columns: [
+        { header: 'Fecha', value: mov => toExcelDate(mov.fecha) },
+        { header: 'Tipo', value: mov => mov.tipo },
+        { header: 'Material', value: mov => mov.materia_prima?.nombre },
+        { header: 'Cantidad', value: mov => mov.cantidad, format: EXCEL_FORMATS.decimal },
+        { header: 'Unidad', value: mov => mov.materia_prima?.unidad_medida?.abreviatura },
+      ],
+    }),
+  ];
+
   const container = {
     hidden: {},
     show: { transition: { staggerChildren: 0.08 } },
@@ -140,13 +189,17 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          Bienvenido, {user?.nombre}
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Resumen general del sistema de costos e inventario
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Bienvenido, {user?.nombre}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Resumen general del sistema de costos e inventario
+          </p>
+        </div>
+
+        <ExportExcelButton fileName="dashboard_resumen" getSheets={getExportSheets} />
       </div>
 
       {/* Stats */}

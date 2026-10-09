@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppData } from '@/contexts/AppDataContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiRequest } from '@/lib/api';
+import { buildSheet } from '@/lib/excel-export';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Users, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
 
 type Usuario = {
@@ -75,6 +77,20 @@ export default function Usuarios() {
 
     return 0;
   });
+
+  /** Exporta los usuarios visibles. Nunca incluye contrasenas. */
+  const getExportSheets = () => [
+    buildSheet({
+      name: 'Usuarios',
+      rows: sorted,
+      columns: [
+        { header: 'Nombre', value: usuario => usuario.nombre },
+        { header: 'Apellido', value: usuario => usuario.apellido },
+        { header: 'Email', value: usuario => usuario.email },
+        { header: 'Rol', value: usuario => usuario.rol },
+      ],
+    }),
+  ];
 
   /** Cambia el criterio de orden o invierte el sentido del campo actual. */
   const handleSort = (field: 'nombre' | 'apellido' | 'email' | 'rol') => {
@@ -220,10 +236,14 @@ export default function Usuarios() {
           <p className="text-muted-foreground mt-1">Gestión de usuarios del sistema</p>
         </div>
 
-        <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo usuario
-        </Button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <ExportExcelButton fileName="usuarios" getSheets={getExportSheets} />
+
+          <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
+            <Plus className="w-4 h-4 mr-2" />
+            Nuevo usuario
+          </Button>
+        </div>
       </div>
 
       <Card>
