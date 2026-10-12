@@ -4,7 +4,13 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
 
-from apps.accounts.views import CurrentUserView, LoginView, RefreshTokenView
+from apps.accounts.views import (
+    CurrentUserView,
+    LoginView,
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
+    RefreshTokenView,
+)
 
 
 def healthcheck(_request):
@@ -17,6 +23,8 @@ urlpatterns = [
     path("health/", healthcheck, name="healthcheck"),
     path("api/auth/login/", LoginView.as_view(), name="login"),
     path("api/auth/refresh/", RefreshTokenView.as_view(), name="token_refresh"),
+    path("api/auth/password-reset/", PasswordResetRequestView.as_view(), name="password_reset"),
+    path("api/auth/password-reset/confirm/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path("api/me/", CurrentUserView.as_view(), name="current_user"),
     path("api/accounts/", include("apps.accounts.urls")),
     path("api/audit/", include("apps.audit.urls")),

@@ -15,6 +15,10 @@ import type { AppModule } from "@/contexts/AuthContext";
 import { AppDataProvider } from "@/contexts/AppDataContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Login from "./pages/Login";
+import RecuperarContrasena from "./pages/RecuperarContrasena";
+import RestablecerContrasena from "./pages/RestablecerContrasena";
+import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
+import PoliticaCookies from "./pages/PoliticaCookies";
 import Dashboard from "./pages/Dashboard";
 import Proyectos from "./pages/Proyectos";
 import Piezas from "./pages/Piezas";
@@ -60,6 +64,11 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+      {/* Rutas publicas: se pueden abrir sin sesion iniciada. */}
+      <Route path="/recuperar-contrasena" element={<RecuperarContrasena />} />
+      <Route path="/restablecer-contrasena" element={<RestablecerContrasena />} />
+      <Route path="/privacidad" element={<PoliticaPrivacidad />} />
+      <Route path="/cookies" element={<PoliticaCookies />} />
       <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<ProtectedRoute module="dashboard"><Dashboard /></ProtectedRoute>} />
         <Route path="/proyectos" element={<ProtectedRoute module="proyectos"><Proyectos /></ProtectedRoute>} />

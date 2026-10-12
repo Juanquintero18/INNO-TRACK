@@ -98,6 +98,12 @@ export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
             <p className="text-xs text-muted-foreground capitalize">{user.rol}</p>
           </div>
         )}
+        {!collapsed && (
+          <div className="flex gap-3 px-2 text-xs text-muted-foreground">
+            <NavLink to="/privacidad" className="hover:text-foreground hover:underline">Privacidad</NavLink>
+            <NavLink to="/cookies" className="hover:text-foreground hover:underline">Cookies</NavLink>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <button
             onClick={logout}

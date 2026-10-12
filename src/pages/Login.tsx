@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,13 +39,22 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Button
-        type="button"
-        variant="ghost"
-        className="fixed bottom-4 left-4 z-20 h-8 px-3 text-xs font-normal text-muted-foreground/70 bg-card/20 border border-border/40 backdrop-blur-sm hover:bg-card/40 hover:text-foreground"
-      >
-        Politicas de privacidad
-      </Button>
+      <div className="fixed bottom-4 left-4 z-20 flex gap-2">
+        <Button
+          asChild
+          variant="ghost"
+          className="h-8 px-3 text-xs font-normal text-muted-foreground/70 bg-card/20 border border-border/40 backdrop-blur-sm hover:bg-card/40 hover:text-foreground"
+        >
+          <Link to="/privacidad">Política de privacidad</Link>
+        </Button>
+        <Button
+          asChild
+          variant="ghost"
+          className="h-8 px-3 text-xs font-normal text-muted-foreground/70 bg-card/20 border border-border/40 backdrop-blur-sm hover:bg-card/40 hover:text-foreground"
+        >
+          <Link to="/cookies">Política de cookies</Link>
+        </Button>
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -105,8 +114,8 @@ export default function Login() {
             </Button>
 
             <div className="flex flex-col items-start gap-1">
-              <Button type="button" variant="link" className="h-auto p-0 text-sm font-medium text-primary/90">
-                ¿Olvidaste tu contraseña?
+              <Button asChild variant="link" className="h-auto p-0 text-sm font-medium text-primary/90">
+                <Link to="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
               </Button>
               <Button type="button" variant="link" className="h-auto p-0 text-sm font-medium text-primary/90">
                 ¿Deseas registrarte?

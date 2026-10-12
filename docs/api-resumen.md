@@ -9,6 +9,8 @@ Alcance: listado resumido de endpoints observados en el backend.
 - Usuario actual: GET /api/me/
 - Login: POST /api/auth/login/
 - Refresh token: POST /api/auth/refresh/
+- Solicitar recuperacion de contrasena: POST /api/auth/password-reset/
+- Confirmar nueva contrasena: POST /api/auth/password-reset/confirm/
 
 ## Accounts
 

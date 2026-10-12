@@ -4,14 +4,17 @@ Este módulo concentra:
 - Serialización de usuario para CRUD.
 - Validación de credenciales de inicio de sesión.
 - Renovación de token de acceso para sesiones activas.
+- Solicitud y confirmación de recuperación de contraseña.
 """
 
 from rest_framework import serializers
 from django.contrib.auth.hashers import check_password, identify_hasher
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 from apps.accounts.authentication import build_access_token, read_access_token
 from apps.accounts.models import AppUser
+from apps.accounts.password_reset import get_user_for_reset, validate_new_password
 
 
 class AppUserSerializer(serializers.ModelSerializer):
@@ -82,6 +85,42 @@ class LoginSerializer(serializers.Serializer):
             "access": build_access_token(user),
             "user": AppUserSerializer(user).data,
         }
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """Valida el correo con el que se solicita recuperar la contraseña."""
+
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Valida el enlace recibido por correo y la nueva contraseña."""
+
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, trim_whitespace=False, max_length=128)
+
+    def validate(self, attrs):
+        """Rechaza enlaces inválidos o vencidos y contraseñas débiles."""
+        user = get_user_for_reset(attrs["uid"], attrs["token"])
+
+        if user is None:
+            raise serializers.ValidationError("El enlace no es válido o ya venció. Solicita uno nuevo.")
+
+        try:
+            validate_new_password(attrs["password"], user)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({"password": list(exc.messages)}) from exc
+
+        attrs["user"] = user
+        return attrs
+
+    def save(self, **kwargs):
+        """Guarda la nueva contraseña hasheada; el enlace usado queda invalidado."""
+        user = self.validated_data["user"]
+        user.contrasena = make_password(self.validated_data["password"])
+        user.save(update_fields=["contrasena"])
+        return user
 
 
 class TokenRefreshSerializer(serializers.Serializer):

@@ -38,6 +38,21 @@ backend/
 - Endpoint de restauracion: `POST /api/audit/logs/{id}/restore/`
 - Cada log guarda: tipo de entidad, id original, etiqueta legible, snapshot JSON del registro, usuario que elimino y marcas de restauracion.
 
+## Recuperacion de contrasena
+
+- `POST /api/auth/password-reset/` con `{ "email": "..." }`: envia un correo con el enlace. Responde lo mismo exista o no la cuenta.
+- `POST /api/auth/password-reset/confirm/` con `{ "uid", "token", "password" }`: guarda la nueva contrasena y avisa por correo al titular.
+- El enlace apunta a `FRONTEND_URL/restablecer-contrasena`, vence en `PASSWORD_RESET_TIMEOUT_SECONDS` (30 minutos por defecto) y deja de servir apenas la contrasena cambia. No guarda nada en la base de datos.
+- La nueva contrasena debe cumplir `AUTH_PASSWORD_VALIDATORS` (minimo 8 caracteres, no solo numeros, no comun, no parecida al nombre o correo).
+- Limites por hora: 10 solicitudes por IP, 3 por correo y 10 confirmaciones por IP.
+- Por defecto el correo se imprime en la consola del servidor. Para enviarlo de verdad configura `EMAIL_BACKEND` y los datos SMTP en `.env` (ver `.env.example`).
+- Las sesiones ya abiertas no se cierran al cambiar la contrasena: sus tokens siguen vigentes hasta que vencen (`API_TOKEN_MAX_AGE_SECONDS`, 8 horas por defecto).
+
+## Pruebas
+
+- `./.venv/Scripts/python.exe backend/manage.py test apps --settings=config.settings_test`
+- Usan SQLite en memoria y crean las tablas legacy desde los modelos, asi que no tocan PostgreSQL.
+
 ## Puesta en marcha
 
 1. Crear y activar el entorno virtual del proyecto en `.venv`.

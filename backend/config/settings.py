@@ -106,9 +106,31 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ),
     "COERCE_DECIMAL_TO_STRING": False,
+    # Límites de los endpoints públicos de recuperación de contraseña.
+    "DEFAULT_THROTTLE_RATES": {
+        "password_reset": "10/hour",
+        "password_reset_email": "3/hour",
+        "password_reset_confirm": "10/hour",
+    },
 }
 
 API_TOKEN_MAX_AGE_SECONDS = config("API_TOKEN_MAX_AGE_SECONDS", default=60 * 60 * 8, cast=int)
+
+# Correo saliente. Por defecto los mensajes se imprimen en la consola del
+# servidor (desarrollo); en producción se configura SMTP por variables de entorno.
+EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = config("EMAIL_HOST", default="localhost")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_TIMEOUT = 15
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="INNO-TRACK <no-reply@localhost>")
+
+# Recuperación de contraseña: URL pública del frontend para armar el enlace del
+# correo y vigencia del enlace en segundos.
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:8080")
+PASSWORD_RESET_TIMEOUT = config("PASSWORD_RESET_TIMEOUT_SECONDS", default=60 * 30, cast=int)
 
 # Orígenes permitidos para frontend local durante desarrollo.
 CORS_ALLOWED_ORIGINS = config(
