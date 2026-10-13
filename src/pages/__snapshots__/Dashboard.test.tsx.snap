@@ -1,0 +1,2841 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dashboard > adapta el menú lateral al rol de almacenista 1`] = `
+<aside
+  class="bg-card border-border border-r duration-300 fixed flex flex-col h-screen left-0 top-0 transition-all w-[260px] z-40"
+>
+  <div
+    class="border-b border-border flex flex-col gap-2 items-center justify-center min-h-[120px] px-4 py-5 text-center"
+  >
+    <img
+      alt="Innolution"
+      class="flex-shrink-0 h-20 object-contain rounded-lg w-20"
+      src="/src/assets/logo-inno-transparente.%20RGB.png"
+    />
+    <span
+      class="font-bold text-lg text-primary tracking-tight"
+    >
+      INNO-TRACK
+    </span>
+  </div>
+  <nav
+    class="flex-1 overflow-y-auto px-2 py-4 space-y-1"
+  >
+    <a
+      aria-current="page"
+      class="bg-primary flex font-medium gap-3 items-center px-3 py-2.5 rounded-lg text-primary-foreground text-sm transition-colors"
+      href="/dashboard"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-layout-dashboard w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect
+          height="9"
+          rx="1"
+          width="7"
+          x="3"
+          y="3"
+        />
+        <rect
+          height="5"
+          rx="1"
+          width="7"
+          x="14"
+          y="3"
+        />
+        <rect
+          height="9"
+          rx="1"
+          width="7"
+          x="14"
+          y="12"
+        />
+        <rect
+          height="5"
+          rx="1"
+          width="7"
+          x="3"
+          y="16"
+        />
+      </svg>
+      <span>
+        Dashboard
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/piezas"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-puzzle w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+        />
+      </svg>
+      <span>
+        Piezas
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/materias-primas"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-package w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+        />
+        <path
+          d="M12 22V12"
+        />
+        <path
+          d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"
+        />
+        <path
+          d="m7.5 4.27 9 5.15"
+        />
+      </svg>
+      <span>
+        Materias Primas
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/inventario"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-arrow-left-right w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8 3 4 7l4 4"
+        />
+        <path
+          d="M4 7h16"
+        />
+        <path
+          d="m16 21 4-4-4-4"
+        />
+        <path
+          d="M20 17H4"
+        />
+      </svg>
+      <span>
+        Inventario
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/proveedores"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-truck w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+        />
+        <path
+          d="M15 18H9"
+        />
+        <path
+          d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+        />
+        <circle
+          cx="17"
+          cy="18"
+          r="2"
+        />
+        <circle
+          cx="7"
+          cy="18"
+          r="2"
+        />
+      </svg>
+      <span>
+        Proveedores
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/trabajadores"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-hard-hat w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"
+        />
+        <path
+          d="M14 6a6 6 0 0 1 6 6v3"
+        />
+        <path
+          d="M4 15v-3a6 6 0 0 1 6-6"
+        />
+        <rect
+          height="4"
+          rx="1"
+          width="20"
+          x="2"
+          y="15"
+        />
+      </svg>
+      <span>
+        Trabajadores
+      </span>
+    </a>
+  </nav>
+  <div
+    class="border-border border-t p-3 space-y-2"
+  >
+    <div
+      class="px-2 py-1"
+    >
+      <p
+        class="font-medium text-foreground text-sm truncate"
+      >
+        Carla Mejía
+      </p>
+      <p
+        class="capitalize text-muted-foreground text-xs"
+      >
+        almacenista
+      </p>
+    </div>
+    <div
+      class="flex gap-3 px-2 text-muted-foreground text-xs"
+    >
+      <a
+        class="hover:text-foreground hover:underline"
+        href="/privacidad"
+      >
+        Privacidad
+      </a>
+      <a
+        class="hover:text-foreground hover:underline"
+        href="/cookies"
+      >
+        Cookies
+      </a>
+    </div>
+    <div
+      class="flex items-center justify-between"
+    >
+      <button
+        class="flex gap-2 hover:bg-muted hover:text-destructive items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+      >
+        <svg
+          class="h-4 lucide lucide-log-out w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+          />
+          <polyline
+            points="16 17 21 12 16 7"
+          />
+          <line
+            x1="21"
+            x2="9"
+            y1="12"
+            y2="12"
+          />
+        </svg>
+        <span>
+          Cerrar sesión
+        </span>
+      </button>
+      <button
+        class="hover:bg-muted hover:text-foreground p-2 rounded-lg text-muted-foreground transition-colors"
+      >
+        <svg
+          class="h-4 lucide lucide-chevron-left w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15 18-6-6 6-6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
+`;
+
+exports[`Dashboard > adapta el menú lateral al rol de trabajador 1`] = `
+<aside
+  class="bg-card border-border border-r duration-300 fixed flex flex-col h-screen left-0 top-0 transition-all w-[260px] z-40"
+>
+  <div
+    class="border-b border-border flex flex-col gap-2 items-center justify-center min-h-[120px] px-4 py-5 text-center"
+  >
+    <img
+      alt="Innolution"
+      class="flex-shrink-0 h-20 object-contain rounded-lg w-20"
+      src="/src/assets/logo-inno-transparente.%20RGB.png"
+    />
+    <span
+      class="font-bold text-lg text-primary tracking-tight"
+    >
+      INNO-TRACK
+    </span>
+  </div>
+  <nav
+    class="flex-1 overflow-y-auto px-2 py-4 space-y-1"
+  >
+    <a
+      aria-current="page"
+      class="bg-primary flex font-medium gap-3 items-center px-3 py-2.5 rounded-lg text-primary-foreground text-sm transition-colors"
+      href="/dashboard"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-layout-dashboard w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect
+          height="9"
+          rx="1"
+          width="7"
+          x="3"
+          y="3"
+        />
+        <rect
+          height="5"
+          rx="1"
+          width="7"
+          x="14"
+          y="3"
+        />
+        <rect
+          height="9"
+          rx="1"
+          width="7"
+          x="14"
+          y="12"
+        />
+        <rect
+          height="5"
+          rx="1"
+          width="7"
+          x="3"
+          y="16"
+        />
+      </svg>
+      <span>
+        Dashboard
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/piezas"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-puzzle w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+        />
+      </svg>
+      <span>
+        Piezas
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/materias-primas"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-package w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+        />
+        <path
+          d="M12 22V12"
+        />
+        <path
+          d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"
+        />
+        <path
+          d="m7.5 4.27 9 5.15"
+        />
+      </svg>
+      <span>
+        Materias Primas
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/inventario"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-arrow-left-right w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8 3 4 7l4 4"
+        />
+        <path
+          d="M4 7h16"
+        />
+        <path
+          d="m16 21 4-4-4-4"
+        />
+        <path
+          d="M20 17H4"
+        />
+      </svg>
+      <span>
+        Inventario
+      </span>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/trabajadores"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-hard-hat w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"
+        />
+        <path
+          d="M14 6a6 6 0 0 1 6 6v3"
+        />
+        <path
+          d="M4 15v-3a6 6 0 0 1 6-6"
+        />
+        <rect
+          height="4"
+          rx="1"
+          width="20"
+          x="2"
+          y="15"
+        />
+      </svg>
+      <span>
+        Trabajadores
+      </span>
+    </a>
+  </nav>
+  <div
+    class="border-border border-t p-3 space-y-2"
+  >
+    <div
+      class="px-2 py-1"
+    >
+      <p
+        class="font-medium text-foreground text-sm truncate"
+      >
+        Carlos Operador
+      </p>
+      <p
+        class="capitalize text-muted-foreground text-xs"
+      >
+        trabajador
+      </p>
+    </div>
+    <div
+      class="flex gap-3 px-2 text-muted-foreground text-xs"
+    >
+      <a
+        class="hover:text-foreground hover:underline"
+        href="/privacidad"
+      >
+        Privacidad
+      </a>
+      <a
+        class="hover:text-foreground hover:underline"
+        href="/cookies"
+      >
+        Cookies
+      </a>
+    </div>
+    <div
+      class="flex items-center justify-between"
+    >
+      <button
+        class="flex gap-2 hover:bg-muted hover:text-destructive items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+      >
+        <svg
+          class="h-4 lucide lucide-log-out w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+          />
+          <polyline
+            points="16 17 21 12 16 7"
+          />
+          <line
+            x1="21"
+            x2="9"
+            y1="12"
+            y2="12"
+          />
+        </svg>
+        <span>
+          Cerrar sesión
+        </span>
+      </button>
+      <button
+        class="hover:bg-muted hover:text-foreground p-2 rounded-lg text-muted-foreground transition-colors"
+      >
+        <svg
+          class="h-4 lucide lucide-chevron-left w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15 18-6-6 6-6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
+`;
+
+exports[`Dashboard > exporta a Excel las cifras del resumen 1`] = `
+{
+  "fileName": "dashboard_resumen_2026-03-15.xlsx",
+  "sheets": [
+    {
+      "columns": [
+        {
+          "width": 20,
+        },
+        {
+          "width": 10,
+        },
+      ],
+      "data": [
+        [
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Indicador",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Valor",
+          },
+        ],
+        [
+          "Piezas Registradas",
+          4,
+        ],
+        [
+          "Materias Primas",
+          5,
+        ],
+        [
+          "Movimientos",
+          8,
+        ],
+        [
+          "Costo Promedio",
+          214.52,
+        ],
+      ],
+      "sheet": "Resumen",
+      "stickyRowsCount": 1,
+    },
+    {
+      "columns": [
+        {
+          "width": 10,
+        },
+        {
+          "width": 22,
+        },
+        {
+          "width": 11,
+        },
+      ],
+      "data": [
+        [
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Trace ID",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Nombre",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Costo",
+          },
+        ],
+        [
+          "TR-0001",
+          "Tobogán curva A",
+          {
+            "format": "$#,##0.00",
+            "value": 356.25,
+          },
+        ],
+        [
+          "TR-0002",
+          "Tobogán recto B",
+          {
+            "format": "$#,##0.00",
+            "value": 235.9,
+          },
+        ],
+        [
+          "TR-0010",
+          "Plataforma de salida",
+          {
+            "format": "$#,##0.00",
+            "value": 265.91,
+          },
+        ],
+        [
+          null,
+          "Sin nombre",
+          {
+            "format": "$#,##0.00",
+            "value": 0,
+          },
+        ],
+      ],
+      "sheet": "Costo por pieza",
+      "stickyRowsCount": 1,
+    },
+    {
+      "columns": [
+        {
+          "width": 18,
+        },
+        {
+          "width": 14,
+        },
+        {
+          "width": 10,
+        },
+        {
+          "width": 10,
+        },
+      ],
+      "data": [
+        [
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Material",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Stock actual",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Unidad",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Estado",
+          },
+        ],
+        [
+          "Catalizador MEKP",
+          {
+            "format": "#,##0.00",
+            "value": 0,
+          },
+          "L",
+          "Crítico",
+        ],
+        [
+          "Gelcoat blanco",
+          {
+            "format": "#,##0.00",
+            "value": 7.5,
+          },
+          "L",
+          "Crítico",
+        ],
+        [
+          "Fibra de vidrio",
+          {
+            "format": "#,##0.00",
+            "value": 40,
+          },
+          "kg",
+          "Bajo",
+        ],
+        [
+          "Resina poliéster",
+          {
+            "format": "#,##0.00",
+            "value": 65,
+          },
+          "kg",
+          "Estable",
+        ],
+        [
+          "Desmoldante",
+          {
+            "format": "#,##0.00",
+            "value": 200,
+          },
+          "ud",
+          "Estable",
+        ],
+      ],
+      "sheet": "Estado del stock",
+      "stickyRowsCount": 1,
+    },
+    {
+      "columns": [
+        {
+          "width": 12,
+        },
+        {
+          "width": 10,
+        },
+        {
+          "width": 17,
+        },
+        {
+          "width": 11,
+        },
+        {
+          "width": 10,
+        },
+      ],
+      "data": [
+        [
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Fecha",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Tipo",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Material",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Cantidad",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Unidad",
+          },
+        ],
+        [
+          null,
+          "salida",
+          "Gelcoat blanco",
+          {
+            "format": "#,##0.00",
+            "value": 0.5,
+          },
+          "L",
+        ],
+        [
+          {
+            "format": "dd/mm/yyyy",
+            "value": 2026-02-20T00:00:00.000Z,
+          },
+          "entrada",
+          "Desmoldante",
+          {
+            "format": "#,##0.00",
+            "value": 200,
+          },
+          "ud",
+        ],
+        [
+          {
+            "format": "dd/mm/yyyy",
+            "value": 2026-03-01T00:00:00.000Z,
+          },
+          "entrada",
+          "Gelcoat blanco",
+          {
+            "format": "#,##0.00",
+            "value": 8,
+          },
+          "L",
+        ],
+        [
+          {
+            "format": "dd/mm/yyyy",
+            "value": 2026-02-15T00:00:00.000Z,
+          },
+          "salida",
+          "Fibra de vidrio",
+          {
+            "format": "#,##0.00",
+            "value": 20,
+          },
+          "kg",
+        ],
+        [
+          {
+            "format": "dd/mm/yyyy",
+            "value": 2026-01-08T00:00:00.000Z,
+          },
+          "entrada",
+          "Fibra de vidrio",
+          {
+            "format": "#,##0.00",
+            "value": 60,
+          },
+          "kg",
+        ],
+      ],
+      "sheet": "Actividad reciente",
+      "stickyRowsCount": 1,
+    },
+  ],
+}
+`;
+
+exports[`Dashboard > muestra el resumen completo, con el menú del administrador 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Notifications (F8)"
+      role="region"
+      style="pointer-events: none;"
+      tabindex="-1"
+    >
+      <ol
+        class="fixed flex flex-col-reverse max-h-screen md:max-w-[420px] p-4 sm:bottom-0 sm:flex-col sm:right-0 sm:top-auto top-0 w-full z-[100]"
+        tabindex="-1"
+      />
+    </div>
+    <section
+      aria-atomic="false"
+      aria-label="Notifications alt+T"
+      aria-live="polite"
+      aria-relevant="additions text"
+      tabindex="-1"
+    />
+    <div
+      class="bg-background min-h-screen"
+    >
+      <aside
+        class="bg-card border-border border-r duration-300 fixed flex flex-col h-screen left-0 top-0 transition-all w-[260px] z-40"
+      >
+        <div
+          class="border-b border-border flex flex-col gap-2 items-center justify-center min-h-[120px] px-4 py-5 text-center"
+        >
+          <img
+            alt="Innolution"
+            class="flex-shrink-0 h-20 object-contain rounded-lg w-20"
+            src="/src/assets/logo-inno-transparente.%20RGB.png"
+          />
+          <span
+            class="font-bold text-lg text-primary tracking-tight"
+          >
+            INNO-TRACK
+          </span>
+        </div>
+        <nav
+          class="flex-1 overflow-y-auto px-2 py-4 space-y-1"
+        >
+          <a
+            aria-current="page"
+            class="bg-primary flex font-medium gap-3 items-center px-3 py-2.5 rounded-lg text-primary-foreground text-sm transition-colors"
+            href="/dashboard"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-layout-dashboard w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="9"
+                rx="1"
+                width="7"
+                x="3"
+                y="3"
+              />
+              <rect
+                height="5"
+                rx="1"
+                width="7"
+                x="14"
+                y="3"
+              />
+              <rect
+                height="9"
+                rx="1"
+                width="7"
+                x="14"
+                y="12"
+              />
+              <rect
+                height="5"
+                rx="1"
+                width="7"
+                x="3"
+                y="16"
+              />
+            </svg>
+            <span>
+              Dashboard
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/proyectos"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-folder-kanban w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"
+              />
+              <path
+                d="M8 10v4"
+              />
+              <path
+                d="M12 10v2"
+              />
+              <path
+                d="M16 10v6"
+              />
+            </svg>
+            <span>
+              Proyectos
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/piezas"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-puzzle w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+              />
+            </svg>
+            <span>
+              Piezas
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/materias-primas"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-package w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+              />
+              <path
+                d="M12 22V12"
+              />
+              <path
+                d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"
+              />
+              <path
+                d="m7.5 4.27 9 5.15"
+              />
+            </svg>
+            <span>
+              Materias Primas
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/inventario"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-arrow-left-right w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 3 4 7l4 4"
+              />
+              <path
+                d="M4 7h16"
+              />
+              <path
+                d="m16 21 4-4-4-4"
+              />
+              <path
+                d="M20 17H4"
+              />
+            </svg>
+            <span>
+              Inventario
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/proveedores"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-truck w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+              />
+              <path
+                d="M15 18H9"
+              />
+              <path
+                d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+              />
+              <circle
+                cx="17"
+                cy="18"
+                r="2"
+              />
+              <circle
+                cx="7"
+                cy="18"
+                r="2"
+              />
+            </svg>
+            <span>
+              Proveedores
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/trabajadores"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-hard-hat w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"
+              />
+              <path
+                d="M14 6a6 6 0 0 1 6 6v3"
+              />
+              <path
+                d="M4 15v-3a6 6 0 0 1 6-6"
+              />
+              <rect
+                height="4"
+                rx="1"
+                width="20"
+                x="2"
+                y="15"
+              />
+            </svg>
+            <span>
+              Trabajadores
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/usuarios"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-users w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+              />
+              <path
+                d="M22 21v-2a4 4 0 0 0-3-3.87"
+              />
+              <path
+                d="M16 3.13a4 4 0 0 1 0 7.75"
+              />
+            </svg>
+            <span>
+              Usuarios
+            </span>
+          </a>
+          <a
+            class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+            href="/auditoria"
+          >
+            <svg
+              class="flex-shrink-0 h-5 lucide lucide-shield-alert w-5"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+              />
+              <path
+                d="M12 8v4"
+              />
+              <path
+                d="M12 16h.01"
+              />
+            </svg>
+            <span>
+              Auditoría
+            </span>
+          </a>
+        </nav>
+        <div
+          class="border-border border-t p-3 space-y-2"
+        >
+          <div
+            class="px-2 py-1"
+          >
+            <p
+              class="font-medium text-foreground text-sm truncate"
+            >
+              Juan Administrador
+            </p>
+            <p
+              class="capitalize text-muted-foreground text-xs"
+            >
+              administrador
+            </p>
+          </div>
+          <div
+            class="flex gap-3 px-2 text-muted-foreground text-xs"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/privacidad"
+            >
+              Privacidad
+            </a>
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/cookies"
+            >
+              Cookies
+            </a>
+          </div>
+          <div
+            class="flex items-center justify-between"
+          >
+            <button
+              class="flex gap-2 hover:bg-muted hover:text-destructive items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+            >
+              <svg
+                class="h-4 lucide lucide-log-out w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+                />
+                <polyline
+                  points="16 17 21 12 16 7"
+                />
+                <line
+                  x1="21"
+                  x2="9"
+                  y1="12"
+                  y2="12"
+                />
+              </svg>
+              <span>
+                Cerrar sesión
+              </span>
+            </button>
+            <button
+              class="hover:bg-muted hover:text-foreground p-2 rounded-lg text-muted-foreground transition-colors"
+            >
+              <svg
+                class="h-4 lucide lucide-chevron-left w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m15 18-6-6 6-6"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+      <main
+        class="duration-300 ml-[260px] transition-all"
+      >
+        <header
+          class="backdrop-blur-md bg-background/80 border-b border-border px-8 py-4 sticky top-0 z-30"
+        >
+          <div
+            class="flex gap-4 items-center justify-between"
+          >
+            <button
+              class="border border-border gap-2 hover:bg-muted hover:text-foreground inline-flex items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+              type="button"
+            >
+              <svg
+                class="h-4 lucide lucide-eye-off w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                />
+                <path
+                  d="M14.084 14.158a3 3 0 0 1-4.242-4.242"
+                />
+                <path
+                  d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                />
+                <path
+                  d="m2 2 20 20"
+                />
+              </svg>
+              Ocultar panel
+            </button>
+            <div
+              class="flex gap-3 items-center"
+            >
+              <img
+                alt="Innolution"
+                class="h-14 object-contain opacity-40 rounded w-14"
+                src="/src/assets/logo-inno-transparente.%20RGB.png"
+              />
+              <span
+                class="text-muted-foreground text-sm"
+              >
+                Juan Administrador
+              </span>
+            </div>
+          </div>
+        </header>
+        <div
+          class="p-8"
+        >
+          <div
+            class="space-y-8"
+          >
+            <div
+              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <h1
+                  class="font-bold text-2xl text-foreground"
+                >
+                  Bienvenido, Juan
+                </h1>
+                <p
+                  class="mt-1 text-muted-foreground"
+                >
+                  Resumen general del sistema de costos e inventario
+                </p>
+              </div>
+              <button
+                class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-emerald-200 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-emerald-50 hover:text-emerald-800 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-emerald-700 text-sm transition-colors whitespace-nowrap"
+                type="button"
+              >
+                <svg
+                  class="h-4 lucide lucide-file-spreadsheet mr-2 w-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                  />
+                  <path
+                    d="M14 2v4a2 2 0 0 0 2 2h4"
+                  />
+                  <path
+                    d="M8 13h2"
+                  />
+                  <path
+                    d="M14 13h2"
+                  />
+                  <path
+                    d="M8 17h2"
+                  />
+                  <path
+                    d="M14 17h2"
+                  />
+                </svg>
+                Exportar Excel
+              </button>
+            </div>
+            <div
+              class="gap-4 grid grid-cols-1 lg:grid-cols-4 sm:grid-cols-2"
+            >
+              <div>
+                <div
+                  class="bg-card border hover:shadow-md rounded-lg shadow-sm text-card-foreground transition-shadow"
+                >
+                  <div
+                    class="flex gap-4 items-center p-5"
+                  >
+                    <div
+                      class="bg-primary/10 p-3 rounded-xl text-primary"
+                    >
+                      <svg
+                        class="h-6 lucide lucide-puzzle w-6"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        class="font-bold text-2xl text-foreground"
+                      >
+                        4
+                      </p>
+                      <p
+                        class="text-muted-foreground text-sm"
+                      >
+                        Piezas Registradas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  class="bg-card border hover:shadow-md rounded-lg shadow-sm text-card-foreground transition-shadow"
+                >
+                  <div
+                    class="flex gap-4 items-center p-5"
+                  >
+                    <div
+                      class="bg-primary/10 p-3 rounded-xl text-primary"
+                    >
+                      <svg
+                        class="h-6 lucide lucide-package w-6"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+                        />
+                        <path
+                          d="M12 22V12"
+                        />
+                        <path
+                          d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"
+                        />
+                        <path
+                          d="m7.5 4.27 9 5.15"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        class="font-bold text-2xl text-foreground"
+                      >
+                        5
+                      </p>
+                      <p
+                        class="text-muted-foreground text-sm"
+                      >
+                        Materias Primas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  class="bg-card border hover:shadow-md rounded-lg shadow-sm text-card-foreground transition-shadow"
+                >
+                  <div
+                    class="flex gap-4 items-center p-5"
+                  >
+                    <div
+                      class="bg-primary/10 p-3 rounded-xl text-primary"
+                    >
+                      <svg
+                        class="h-6 lucide lucide-arrow-left-right w-6"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M8 3 4 7l4 4"
+                        />
+                        <path
+                          d="M4 7h16"
+                        />
+                        <path
+                          d="m16 21 4-4-4-4"
+                        />
+                        <path
+                          d="M20 17H4"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        class="font-bold text-2xl text-foreground"
+                      >
+                        8
+                      </p>
+                      <p
+                        class="text-muted-foreground text-sm"
+                      >
+                        Movimientos
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div
+                  class="bg-card border hover:shadow-md rounded-lg shadow-sm text-card-foreground transition-shadow"
+                >
+                  <div
+                    class="flex gap-4 items-center p-5"
+                  >
+                    <div
+                      class="bg-primary/10 p-3 rounded-xl text-success"
+                    >
+                      <svg
+                        class="h-6 lucide lucide-dollar-sign w-6"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <line
+                          x1="12"
+                          x2="12"
+                          y1="2"
+                          y2="22"
+                        />
+                        <path
+                          d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        class="font-bold text-2xl text-foreground"
+                      >
+                        $214.51
+                      </p>
+                      <p
+                        class="text-muted-foreground text-sm"
+                      >
+                        Costo Promedio
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="gap-6 grid grid-cols-1 lg:grid-cols-2"
+            >
+              <div
+                class="bg-card border rounded-lg shadow-sm text-card-foreground"
+              >
+                <div
+                  class="flex flex-col p-6 space-y-1.5"
+                >
+                  <h3
+                    class="flex font-semibold gap-2 items-center text-base tracking-tight"
+                  >
+                    <svg
+                      class="h-4 lucide lucide-trending-up text-primary w-4"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline
+                        points="22 7 13.5 15.5 8.5 10.5 2 17"
+                      />
+                      <polyline
+                        points="16 7 22 7 22 13"
+                      />
+                    </svg>
+                    Costo por Pieza
+                  </h3>
+                </div>
+                <div
+                  class="p-6 pt-0"
+                >
+                  <div
+                    class="recharts-responsive-container"
+                    style="width: 100%; height: 280px; min-width: 0;"
+                  />
+                </div>
+              </div>
+              <div
+                class="bg-card border rounded-lg shadow-sm text-card-foreground"
+              >
+                <div
+                  class="flex flex-col p-6 space-y-1.5"
+                >
+                  <h3
+                    class="flex font-semibold gap-2 items-center text-base tracking-tight"
+                  >
+                    <svg
+                      class="h-4 lucide lucide-package text-primary w-4"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+                      />
+                      <path
+                        d="M12 22V12"
+                      />
+                      <path
+                        d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"
+                      />
+                      <path
+                        d="m7.5 4.27 9 5.15"
+                      />
+                    </svg>
+                    Stock de Materiales
+                  </h3>
+                </div>
+                <div
+                  class="p-6 pt-0"
+                >
+                  <div
+                    class="gap-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-center"
+                  >
+                    <div
+                      class="h-[280px]"
+                    >
+                      <div
+                        class="recharts-responsive-container"
+                        style="width: 100%; height: 100%; min-width: 0;"
+                      />
+                    </div>
+                    <div
+                      class="space-y-3"
+                    >
+                      <div
+                        class="bg-muted/30 border border-border flex gap-3 items-center justify-between px-3 py-2 rounded-xl"
+                      >
+                        <div
+                          class="flex gap-3 items-center min-w-0"
+                        >
+                          <span
+                            class="h-3 rounded-full shrink-0 w-3"
+                            style="background-color: rgb(1, 1, 1);"
+                          />
+                          <div
+                            class="min-w-0"
+                          >
+                            <p
+                              class="font-medium text-foreground text-sm truncate"
+                            >
+                              Catalizador MEKP
+                            </p>
+                            <span
+                              class="bg-destructive/10 font-medium inline-flex px-2 py-0.5 rounded-full text-destructive text-xs"
+                            >
+                              Crítico
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          class="font-semibold shrink-0 text-foreground text-sm"
+                        >
+                          0 L
+                        </span>
+                      </div>
+                      <div
+                        class="bg-muted/30 border border-border flex gap-3 items-center justify-between px-3 py-2 rounded-xl"
+                      >
+                        <div
+                          class="flex gap-3 items-center min-w-0"
+                        >
+                          <span
+                            class="h-3 rounded-full shrink-0 w-3"
+                            style="background-color: rgb(23, 23, 23);"
+                          />
+                          <div
+                            class="min-w-0"
+                          >
+                            <p
+                              class="font-medium text-foreground text-sm truncate"
+                            >
+                              Gelcoat blanco
+                            </p>
+                            <span
+                              class="bg-destructive/10 font-medium inline-flex px-2 py-0.5 rounded-full text-destructive text-xs"
+                            >
+                              Crítico
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          class="font-semibold shrink-0 text-foreground text-sm"
+                        >
+                          7.5 L
+                        </span>
+                      </div>
+                      <div
+                        class="bg-muted/30 border border-border flex gap-3 items-center justify-between px-3 py-2 rounded-xl"
+                      >
+                        <div
+                          class="flex gap-3 items-center min-w-0"
+                        >
+                          <span
+                            class="h-3 rounded-full shrink-0 w-3"
+                            style="background-color: rgb(92, 92, 92);"
+                          />
+                          <div
+                            class="min-w-0"
+                          >
+                            <p
+                              class="font-medium text-foreground text-sm truncate"
+                            >
+                              Fibra de vidrio
+                            </p>
+                            <span
+                              class="bg-warning/10 font-medium inline-flex px-2 py-0.5 rounded-full text-warning text-xs"
+                            >
+                              Bajo
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          class="font-semibold shrink-0 text-foreground text-sm"
+                        >
+                          40 kg
+                        </span>
+                      </div>
+                      <div
+                        class="bg-muted/30 border border-border flex gap-3 items-center justify-between px-3 py-2 rounded-xl"
+                      >
+                        <div
+                          class="flex gap-3 items-center min-w-0"
+                        >
+                          <span
+                            class="h-3 rounded-full shrink-0 w-3"
+                            style="background-color: rgb(128, 128, 128);"
+                          />
+                          <div
+                            class="min-w-0"
+                          >
+                            <p
+                              class="font-medium text-foreground text-sm truncate"
+                            >
+                              Resina poliéster
+                            </p>
+                            <span
+                              class="bg-success/10 font-medium inline-flex px-2 py-0.5 rounded-full text-success text-xs"
+                            >
+                              Estable
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          class="font-semibold shrink-0 text-foreground text-sm"
+                        >
+                          65 kg
+                        </span>
+                      </div>
+                      <div
+                        class="bg-muted/30 border border-border flex gap-3 items-center justify-between px-3 py-2 rounded-xl"
+                      >
+                        <div
+                          class="flex gap-3 items-center min-w-0"
+                        >
+                          <span
+                            class="h-3 rounded-full shrink-0 w-3"
+                            style="background-color: rgb(33, 33, 33);"
+                          />
+                          <div
+                            class="min-w-0"
+                          >
+                            <p
+                              class="font-medium text-foreground text-sm truncate"
+                            >
+                              Desmoldante
+                            </p>
+                            <span
+                              class="bg-success/10 font-medium inline-flex px-2 py-0.5 rounded-full text-success text-xs"
+                            >
+                              Estable
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          class="font-semibold shrink-0 text-foreground text-sm"
+                        >
+                          200 ud
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card border rounded-lg shadow-sm text-card-foreground"
+            >
+              <div
+                class="flex flex-col p-6 space-y-1.5"
+              >
+                <h3
+                  class="flex font-semibold gap-2 items-center text-base tracking-tight"
+                >
+                  <svg
+                    class="h-4 lucide lucide-triangle-alert w-4"
+                    fill="none"
+                    height="24"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"
+                    />
+                    <path
+                      d="M12 9v4"
+                    />
+                    <path
+                      d="M12 17h.01"
+                    />
+                  </svg>
+                  Estado del Stock por Materia Prima
+                </h3>
+              </div>
+              <div
+                class="p-6 pt-0"
+              >
+                <div
+                  class="space-y-5"
+                >
+                  <div
+                    class="space-y-2"
+                  >
+                    <div
+                      class="flex items-center justify-between"
+                    >
+                      <p
+                        class="font-semibold text-destructive text-sm"
+                      >
+                        Crítico
+                      </p>
+                      <span
+                        class="bg-destructive/10 font-medium inline-flex px-2.5 py-1 rounded-full text-destructive text-xs"
+                      >
+                        2
+                      </span>
+                    </div>
+                    <div
+                      class="space-y-2"
+                    >
+                      <div
+                        class="bg-background border flex gap-4 items-center justify-between px-3 py-3 rounded-lg"
+                      >
+                        <div
+                          class="min-w-0 space-y-1"
+                        >
+                          <div
+                            class="flex gap-2 items-center"
+                          >
+                            <span
+                              class="font-medium text-foreground text-sm"
+                            >
+                              Catalizador MEKP
+                            </span>
+                            <span
+                              class="bg-destructive/10 font-medium inline-flex px-2 py-0.5 rounded-full text-destructive text-xs"
+                            >
+                              Crítico
+                            </span>
+                          </div>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Revisión inmediata
+                          </p>
+                        </div>
+                        <div
+                          class="shrink-0 text-right"
+                        >
+                          <p
+                            class="font-semibold text-foreground text-sm"
+                          >
+                            0 L
+                          </p>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Stock actual
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="bg-background border flex gap-4 items-center justify-between px-3 py-3 rounded-lg"
+                      >
+                        <div
+                          class="min-w-0 space-y-1"
+                        >
+                          <div
+                            class="flex gap-2 items-center"
+                          >
+                            <span
+                              class="font-medium text-foreground text-sm"
+                            >
+                              Gelcoat blanco
+                            </span>
+                            <span
+                              class="bg-destructive/10 font-medium inline-flex px-2 py-0.5 rounded-full text-destructive text-xs"
+                            >
+                              Crítico
+                            </span>
+                          </div>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Revisión inmediata
+                          </p>
+                        </div>
+                        <div
+                          class="shrink-0 text-right"
+                        >
+                          <p
+                            class="font-semibold text-foreground text-sm"
+                          >
+                            7.5 L
+                          </p>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Stock actual
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="space-y-2"
+                  >
+                    <div
+                      class="flex items-center justify-between"
+                    >
+                      <p
+                        class="font-semibold text-sm text-warning"
+                      >
+                        Bajo
+                      </p>
+                      <span
+                        class="bg-warning/10 font-medium inline-flex px-2.5 py-1 rounded-full text-warning text-xs"
+                      >
+                        1
+                      </span>
+                    </div>
+                    <div
+                      class="space-y-2"
+                    >
+                      <div
+                        class="bg-background border flex gap-4 items-center justify-between px-3 py-3 rounded-lg"
+                      >
+                        <div
+                          class="min-w-0 space-y-1"
+                        >
+                          <div
+                            class="flex gap-2 items-center"
+                          >
+                            <span
+                              class="font-medium text-foreground text-sm"
+                            >
+                              Fibra de vidrio
+                            </span>
+                            <span
+                              class="bg-warning/10 font-medium inline-flex px-2 py-0.5 rounded-full text-warning text-xs"
+                            >
+                              Bajo
+                            </span>
+                          </div>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Seguimiento preventivo
+                          </p>
+                        </div>
+                        <div
+                          class="shrink-0 text-right"
+                        >
+                          <p
+                            class="font-semibold text-foreground text-sm"
+                          >
+                            40 kg
+                          </p>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Stock actual
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="space-y-2"
+                  >
+                    <div
+                      class="flex items-center justify-between"
+                    >
+                      <p
+                        class="font-semibold text-sm text-success"
+                      >
+                        Estable
+                      </p>
+                      <span
+                        class="bg-success/10 font-medium inline-flex px-2.5 py-1 rounded-full text-success text-xs"
+                      >
+                        2
+                      </span>
+                    </div>
+                    <div
+                      class="space-y-2"
+                    >
+                      <div
+                        class="bg-background border flex gap-4 items-center justify-between px-3 py-3 rounded-lg"
+                      >
+                        <div
+                          class="min-w-0 space-y-1"
+                        >
+                          <div
+                            class="flex gap-2 items-center"
+                          >
+                            <span
+                              class="font-medium text-foreground text-sm"
+                            >
+                              Resina poliéster
+                            </span>
+                            <span
+                              class="bg-success/10 font-medium inline-flex px-2 py-0.5 rounded-full text-success text-xs"
+                            >
+                              Estable
+                            </span>
+                          </div>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Nivel saludable
+                          </p>
+                        </div>
+                        <div
+                          class="shrink-0 text-right"
+                        >
+                          <p
+                            class="font-semibold text-foreground text-sm"
+                          >
+                            65 kg
+                          </p>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Stock actual
+                          </p>
+                        </div>
+                      </div>
+                      <div
+                        class="bg-background border flex gap-4 items-center justify-between px-3 py-3 rounded-lg"
+                      >
+                        <div
+                          class="min-w-0 space-y-1"
+                        >
+                          <div
+                            class="flex gap-2 items-center"
+                          >
+                            <span
+                              class="font-medium text-foreground text-sm"
+                            >
+                              Desmoldante
+                            </span>
+                            <span
+                              class="bg-success/10 font-medium inline-flex px-2 py-0.5 rounded-full text-success text-xs"
+                            >
+                              Estable
+                            </span>
+                          </div>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Nivel saludable
+                          </p>
+                        </div>
+                        <div
+                          class="shrink-0 text-right"
+                        >
+                          <p
+                            class="font-semibold text-foreground text-sm"
+                          >
+                            200 ud
+                          </p>
+                          <p
+                            class="text-muted-foreground text-xs"
+                          >
+                            Stock actual
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-card border rounded-lg shadow-sm text-card-foreground"
+            >
+              <div
+                class="flex flex-col p-6 space-y-1.5"
+              >
+                <h3
+                  class="font-semibold text-base tracking-tight"
+                >
+                  Actividad Reciente
+                </h3>
+              </div>
+              <div
+                class="p-6 pt-0"
+              >
+                <div
+                  class="space-y-3"
+                >
+                  <div
+                    class="flex hover:bg-muted/50 items-center justify-between px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <div
+                      class="flex gap-3 items-center"
+                    >
+                      <span
+                        class="bg-destructive/10 font-medium inline-flex items-center px-2.5 py-0.5 rounded-full text-destructive text-xs"
+                      >
+                        salida
+                      </span>
+                      <span
+                        class="text-foreground text-sm"
+                      >
+                        Gelcoat blanco
+                      </span>
+                    </div>
+                    <div
+                      class="text-right"
+                    >
+                      <span
+                        class="font-medium text-foreground text-sm"
+                      >
+                        0.5 L
+                      </span>
+                      <p
+                        class="text-muted-foreground text-xs"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="flex hover:bg-muted/50 items-center justify-between px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <div
+                      class="flex gap-3 items-center"
+                    >
+                      <span
+                        class="bg-success/10 font-medium inline-flex items-center px-2.5 py-0.5 rounded-full text-success text-xs"
+                      >
+                        entrada
+                      </span>
+                      <span
+                        class="text-foreground text-sm"
+                      >
+                        Desmoldante
+                      </span>
+                    </div>
+                    <div
+                      class="text-right"
+                    >
+                      <span
+                        class="font-medium text-foreground text-sm"
+                      >
+                        200 ud
+                      </span>
+                      <p
+                        class="text-muted-foreground text-xs"
+                      >
+                        2026-02-20
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex hover:bg-muted/50 items-center justify-between px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <div
+                      class="flex gap-3 items-center"
+                    >
+                      <span
+                        class="bg-success/10 font-medium inline-flex items-center px-2.5 py-0.5 rounded-full text-success text-xs"
+                      >
+                        entrada
+                      </span>
+                      <span
+                        class="text-foreground text-sm"
+                      >
+                        Gelcoat blanco
+                      </span>
+                    </div>
+                    <div
+                      class="text-right"
+                    >
+                      <span
+                        class="font-medium text-foreground text-sm"
+                      >
+                        8 L
+                      </span>
+                      <p
+                        class="text-muted-foreground text-xs"
+                      >
+                        2026-03-01
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex hover:bg-muted/50 items-center justify-between px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <div
+                      class="flex gap-3 items-center"
+                    >
+                      <span
+                        class="bg-destructive/10 font-medium inline-flex items-center px-2.5 py-0.5 rounded-full text-destructive text-xs"
+                      >
+                        salida
+                      </span>
+                      <span
+                        class="text-foreground text-sm"
+                      >
+                        Fibra de vidrio
+                      </span>
+                    </div>
+                    <div
+                      class="text-right"
+                    >
+                      <span
+                        class="font-medium text-foreground text-sm"
+                      >
+                        20 kg
+                      </span>
+                      <p
+                        class="text-muted-foreground text-xs"
+                      >
+                        2026-02-15
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex hover:bg-muted/50 items-center justify-between px-3 py-2 rounded-lg transition-colors"
+                  >
+                    <div
+                      class="flex gap-3 items-center"
+                    >
+                      <span
+                        class="bg-success/10 font-medium inline-flex items-center px-2.5 py-0.5 rounded-full text-success text-xs"
+                      >
+                        entrada
+                      </span>
+                      <span
+                        class="text-foreground text-sm"
+                      >
+                        Fibra de vidrio
+                      </span>
+                    </div>
+                    <div
+                      class="text-right"
+                    >
+                      <span
+                        class="font-medium text-foreground text-sm"
+                      >
+                        60 kg
+                      </span>
+                      <p
+                        class="text-muted-foreground text-xs"
+                      >
+                        2026-01-08
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Dashboard > oculta y muestra el panel superior, y colapsa el menú lateral > margen del contenido 1`] = `"transition-all duration-300 ml-[72px]"`;
+
+exports[`Dashboard > oculta y muestra el panel superior, y colapsa el menú lateral > menu colapsado 1`] = `
+<aside
+  class="bg-card border-border border-r duration-300 fixed flex flex-col h-screen left-0 top-0 transition-all w-[72px] z-40"
+>
+  <div
+    class="border-b border-border flex items-center justify-center min-h-[72px] px-4 py-5"
+  >
+    <img
+      alt="Innolution"
+      class="flex-shrink-0 h-20 object-contain rounded-lg w-20"
+      src="/src/assets/logo-inno-transparente.%20RGB.png"
+    />
+  </div>
+  <nav
+    class="flex-1 overflow-y-auto px-2 py-4 space-y-1"
+  >
+    <a
+      aria-current="page"
+      class="bg-primary flex font-medium gap-3 items-center px-3 py-2.5 rounded-lg text-primary-foreground text-sm transition-colors"
+      href="/dashboard"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-layout-dashboard w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect
+          height="9"
+          rx="1"
+          width="7"
+          x="3"
+          y="3"
+        />
+        <rect
+          height="5"
+          rx="1"
+          width="7"
+          x="14"
+          y="3"
+        />
+        <rect
+          height="9"
+          rx="1"
+          width="7"
+          x="14"
+          y="12"
+        />
+        <rect
+          height="5"
+          rx="1"
+          width="7"
+          x="3"
+          y="16"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/proyectos"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-folder-kanban w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"
+        />
+        <path
+          d="M8 10v4"
+        />
+        <path
+          d="M12 10v2"
+        />
+        <path
+          d="M16 10v6"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/piezas"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-puzzle w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/materias-primas"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-package w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+        />
+        <path
+          d="M12 22V12"
+        />
+        <path
+          d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"
+        />
+        <path
+          d="m7.5 4.27 9 5.15"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/inventario"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-arrow-left-right w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8 3 4 7l4 4"
+        />
+        <path
+          d="M4 7h16"
+        />
+        <path
+          d="m16 21 4-4-4-4"
+        />
+        <path
+          d="M20 17H4"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/proveedores"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-truck w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"
+        />
+        <path
+          d="M15 18H9"
+        />
+        <path
+          d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"
+        />
+        <circle
+          cx="17"
+          cy="18"
+          r="2"
+        />
+        <circle
+          cx="7"
+          cy="18"
+          r="2"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/trabajadores"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-hard-hat w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"
+        />
+        <path
+          d="M14 6a6 6 0 0 1 6 6v3"
+        />
+        <path
+          d="M4 15v-3a6 6 0 0 1 6-6"
+        />
+        <rect
+          height="4"
+          rx="1"
+          width="20"
+          x="2"
+          y="15"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/usuarios"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-users w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+        />
+        <circle
+          cx="9"
+          cy="7"
+          r="4"
+        />
+        <path
+          d="M22 21v-2a4 4 0 0 0-3-3.87"
+        />
+        <path
+          d="M16 3.13a4 4 0 0 1 0 7.75"
+        />
+      </svg>
+    </a>
+    <a
+      class="flex font-medium gap-3 hover:bg-muted hover:text-foreground items-center px-3 py-2.5 rounded-lg text-muted-foreground text-sm transition-colors"
+      href="/auditoria"
+    >
+      <svg
+        class="flex-shrink-0 h-5 lucide lucide-shield-alert w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+        />
+        <path
+          d="M12 8v4"
+        />
+        <path
+          d="M12 16h.01"
+        />
+      </svg>
+    </a>
+  </nav>
+  <div
+    class="border-border border-t p-3 space-y-2"
+  >
+    <div
+      class="flex items-center justify-between"
+    >
+      <button
+        class="flex gap-2 hover:bg-muted hover:text-destructive items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+      >
+        <svg
+          class="h-4 lucide lucide-log-out w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
+          />
+          <polyline
+            points="16 17 21 12 16 7"
+          />
+          <line
+            x1="21"
+            x2="9"
+            y1="12"
+            y2="12"
+          />
+        </svg>
+      </button>
+      <button
+        class="hover:bg-muted hover:text-foreground p-2 rounded-lg text-muted-foreground transition-colors"
+      >
+        <svg
+          class="h-4 lucide lucide-chevron-right w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m9 18 6-6-6-6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</aside>
+`;

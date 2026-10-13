@@ -1,0 +1,265 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Login y rutas > inicia sesión, guarda el token y carga los datos > carga de datos 1`] = `
+[
+  "GET /api/accounts/users/",
+  "GET /api/audit/logs/",
+  "GET /api/inventory/materias-primas/",
+  "GET /api/inventory/movimientos/",
+  "GET /api/inventory/proveedores/",
+  "GET /api/inventory/trabajadores/",
+  "GET /api/inventory/unidades-medida/",
+  "GET /api/production/ordenes/",
+  "GET /api/production/piezas/",
+  "GET /api/production/proyectos/",
+]
+`;
+
+exports[`Login y rutas > inicia sesión, guarda el token y carga los datos > peticion de login 1`] = `
+{
+  "body": {
+    "email": "admin@innolution.test",
+    "password": "clave-correcta",
+  },
+  "method": "POST",
+  "path": "/api/auth/login/",
+}
+`;
+
+exports[`Login y rutas > muestra el formulario de acceso cuando no hay sesión 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Notifications (F8)"
+      role="region"
+      style="pointer-events: none;"
+      tabindex="-1"
+    >
+      <ol
+        class="fixed flex flex-col-reverse max-h-screen md:max-w-[420px] p-4 sm:bottom-0 sm:flex-col sm:right-0 sm:top-auto top-0 w-full z-[100]"
+        tabindex="-1"
+      />
+    </div>
+    <section
+      aria-atomic="false"
+      aria-label="Notifications alt+T"
+      aria-live="polite"
+      aria-relevant="additions text"
+      tabindex="-1"
+    />
+    <div
+      class="bg-muted/30 flex items-center justify-center min-h-screen px-4"
+    >
+      <div
+        class="bottom-4 fixed flex gap-2 left-4 z-20"
+      >
+        <a
+          class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 backdrop-blur-sm bg-card/20 border border-border/40 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-normal gap-2 h-8 hover:bg-card/40 hover:text-foreground inline-flex items-center justify-center px-3 py-2 ring-offset-background rounded-md text-muted-foreground/70 text-xs transition-colors whitespace-nowrap"
+          href="/privacidad"
+        >
+          Política de privacidad
+        </a>
+        <a
+          class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 backdrop-blur-sm bg-card/20 border border-border/40 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-normal gap-2 h-8 hover:bg-card/40 hover:text-foreground inline-flex items-center justify-center px-3 py-2 ring-offset-background rounded-md text-muted-foreground/70 text-xs transition-colors whitespace-nowrap"
+          href="/cookies"
+        >
+          Política de cookies
+        </a>
+      </div>
+      <div
+        class="max-w-md w-full"
+      >
+        <div
+          class="bg-card border border-border p-8 rounded-2xl shadow-xl"
+        >
+          <div
+            class="flex flex-col items-center mb-8"
+          >
+            <img
+              alt="Innolution"
+              class="h-28 mb-4 object-contain rounded-xl w-28"
+              src="/src/assets/logo-inno-transparente.%20RGB.png"
+            />
+            <h1
+              class="font-bold text-2xl text-primary tracking-tight"
+            >
+              INNO-TRACK
+            </h1>
+            <p
+              class="mt-1 text-muted-foreground text-sm"
+            >
+              Sistema de Costos e Inventario
+            </p>
+          </div>
+          <form
+            class="space-y-5"
+          >
+            <div
+              class="space-y-2"
+            >
+              <label
+                class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+                for="email"
+              >
+                Correo electrónico
+              </label>
+              <div
+                class="relative"
+              >
+                <svg
+                  class="-translate-y-1/2 absolute h-4 left-3 lucide lucide-mail text-muted-foreground top-1/2 w-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    height="16"
+                    rx="2"
+                    width="20"
+                    x="2"
+                    y="4"
+                  />
+                  <path
+                    d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                  />
+                </svg>
+                <input
+                  class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm pl-10 placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+                  id="email"
+                  placeholder="correo@innolution.com"
+                  required=""
+                  type="email"
+                  value=""
+                />
+              </div>
+            </div>
+            <div
+              class="space-y-2"
+            >
+              <label
+                class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+                for="password"
+              >
+                Contraseña
+              </label>
+              <div
+                class="relative"
+              >
+                <svg
+                  class="-translate-y-1/2 absolute h-4 left-3 lucide lucide-lock text-muted-foreground top-1/2 w-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    height="11"
+                    rx="2"
+                    ry="2"
+                    width="18"
+                    x="3"
+                    y="11"
+                  />
+                  <path
+                    d="M7 11V7a5 5 0 0 1 10 0v4"
+                  />
+                </svg>
+                <input
+                  class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm pl-10 placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+                  id="password"
+                  placeholder="••••••••"
+                  required=""
+                  type="password"
+                  value=""
+                />
+              </div>
+            </div>
+            <button
+              class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-semibold gap-2 h-11 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-base text-primary-foreground transition-colors w-full whitespace-nowrap"
+              type="submit"
+            >
+              Iniciar Sesión
+            </button>
+            <div
+              class="flex flex-col gap-1 items-start"
+            >
+              <a
+                class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-auto hover:underline inline-flex items-center justify-center p-0 ring-offset-background rounded-md text-primary/90 text-sm transition-colors underline-offset-4 whitespace-nowrap"
+                href="/recuperar-contrasena"
+              >
+                ¿Olvidaste tu contraseña?
+              </a>
+              <button
+                class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-auto hover:underline inline-flex items-center justify-center p-0 ring-offset-background rounded-md text-primary/90 text-sm transition-colors underline-offset-4 whitespace-nowrap"
+                type="button"
+              >
+                ¿Deseas registrarte?
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Login y rutas > muestra la página 404 en rutas desconocidas 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Notifications (F8)"
+      role="region"
+      style="pointer-events: none;"
+      tabindex="-1"
+    >
+      <ol
+        class="fixed flex flex-col-reverse max-h-screen md:max-w-[420px] p-4 sm:bottom-0 sm:flex-col sm:right-0 sm:top-auto top-0 w-full z-[100]"
+        tabindex="-1"
+      />
+    </div>
+    <section
+      aria-atomic="false"
+      aria-label="Notifications alt+T"
+      aria-live="polite"
+      aria-relevant="additions text"
+      tabindex="-1"
+    />
+    <div
+      class="bg-muted flex items-center justify-center min-h-screen"
+    >
+      <div
+        class="text-center"
+      >
+        <h1
+          class="font-bold mb-4 text-4xl"
+        >
+          404
+        </h1>
+        <p
+          class="mb-4 text-muted-foreground text-xl"
+        >
+          Oops! Page not found
+        </p>
+        <a
+          class="hover:text-primary/90 text-primary underline"
+          href="/"
+        >
+          Return to Home
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+`;

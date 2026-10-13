@@ -1,0 +1,1831 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Usuarios > conserva el estado del formulario al cancelar y lo limpia al cerrar con Escape > tras cancelar una edicion 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-w-lg p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-full z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Editar usuario
+    </h2>
+  </div>
+  <form
+    class="space-y-4"
+  >
+    <p
+      class="text-muted-foreground text-sm"
+    >
+      <span
+        class="font-semibold text-primary"
+      >
+        *
+      </span>
+       es obligatorio
+    </p>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="nombre"
+      >
+        Nombre 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="nombre"
+        placeholder="Ej. Laura"
+        value="Carlos"
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="apellido"
+      >
+        Apellido 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="apellido"
+        placeholder="Ej. Gómez"
+        value="Operador"
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="email"
+      >
+        Correo electrónico 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="email"
+        placeholder="usuario@innolution.com"
+        type="email"
+        value="carlos@innolution.test"
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="contrasena"
+      >
+        Contraseña 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="contrasena"
+        placeholder="••••••••"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+      >
+        Rol 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:id:"
+        aria-expanded="false"
+        class="[&>span]:line-clamp-1 bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring h-10 items-center justify-between placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-sm w-full"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          Trabajador
+        </span>
+        <svg
+          aria-hidden="true"
+          class="h-4 lucide lucide-chevron-down opacity-50 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <select
+        aria-hidden="true"
+        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="-1"
+      >
+        <option
+          value="administrador"
+        >
+          Administrador
+        </option>
+        <option
+          value="almacenista"
+        >
+          Almacenista
+        </option>
+        <option
+          selected=""
+          value="trabajador"
+        >
+          Trabajador
+        </option>
+      </select>
+    </div>
+    <div
+      class="flex gap-2 justify-end"
+    >
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+        type="button"
+      >
+        Cancelar
+      </button>
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-primary-foreground text-sm transition-colors whitespace-nowrap"
+        type="submit"
+      >
+        Actualizar
+      </button>
+    </div>
+  </form>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Usuarios > conserva el estado del formulario al cancelar y lo limpia al cerrar con Escape > tras cerrar con Escape 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-w-lg p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-full z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Nuevo usuario
+    </h2>
+  </div>
+  <form
+    class="space-y-4"
+  >
+    <p
+      class="text-muted-foreground text-sm"
+    >
+      <span
+        class="font-semibold text-primary"
+      >
+        *
+      </span>
+       es obligatorio
+    </p>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="nombre"
+      >
+        Nombre 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="nombre"
+        placeholder="Ej. Laura"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="apellido"
+      >
+        Apellido 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="apellido"
+        placeholder="Ej. Gómez"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="email"
+      >
+        Correo electrónico 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="email"
+        placeholder="usuario@innolution.com"
+        type="email"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="contrasena"
+      >
+        Contraseña 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="contrasena"
+        placeholder="••••••••"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+      >
+        Rol 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:id:"
+        aria-expanded="false"
+        class="[&>span]:line-clamp-1 bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring h-10 items-center justify-between placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-sm w-full"
+        data-placeholder=""
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          Selecciona un rol
+        </span>
+        <svg
+          aria-hidden="true"
+          class="h-4 lucide lucide-chevron-down opacity-50 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <select
+        aria-hidden="true"
+        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="-1"
+      >
+        <option
+          value="administrador"
+        >
+          Administrador
+        </option>
+        <option
+          value="almacenista"
+        >
+          Almacenista
+        </option>
+        <option
+          value="trabajador"
+        >
+          Trabajador
+        </option>
+      </select>
+    </div>
+    <div
+      class="flex gap-2 justify-end"
+    >
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+        type="button"
+      >
+        Cancelar
+      </button>
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-primary-foreground text-sm transition-colors whitespace-nowrap"
+        type="submit"
+      >
+        Guardar
+      </button>
+    </div>
+  </form>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Usuarios > edita un usuario sin cambiar su contraseña > dialogo con datos 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-w-lg p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-full z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Editar usuario
+    </h2>
+  </div>
+  <form
+    class="space-y-4"
+  >
+    <p
+      class="text-muted-foreground text-sm"
+    >
+      <span
+        class="font-semibold text-primary"
+      >
+        *
+      </span>
+       es obligatorio
+    </p>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="nombre"
+      >
+        Nombre 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="nombre"
+        placeholder="Ej. Laura"
+        value="Juan"
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="apellido"
+      >
+        Apellido 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="apellido"
+        placeholder="Ej. Gómez"
+        value="Administrador"
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="email"
+      >
+        Correo electrónico 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="email"
+        placeholder="usuario@innolution.com"
+        type="email"
+        value="admin@innolution.test"
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="contrasena"
+      >
+        Contraseña 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="contrasena"
+        placeholder="••••••••"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+      >
+        Rol 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:id:"
+        aria-expanded="false"
+        class="[&>span]:line-clamp-1 bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring h-10 items-center justify-between placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-sm w-full"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          Administrador
+        </span>
+        <svg
+          aria-hidden="true"
+          class="h-4 lucide lucide-chevron-down opacity-50 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <select
+        aria-hidden="true"
+        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="-1"
+      >
+        <option
+          selected=""
+          value="administrador"
+        >
+          Administrador
+        </option>
+        <option
+          value="almacenista"
+        >
+          Almacenista
+        </option>
+        <option
+          value="trabajador"
+        >
+          Trabajador
+        </option>
+      </select>
+    </div>
+    <div
+      class="flex gap-2 justify-end"
+    >
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+        type="button"
+      >
+        Cancelar
+      </button>
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-primary-foreground text-sm transition-colors whitespace-nowrap"
+        type="submit"
+      >
+        Actualizar
+      </button>
+    </div>
+  </form>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Usuarios > edita un usuario sin cambiar su contraseña > listado tras editar 1`] = `
+[
+  "NombreASC | Apellido | Email | Rol | Acciones",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+  "Carlos | Operador | carlos@innolution.test | trabajador | ",
+  "Juan | Operador Senior | admin@innolution.test | administrador | ",
+]
+`;
+
+exports[`Usuarios > edita un usuario sin cambiar su contraseña > peticiones 1`] = `
+[
+  {
+    "body": {
+      "apellido": "Operador Senior",
+      "email": "admin@innolution.test",
+      "nombre": "Juan",
+      "rol": "administrador",
+    },
+    "method": "PUT",
+    "path": "/api/accounts/users/1/",
+  },
+]
+`;
+
+exports[`Usuarios > elimina solo si el usuario confirma > listado tras eliminar 1`] = `
+[
+  "NombreASC | Apellido | Email | Rol | Acciones",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+  "Juan | Administrador | admin@innolution.test | administrador | ",
+]
+`;
+
+exports[`Usuarios > elimina solo si el usuario confirma > mensajes 1`] = `
+[
+  "confirm: ¿Eliminar al usuario Carlos Operador?",
+  "confirm: ¿Eliminar al usuario Carlos Operador?",
+]
+`;
+
+exports[`Usuarios > elimina solo si el usuario confirma > peticiones 1`] = `
+[
+  {
+    "method": "DELETE",
+    "path": "/api/accounts/users/3/",
+  },
+  {
+    "method": "GET",
+    "path": "/api/audit/logs/",
+  },
+]
+`;
+
+exports[`Usuarios > exporta a Excel sin incluir contraseñas 1`] = `
+{
+  "fileName": "usuarios_2026-03-15.xlsx",
+  "sheets": [
+    {
+      "columns": [
+        {
+          "width": 10,
+        },
+        {
+          "width": 15,
+        },
+        {
+          "width": 25,
+        },
+        {
+          "width": 15,
+        },
+      ],
+      "data": [
+        [
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Nombre",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Apellido",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Email",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Rol",
+          },
+        ],
+        [
+          "Carla",
+          "Mejía",
+          "almacen@innolution.test",
+          "almacenista",
+        ],
+        [
+          "Carlos",
+          "Operador",
+          "carlos@innolution.test",
+          "trabajador",
+        ],
+        [
+          "Juan",
+          "Administrador",
+          "admin@innolution.test",
+          "administrador",
+        ],
+      ],
+      "sheet": "Usuarios",
+      "stickyRowsCount": 1,
+    },
+  ],
+}
+`;
+
+exports[`Usuarios > filtra por texto y ordena por columna > busqueda por rol o correo 1`] = `
+[
+  "NombreASC | Apellido | Email | Rol | Acciones",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+]
+`;
+
+exports[`Usuarios > filtra por texto y ordena por columna > email ascendente 1`] = `
+[
+  "Nombre | Apellido | EmailASC | Rol | Acciones",
+  "Juan | Administrador | admin@innolution.test | administrador | ",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+  "Carlos | Operador | carlos@innolution.test | trabajador | ",
+]
+`;
+
+exports[`Usuarios > filtra por texto y ordena por columna > email descendente 1`] = `
+[
+  "Nombre | Apellido | EmailDESC | Rol | Acciones",
+  "Carlos | Operador | carlos@innolution.test | trabajador | ",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+  "Juan | Administrador | admin@innolution.test | administrador | ",
+]
+`;
+
+exports[`Usuarios > filtra por texto y ordena por columna > rol ascendente 1`] = `
+[
+  "Nombre | Apellido | Email | RolASC | Acciones",
+  "Juan | Administrador | admin@innolution.test | administrador | ",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+  "Carlos | Operador | carlos@innolution.test | trabajador | ",
+]
+`;
+
+exports[`Usuarios > muestra el listado al administrador 1`] = `
+<main
+  class="duration-300 ml-[260px] transition-all"
+>
+  <header
+    class="backdrop-blur-md bg-background/80 border-b border-border px-8 py-4 sticky top-0 z-30"
+  >
+    <div
+      class="flex gap-4 items-center justify-between"
+    >
+      <button
+        class="border border-border gap-2 hover:bg-muted hover:text-foreground inline-flex items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+        type="button"
+      >
+        <svg
+          class="h-4 lucide lucide-eye-off w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+          />
+          <path
+            d="M14.084 14.158a3 3 0 0 1-4.242-4.242"
+          />
+          <path
+            d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+          />
+          <path
+            d="m2 2 20 20"
+          />
+        </svg>
+        Ocultar panel
+      </button>
+      <div
+        class="flex gap-3 items-center"
+      >
+        <img
+          alt="Innolution"
+          class="h-14 object-contain opacity-40 rounded w-14"
+          src="/src/assets/logo-inno-transparente.%20RGB.png"
+        />
+        <span
+          class="text-muted-foreground text-sm"
+        >
+          Juan Administrador
+        </span>
+      </div>
+    </div>
+  </header>
+  <div
+    class="p-8"
+  >
+    <div
+      class="space-y-6"
+    >
+      <div
+        class="flex gap-4 items-center justify-between"
+      >
+        <div>
+          <h1
+            class="flex font-bold gap-2 items-center text-2xl text-foreground"
+          >
+            <svg
+              class="h-6 lucide lucide-users text-primary w-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+              />
+              <path
+                d="M22 21v-2a4 4 0 0 0-3-3.87"
+              />
+              <path
+                d="M16 3.13a4 4 0 0 1 0 7.75"
+              />
+            </svg>
+             Usuarios
+          </h1>
+          <p
+            class="mt-1 text-muted-foreground"
+          >
+            Gestión de usuarios del sistema
+          </p>
+        </div>
+        <div
+          class="flex flex-wrap gap-2 items-center justify-end"
+        >
+          <button
+            class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-emerald-200 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-emerald-50 hover:text-emerald-800 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-emerald-700 text-sm transition-colors whitespace-nowrap"
+            type="button"
+          >
+            <svg
+              class="h-4 lucide lucide-file-spreadsheet mr-2 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+              />
+              <path
+                d="M14 2v4a2 2 0 0 0 2 2h4"
+              />
+              <path
+                d="M8 13h2"
+              />
+              <path
+                d="M14 13h2"
+              />
+              <path
+                d="M8 17h2"
+              />
+              <path
+                d="M14 17h2"
+              />
+            </svg>
+            Exportar Excel
+          </button>
+          <button
+            class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-primary-foreground text-sm transition-colors whitespace-nowrap"
+            type="button"
+          >
+            <svg
+              class="h-4 lucide lucide-plus mr-2 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 12h14"
+              />
+              <path
+                d="M12 5v14"
+              />
+            </svg>
+            Nuevo usuario
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-card border rounded-lg shadow-sm text-card-foreground"
+      >
+        <div
+          class="flex flex-col p-6 pb-3 space-y-1.5"
+        >
+          <div
+            class="max-w-sm relative"
+          >
+            <svg
+              class="-translate-y-1/2 absolute h-4 left-3 lucide lucide-search text-muted-foreground top-1/2 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+              <path
+                d="m21 21-4.3-4.3"
+              />
+            </svg>
+            <input
+              class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm pl-9 placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+              placeholder="Buscar por nombre, apellido, email o rol..."
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="p-6 pt-0"
+        >
+          <div
+            class="overflow-auto relative w-full"
+          >
+            <table
+              class="caption-bottom text-sm w-full"
+            >
+              <thead
+                class="[&_tr]:border-b"
+              >
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    <button
+                      class="font-semibold gap-1 hover:text-primary inline-flex items-center text-foreground transition-colors"
+                      type="button"
+                    >
+                      <span>
+                        Nombre
+                      </span>
+                      <svg
+                        class="h-4 lucide lucide-arrow-up-down text-primary w-4"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m21 16-4 4-4-4"
+                        />
+                        <path
+                          d="M17 20V4"
+                        />
+                        <path
+                          d="m3 8 4-4 4 4"
+                        />
+                        <path
+                          d="M7 4v16"
+                        />
+                      </svg>
+                      <span
+                        class="text-primary text-xs"
+                      >
+                        ASC
+                      </span>
+                    </button>
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    <button
+                      class="font-semibold gap-1 hover:text-primary inline-flex items-center text-foreground transition-colors"
+                      type="button"
+                    >
+                      <span>
+                        Apellido
+                      </span>
+                      <svg
+                        class="h-4 lucide lucide-arrow-up-down text-muted-foreground w-4"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m21 16-4 4-4-4"
+                        />
+                        <path
+                          d="M17 20V4"
+                        />
+                        <path
+                          d="m3 8 4-4 4 4"
+                        />
+                        <path
+                          d="M7 4v16"
+                        />
+                      </svg>
+                    </button>
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    <button
+                      class="font-semibold gap-1 hover:text-primary inline-flex items-center text-foreground transition-colors"
+                      type="button"
+                    >
+                      <span>
+                        Email
+                      </span>
+                      <svg
+                        class="h-4 lucide lucide-arrow-up-down text-muted-foreground w-4"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m21 16-4 4-4-4"
+                        />
+                        <path
+                          d="M17 20V4"
+                        />
+                        <path
+                          d="m3 8 4-4 4 4"
+                        />
+                        <path
+                          d="M7 4v16"
+                        />
+                      </svg>
+                    </button>
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    <button
+                      class="font-semibold gap-1 hover:text-primary inline-flex items-center text-foreground transition-colors"
+                      type="button"
+                    >
+                      <span>
+                        Rol
+                      </span>
+                      <svg
+                        class="h-4 lucide lucide-arrow-up-down text-muted-foreground w-4"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="m21 16-4 4-4-4"
+                        />
+                        <path
+                          d="M17 20V4"
+                        />
+                        <path
+                          d="m3 8 4-4 4 4"
+                        />
+                        <path
+                          d="M7 4v16"
+                        />
+                      </svg>
+                    </button>
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-muted-foreground text-right"
+                  >
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="[&_tr:last-child]:border-0"
+              >
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Carla
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    Mejía
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    almacen@innolution.test
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      almacenista
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center ring-offset-background rounded-md text-sm transition-colors w-10 whitespace-nowrap"
+                        title="Editar"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-pencil w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                          />
+                          <path
+                            d="m15 5 4 4"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-destructive disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-destructive/90 inline-flex items-center justify-center ring-offset-background rounded-md text-destructive-foreground text-sm transition-colors w-10 whitespace-nowrap"
+                        title="Eliminar"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-trash2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 6h18"
+                          />
+                          <path
+                            d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                          />
+                          <path
+                            d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                          />
+                          <line
+                            x1="10"
+                            x2="10"
+                            y1="11"
+                            y2="17"
+                          />
+                          <line
+                            x1="14"
+                            x2="14"
+                            y1="11"
+                            y2="17"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Carlos
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    Operador
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    carlos@innolution.test
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      trabajador
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center ring-offset-background rounded-md text-sm transition-colors w-10 whitespace-nowrap"
+                        title="Editar"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-pencil w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                          />
+                          <path
+                            d="m15 5 4 4"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-destructive disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-destructive/90 inline-flex items-center justify-center ring-offset-background rounded-md text-destructive-foreground text-sm transition-colors w-10 whitespace-nowrap"
+                        title="Eliminar"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-trash2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 6h18"
+                          />
+                          <path
+                            d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                          />
+                          <path
+                            d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                          />
+                          <line
+                            x1="10"
+                            x2="10"
+                            y1="11"
+                            y2="17"
+                          />
+                          <line
+                            x1="14"
+                            x2="14"
+                            y1="11"
+                            y2="17"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Juan
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    Administrador
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    admin@innolution.test
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-primary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-primary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-primary-foreground text-xs transition-colors"
+                    >
+                      administrador
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center ring-offset-background rounded-md text-sm transition-colors w-10 whitespace-nowrap"
+                        title="Editar"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-pencil w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                          />
+                          <path
+                            d="m15 5 4 4"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-destructive disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-destructive/90 inline-flex items-center justify-center ring-offset-background rounded-md text-destructive-foreground text-sm transition-colors w-10 whitespace-nowrap"
+                        title="Eliminar"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-trash2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 6h18"
+                          />
+                          <path
+                            d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                          />
+                          <path
+                            d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                          />
+                          <line
+                            x1="10"
+                            x2="10"
+                            y1="11"
+                            y2="17"
+                          />
+                          <line
+                            x1="14"
+                            x2="14"
+                            y1="11"
+                            y2="17"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+`;
+
+exports[`Usuarios > valida y crea un usuario > dialogo vacio 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-w-lg p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-full z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Nuevo usuario
+    </h2>
+  </div>
+  <form
+    class="space-y-4"
+  >
+    <p
+      class="text-muted-foreground text-sm"
+    >
+      <span
+        class="font-semibold text-primary"
+      >
+        *
+      </span>
+       es obligatorio
+    </p>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="nombre"
+      >
+        Nombre 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="nombre"
+        placeholder="Ej. Laura"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="apellido"
+      >
+        Apellido 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="apellido"
+        placeholder="Ej. Gómez"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="email"
+      >
+        Correo electrónico 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="email"
+        placeholder="usuario@innolution.com"
+        type="email"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+        for="contrasena"
+      >
+        Contraseña 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <input
+        class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+        id="contrasena"
+        placeholder="••••••••"
+        type="password"
+        value=""
+      />
+    </div>
+    <div
+      class="space-y-2"
+    >
+      <label
+        class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm"
+      >
+        Rol 
+        <span
+          class="text-primary"
+        >
+          *
+        </span>
+      </label>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:id:"
+        aria-expanded="false"
+        class="[&>span]:line-clamp-1 bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring h-10 items-center justify-between placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-sm w-full"
+        data-placeholder=""
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          Selecciona un rol
+        </span>
+        <svg
+          aria-hidden="true"
+          class="h-4 lucide lucide-chevron-down opacity-50 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <select
+        aria-hidden="true"
+        style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="-1"
+      >
+        <option
+          value="administrador"
+        >
+          Administrador
+        </option>
+        <option
+          value="almacenista"
+        >
+          Almacenista
+        </option>
+        <option
+          value="trabajador"
+        >
+          Trabajador
+        </option>
+      </select>
+    </div>
+    <div
+      class="flex gap-2 justify-end"
+    >
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+        type="button"
+      >
+        Cancelar
+      </button>
+      <button
+        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-primary-foreground text-sm transition-colors whitespace-nowrap"
+        type="submit"
+      >
+        Guardar
+      </button>
+    </div>
+  </form>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Usuarios > valida y crea un usuario > listado tras crear 1`] = `
+[
+  "NombreASC | Apellido | Email | Rol | Acciones",
+  "Carla | Mejía | almacen@innolution.test | almacenista | ",
+  "Carlos | Operador | carlos@innolution.test | trabajador | ",
+  "Juan | Administrador | admin@innolution.test | administrador | ",
+  "Nora | Paz | nora@innolution.test | almacenista | ",
+]
+`;
+
+exports[`Usuarios > valida y crea un usuario > peticiones 1`] = `
+[
+  {
+    "body": {
+      "apellido": "Paz",
+      "contrasena": "Clave-Segura-9",
+      "email": "nora@innolution.test",
+      "nombre": "Nora",
+      "rol": "almacenista",
+    },
+    "method": "POST",
+    "path": "/api/accounts/users/",
+  },
+]
+`;

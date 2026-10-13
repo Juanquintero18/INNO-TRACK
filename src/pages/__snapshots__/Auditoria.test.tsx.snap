@@ -1,0 +1,2896 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Auditoría > exporta a Excel lo que está en pantalla 1`] = `
+{
+  "fileName": "auditoria_eliminaciones_2026-03-15.xlsx",
+  "sheets": [
+    {
+      "columns": [
+        {
+          "width": 17,
+        },
+        {
+          "width": 26,
+        },
+        {
+          "width": 23,
+        },
+        {
+          "width": 22,
+        },
+        {
+          "width": 12,
+        },
+        {
+          "width": 20,
+        },
+        {
+          "width": 23,
+        },
+      ],
+      "data": [
+        [
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Módulo",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Registro eliminado",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Eliminado por",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Fecha de eliminación",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Estado",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Restaurado por",
+          },
+          {
+            "backgroundColor": "#013C7F",
+            "fontWeight": "bold",
+            "textColor": "#FFFFFF",
+            "value": "Fecha de restauración",
+          },
+        ],
+        [
+          "Piezas",
+          "TR-0040 - Codo de prueba",
+          "Juan Administrador",
+          {
+            "format": "dd/mm/yyyy hh:mm",
+            "value": 2026-03-10T14:05:00.000Z,
+          },
+          "Eliminado",
+          null,
+          null,
+        ],
+        [
+          "Inventario",
+          "OC-0999",
+          "Carla Mejía",
+          {
+            "format": "dd/mm/yyyy hh:mm",
+            "value": 2026-03-08T09:20:00.000Z,
+          },
+          "Eliminado",
+          null,
+          null,
+        ],
+        [
+          "Materias primas",
+          "Pigmento azul",
+          "Juan Administrador",
+          {
+            "format": "dd/mm/yyyy hh:mm",
+            "value": 2026-02-25T17:45:00.000Z,
+          },
+          "Eliminado",
+          null,
+          null,
+        ],
+        [
+          "Trabajadores",
+          "Marta Solano",
+          "Usuario no disponible",
+          {
+            "format": "dd/mm/yyyy hh:mm",
+            "value": 2026-02-20T08:10:00.000Z,
+          },
+          "Eliminado",
+          null,
+          null,
+        ],
+        [
+          "Usuarios",
+          "Sofía Pardo",
+          "Juan Administrador",
+          {
+            "format": "dd/mm/yyyy hh:mm",
+            "value": 2026-02-12T12:00:00.000Z,
+          },
+          "Restaurado",
+          "Juan Administrador",
+          {
+            "format": "dd/mm/yyyy hh:mm",
+            "value": 2026-02-13T09:30:00.000Z,
+          },
+        ],
+      ],
+      "sheet": "Auditoría",
+      "stickyRowsCount": 1,
+    },
+  ],
+}
+`;
+
+exports[`Auditoría > filtra por texto, por módulo y por fechas > busqueda por modulo 1`] = `
+[
+  "Módulo | Registro eliminado | Eliminado por | Fecha | Acción",
+  "Inventario | OC-0999 | Carla Mejía | 08/03/2026, 09:20 a. m. | Ver detalleDeshacer",
+]
+`;
+
+exports[`Auditoría > filtra por texto, por módulo y por fechas > busqueda por usuario 1`] = `
+[
+  "Módulo | Registro eliminado | Eliminado por | Fecha | Acción",
+  "Inventario | OC-0999 | Carla Mejía | 08/03/2026, 09:20 a. m. | Ver detalleDeshacer",
+]
+`;
+
+exports[`Auditoría > filtra por texto, por módulo y por fechas > entre fechas 1`] = `
+[
+  "Módulo | Registro eliminado | Eliminado por | Fecha | Acción",
+  "Materias primas | Pigmento azul | Juan Administrador | 25/02/2026, 05:45 p. m. | Ver detalleDeshacer",
+  "Trabajadores | Marta Solano | Usuario no disponible | 20/02/2026, 08:10 a. m. | Ver detalleDeshacer",
+  "Usuarios | Sofía Pardo | Juan Administrador | 12/02/2026, 12:00 p. m. | Ver detalleRestaurado",
+]
+`;
+
+exports[`Auditoría > filtra por texto, por módulo y por fechas > sin resultados 1`] = `
+[
+  "Módulo | Registro eliminado | Eliminado por | Fecha | Acción",
+  "No hay registros eliminados que coincidan con el filtro actual.",
+]
+`;
+
+exports[`Auditoría > filtra por texto, por módulo y por fechas > solo proveedores 1`] = `
+[
+  "Módulo | Registro eliminado | Eliminado por | Fecha | Acción",
+  "Proveedores | Proveedor antiguo | Juan Administrador | 11/02/2026, 10:30 a. m. | Ver detalleDeshacer",
+]
+`;
+
+exports[`Auditoría > muestra el detalle de un registro eliminado de tipo materia prima 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-h-[90vh] max-w-4xl p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-2rem)] z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Detalle completo del registro eliminado
+    </h2>
+    <p
+      class="text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      Este respaldo corresponde exactamente a la informacion que se guardo en auditoria antes de eliminar el registro.
+    </p>
+  </div>
+  <div
+    class="bg-muted/20 border border-border/70 gap-3 grid lg:grid-cols-4 p-4 rounded-xl sm:grid-cols-2"
+  >
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Módulo
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+        >
+          Materias primas
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Registro
+      </div>
+      <div
+        class="font-medium mt-1 text-foreground text-sm"
+      >
+        Pigmento azul
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Eliminado por
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        Juan Administrador
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Fecha
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        25/02/2026, 05:45 p. m.
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-muted/10 border border-border/70 h-[55vh] overflow-hidden relative rounded-xl"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="h-full rounded-[inherit] w-full"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <div
+          class="p-4"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Ficha de la materia prima
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Datos principales del material que fue eliminado.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Nombre
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Pigmento azul
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Unidad de medida
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Kilogramo (kg)
+                    </div>
+                    <div
+                      class="mt-1 text-muted-foreground text-xs"
+                    >
+                      Referencia interna: ID 1
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Costo
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      30.00
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Fecha de actualización
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      01/02/2026
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Auditoría > muestra el detalle de un registro eliminado de tipo movimiento de inventario 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-h-[90vh] max-w-4xl p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-2rem)] z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Detalle completo del registro eliminado
+    </h2>
+    <p
+      class="text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      Este respaldo corresponde exactamente a la informacion que se guardo en auditoria antes de eliminar el registro.
+    </p>
+  </div>
+  <div
+    class="bg-muted/20 border border-border/70 gap-3 grid lg:grid-cols-4 p-4 rounded-xl sm:grid-cols-2"
+  >
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Módulo
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+        >
+          Inventario
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Registro
+      </div>
+      <div
+        class="font-medium mt-1 text-foreground text-sm"
+      >
+        OC-0999
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Eliminado por
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        Carla Mejía
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Fecha
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        08/03/2026, 09:20 a. m.
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-muted/10 border border-border/70 h-[55vh] overflow-hidden relative rounded-xl"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="h-full rounded-[inherit] w-full"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <div
+          class="p-4"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Resumen del movimiento
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Información principal del movimiento eliminado dentro de inventario.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Materia prima
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Fibra de vidrio
+                    </div>
+                    <div
+                      class="mt-1 text-muted-foreground text-xs"
+                    >
+                      Referencia interna: ID 2
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Tipo
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Entrada
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Cantidad
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      40.00
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Fecha
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      07/03/2026
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Referencia
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      OC-0999
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="md:col-span-2"
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Motivo
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Registro duplicado
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Participantes y contexto
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Personas o entidades relacionadas con este movimiento.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Proveedor
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      FibraMax
+                    </div>
+                    <div
+                      class="mt-1 text-muted-foreground text-xs"
+                    >
+                      Referencia interna: ID 2
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Trabajador
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-muted-foreground text-sm"
+                  >
+                    <div>
+                      No registrado
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Usuario
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Carla Mejía
+                    </div>
+                    <div
+                      class="mt-1 text-muted-foreground text-xs"
+                    >
+                      Referencia interna: ID 2
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Auditoría > muestra el detalle de un registro eliminado de tipo pieza 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-h-[90vh] max-w-4xl p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-2rem)] z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Detalle completo del registro eliminado
+    </h2>
+    <p
+      class="text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      Este respaldo corresponde exactamente a la informacion que se guardo en auditoria antes de eliminar el registro.
+    </p>
+  </div>
+  <div
+    class="bg-muted/20 border border-border/70 gap-3 grid lg:grid-cols-4 p-4 rounded-xl sm:grid-cols-2"
+  >
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Módulo
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+        >
+          Piezas
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Registro
+      </div>
+      <div
+        class="font-medium mt-1 text-foreground text-sm"
+      >
+        TR-0040 - Codo de prueba
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Eliminado por
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        Juan Administrador
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Fecha
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        10/03/2026, 02:05 p. m.
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-muted/10 border border-border/70 h-[55vh] overflow-hidden relative rounded-xl"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="h-full rounded-[inherit] w-full"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <div
+          class="p-4"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Identificación de la pieza
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Datos principales y trazabilidad base de la pieza eliminada.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Trace ID
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      TR-0040
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Nombre
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Codo de prueba
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Orden
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      ORD-001
+                    </div>
+                    <div
+                      class="mt-1 text-muted-foreground text-xs"
+                    >
+                      Referencia interna: ID 1
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Usuario
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Carlos Operador
+                    </div>
+                    <div
+                      class="mt-1 text-muted-foreground text-xs"
+                    >
+                      Referencia interna: ID 3
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Fecha de gelcoat
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      01/03/2026
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Fecha de QC
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-muted-foreground text-sm"
+                  >
+                    <div>
+                      No registrado
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Peso real
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      12.30
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Materias primas asociadas
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Consumos registrados para esta pieza antes de eliminarse.
+                </p>
+              </div>
+              <div
+                class="space-y-3"
+              >
+                <div
+                  class="bg-background border border-border/70 p-4 rounded-xl"
+                >
+                  <div
+                    class="font-semibold mb-3 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Materia prima 1
+                  </div>
+                  <div
+                    class="gap-3 grid md:grid-cols-2"
+                  >
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Materia prima
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          Resina poliéster
+                        </div>
+                        <div
+                          class="mt-1 text-muted-foreground text-xs"
+                        >
+                          Referencia interna: ID 1
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Cantidad teórica
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          5.00
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Cantidad real
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          5.50
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-background border border-border/70 p-4 rounded-xl"
+                >
+                  <div
+                    class="font-semibold mb-3 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Materia prima 2
+                  </div>
+                  <div
+                    class="gap-3 grid md:grid-cols-2"
+                  >
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Materia prima
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          ID 77
+                        </div>
+                        <div
+                          class="mt-1 text-muted-foreground text-xs"
+                        >
+                          No fue posible resolver esta referencia con un nombre visible.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Cantidad teórica
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          1.00
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Cantidad real
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-muted-foreground text-sm"
+                      >
+                        <div>
+                          No registrado
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Historial de la pieza
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Eventos y observaciones guardados antes de la eliminación.
+                </p>
+              </div>
+              <div
+                class="space-y-3"
+              >
+                <div
+                  class="bg-background border border-border/70 p-4 rounded-xl"
+                >
+                  <div
+                    class="font-semibold mb-3 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Evento 1
+                  </div>
+                  <div
+                    class="gap-3 grid md:grid-cols-2"
+                  >
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Fecha
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          01/03/2026, 10:00 a. m.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Accion
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          Creación
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Usuario
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          Carlos Operador
+                        </div>
+                        <div
+                          class="mt-1 text-muted-foreground text-xs"
+                        >
+                          Referencia interna: ID 3
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="md:col-span-2"
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Descripcion
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          Pieza creada desde la API.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-background border border-border/70 p-4 rounded-xl"
+                >
+                  <div
+                    class="font-semibold mb-3 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Evento 2
+                  </div>
+                  <div
+                    class="gap-3 grid md:grid-cols-2"
+                  >
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Fecha
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          05/03/2026, 11:30 a. m.
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Accion
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          Edición
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Usuario
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          Juan Administrador
+                        </div>
+                        <div
+                          class="mt-1 text-muted-foreground text-xs"
+                        >
+                          Referencia interna: ID 1
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="md:col-span-2"
+                    >
+                      <div
+                        class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                      >
+                        Descripcion
+                      </div>
+                      <div
+                        class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                      >
+                        <div>
+                          {"schema":"pieza_historial_v1","accion":"edicion","summary":"Se actualizó la pieza desde la API: 1 campo(s).","field_changes":[{"field":"peso_real","label":"Peso real","before":null,"after":"12.30"}],"material_changes":[]}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Auditoría > muestra el detalle de un registro eliminado de tipo proveedor 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-h-[90vh] max-w-4xl p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-2rem)] z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Detalle completo del registro eliminado
+    </h2>
+    <p
+      class="text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      Este respaldo corresponde exactamente a la informacion que se guardo en auditoria antes de eliminar el registro.
+    </p>
+  </div>
+  <div
+    class="bg-muted/20 border border-border/70 gap-3 grid lg:grid-cols-4 p-4 rounded-xl sm:grid-cols-2"
+  >
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Módulo
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+        >
+          Proveedores
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Registro
+      </div>
+      <div
+        class="font-medium mt-1 text-foreground text-sm"
+      >
+        Proveedor antiguo
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Eliminado por
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        Juan Administrador
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Fecha
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        11/02/2026, 10:30 a. m.
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-muted/10 border border-border/70 h-[55vh] overflow-hidden relative rounded-xl"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="h-full rounded-[inherit] w-full"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <div
+          class="p-4"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Información del proveedor
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Datos de contacto del proveedor eliminado.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Nombre
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Proveedor antiguo
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Telefono
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      6015550000
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Email
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      viejo@proveedor.test
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="md:col-span-2"
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Direccion
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Cra 1 # 2-3
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Auditoría > muestra el detalle de un registro eliminado de tipo trabajador 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-h-[90vh] max-w-4xl p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-2rem)] z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Detalle completo del registro eliminado
+    </h2>
+    <p
+      class="text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      Este respaldo corresponde exactamente a la informacion que se guardo en auditoria antes de eliminar el registro.
+    </p>
+  </div>
+  <div
+    class="bg-muted/20 border border-border/70 gap-3 grid lg:grid-cols-4 p-4 rounded-xl sm:grid-cols-2"
+  >
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Módulo
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+        >
+          Trabajadores
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Registro
+      </div>
+      <div
+        class="font-medium mt-1 text-foreground text-sm"
+      >
+        Marta Solano
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Eliminado por
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        Usuario no disponible
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Fecha
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        20/02/2026, 08:10 a. m.
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-muted/10 border border-border/70 h-[55vh] overflow-hidden relative rounded-xl"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="h-full rounded-[inherit] w-full"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <div
+          class="p-4"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Información del trabajador
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Datos principales del trabajador de producción eliminado.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Nombre
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Marta Solano
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Código de trabajador
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      TRB-012
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Auditoría > muestra el detalle de un registro eliminado de tipo usuario 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-h-[90vh] max-w-4xl p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100vw-2rem)] z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="dialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-1.5 text-center"
+  >
+    <h2
+      class="font-semibold leading-none text-lg tracking-tight"
+      id="radix-:id:"
+    >
+      Detalle completo del registro eliminado
+    </h2>
+    <p
+      class="text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      Este respaldo corresponde exactamente a la informacion que se guardo en auditoria antes de eliminar el registro.
+    </p>
+  </div>
+  <div
+    class="bg-muted/20 border border-border/70 gap-3 grid lg:grid-cols-4 p-4 rounded-xl sm:grid-cols-2"
+  >
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Módulo
+      </div>
+      <div
+        class="mt-1"
+      >
+        <div
+          class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+        >
+          Usuarios
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Registro
+      </div>
+      <div
+        class="font-medium mt-1 text-foreground text-sm"
+      >
+        Sofía Pardo
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Eliminado por
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        Juan Administrador
+      </div>
+    </div>
+    <div>
+      <div
+        class="font-semibold text-muted-foreground text-xs tracking-wide uppercase"
+      >
+        Fecha
+      </div>
+      <div
+        class="mt-1 text-foreground text-sm"
+      >
+        12/02/2026, 12:00 p. m.
+      </div>
+    </div>
+  </div>
+  <div
+    class="bg-muted/10 border border-border/70 h-[55vh] overflow-hidden relative rounded-xl"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="h-full rounded-[inherit] w-full"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <div
+          class="p-4"
+        >
+          <div
+            class="space-y-6"
+          >
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Perfil del usuario
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Información visible del usuario eliminado.
+                </p>
+              </div>
+              <div
+                class="gap-3 grid md:grid-cols-2"
+              >
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Nombre
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Sofía
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Apellido
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Pardo
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Email
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      sofia@innolution.test
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=""
+                >
+                  <div
+                    class="font-semibold mb-2 text-muted-foreground text-xs tracking-wide uppercase"
+                  >
+                    Rol
+                  </div>
+                  <div
+                    class="bg-muted/40 break-words px-3 py-2 rounded-md text-foreground text-sm"
+                  >
+                    <div>
+                      Trabajador
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section
+              class="space-y-3"
+            >
+              <div>
+                <h3
+                  class="font-semibold text-base text-foreground"
+                >
+                  Seguridad
+                </h3>
+                <p
+                  class="mt-1 text-muted-foreground text-sm"
+                >
+                  Los datos sensibles no se exponen directamente en esta vista.
+                </p>
+              </div>
+              <div
+                class="bg-muted/40 px-3 py-2 rounded-md text-muted-foreground text-sm"
+              >
+                La contraseña se conserva en el respaldo de auditoría, pero no se muestra aquí.
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="absolute data-[state=open]:bg-accent data-[state=open]:text-muted-foreground disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring hover:opacity-100 opacity-70 right-4 ring-offset-background rounded-sm top-4 transition-opacity"
+    type="button"
+  >
+    <svg
+      class="h-4 lucide lucide-x w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 6 6 18"
+      />
+      <path
+        d="m6 6 12 12"
+      />
+    </svg>
+    <span
+      class="sr-only"
+    >
+      Close
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Auditoría > muestra el registro de eliminaciones al administrador 1`] = `
+<main
+  class="duration-300 ml-[260px] transition-all"
+>
+  <header
+    class="backdrop-blur-md bg-background/80 border-b border-border px-8 py-4 sticky top-0 z-30"
+  >
+    <div
+      class="flex gap-4 items-center justify-between"
+    >
+      <button
+        class="border border-border gap-2 hover:bg-muted hover:text-foreground inline-flex items-center px-3 py-2 rounded-lg text-muted-foreground text-sm transition-colors"
+        type="button"
+      >
+        <svg
+          class="h-4 lucide lucide-eye-off w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+          />
+          <path
+            d="M14.084 14.158a3 3 0 0 1-4.242-4.242"
+          />
+          <path
+            d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+          />
+          <path
+            d="m2 2 20 20"
+          />
+        </svg>
+        Ocultar panel
+      </button>
+      <div
+        class="flex gap-3 items-center"
+      >
+        <img
+          alt="Innolution"
+          class="h-14 object-contain opacity-40 rounded w-14"
+          src="/src/assets/logo-inno-transparente.%20RGB.png"
+        />
+        <span
+          class="text-muted-foreground text-sm"
+        >
+          Juan Administrador
+        </span>
+      </div>
+    </div>
+  </header>
+  <div
+    class="p-8"
+  >
+    <div
+      class="space-y-6"
+    >
+      <div
+        class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"
+      >
+        <div>
+          <h1
+            class="flex font-bold gap-2 items-center text-2xl text-foreground"
+          >
+            <svg
+              class="h-6 lucide lucide-shield-alert text-primary w-6"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+              />
+              <path
+                d="M12 8v4"
+              />
+              <path
+                d="M12 16h.01"
+              />
+            </svg>
+             Auditoría de Eliminaciones
+          </h1>
+          <p
+            class="mt-1 text-muted-foreground"
+          >
+            Aquí aparecen todos los registros eliminados y solo desde aquí se pueden deshacer.
+          </p>
+        </div>
+        <div
+          class="gap-2 grid grid-cols-1 lg:min-w-[560px] sm:grid-cols-3"
+        >
+          <div
+            class="lg:col-span-1 relative sm:col-span-3"
+          >
+            <svg
+              class="-translate-y-1/2 absolute h-4 left-3 lucide lucide-search text-muted-foreground top-1/2 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="11"
+                cy="11"
+                r="8"
+              />
+              <path
+                d="m21 21-4.3-4.3"
+              />
+            </svg>
+            <input
+              class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm pl-9 placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+              placeholder="Buscar por registro, módulo o usuario..."
+              value=""
+            />
+          </div>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:id:"
+            aria-expanded="false"
+            class="[&>span]:line-clamp-1 bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring h-10 items-center justify-between placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-sm w-full"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Todos
+            </span>
+            <svg
+              aria-hidden="true"
+              class="h-4 lucide lucide-chevron-down opacity-50 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <input
+            class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+            type="date"
+            value=""
+          />
+          <input
+            class="bg-background border border-input disabled:cursor-not-allowed disabled:opacity-50 file:bg-transparent file:border-0 file:font-medium file:text-foreground file:text-sm flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring h-10 md:text-sm placeholder:text-muted-foreground px-3 py-2 ring-offset-background rounded-md text-base w-full"
+            type="date"
+            value=""
+          />
+        </div>
+      </div>
+      <div
+        class="bg-card border rounded-lg shadow-sm text-card-foreground"
+      >
+        <div
+          class="flex flex-col p-6 pb-3 space-y-1.5"
+        >
+          <div
+            class="flex gap-3 items-center justify-between text-muted-foreground text-sm"
+          >
+            <span>
+              Registros eliminados: 6
+            </span>
+            <div
+              class="flex flex-wrap gap-3 items-center justify-end"
+            >
+              <span>
+                Resultados filtrados: 6
+              </span>
+              <button
+                class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-emerald-200 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-emerald-50 hover:text-emerald-800 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-emerald-700 text-sm transition-colors whitespace-nowrap"
+                type="button"
+              >
+                <svg
+                  class="h-4 lucide lucide-file-spreadsheet mr-2 w-4"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"
+                  />
+                  <path
+                    d="M14 2v4a2 2 0 0 0 2 2h4"
+                  />
+                  <path
+                    d="M8 13h2"
+                  />
+                  <path
+                    d="M14 13h2"
+                  />
+                  <path
+                    d="M8 17h2"
+                  />
+                  <path
+                    d="M14 17h2"
+                  />
+                </svg>
+                Exportar Excel
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="p-6 pt-0"
+        >
+          <div
+            class="overflow-auto relative w-full"
+          >
+            <table
+              class="caption-bottom text-sm w-full"
+            >
+              <thead
+                class="[&_tr]:border-b"
+              >
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    Módulo
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    Registro eliminado
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    Eliminado por
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-left text-muted-foreground"
+                  >
+                    Fecha
+                  </th>
+                  <th
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium h-12 px-4 text-muted-foreground text-right"
+                  >
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="[&_tr:last-child]:border-0"
+              >
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      Piezas
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    TR-0040 - Codo de prueba
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    Juan Administrador
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    10/03/2026, 02:05 p. m.
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex flex-wrap gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-secondary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-secondary/80 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-secondary-foreground text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-eye mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                          />
+                        </svg>
+                        Ver detalle
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-rotate-ccw mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                          />
+                          <path
+                            d="M3 3v5h5"
+                          />
+                        </svg>
+                        Deshacer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      Inventario
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    OC-0999
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    Carla Mejía
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    08/03/2026, 09:20 a. m.
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex flex-wrap gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-secondary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-secondary/80 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-secondary-foreground text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-eye mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                          />
+                        </svg>
+                        Ver detalle
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-rotate-ccw mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                          />
+                          <path
+                            d="M3 3v5h5"
+                          />
+                        </svg>
+                        Deshacer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      Materias primas
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Pigmento azul
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    Juan Administrador
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    25/02/2026, 05:45 p. m.
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex flex-wrap gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-secondary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-secondary/80 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-secondary-foreground text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-eye mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                          />
+                        </svg>
+                        Ver detalle
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-rotate-ccw mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                          />
+                          <path
+                            d="M3 3v5h5"
+                          />
+                        </svg>
+                        Deshacer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      Trabajadores
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Marta Solano
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    Usuario no disponible
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    20/02/2026, 08:10 a. m.
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex flex-wrap gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-secondary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-secondary/80 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-secondary-foreground text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-eye mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                          />
+                        </svg>
+                        Ver detalle
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-rotate-ccw mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                          />
+                          <path
+                            d="M3 3v5h5"
+                          />
+                        </svg>
+                        Deshacer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      Usuarios
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Sofía Pardo
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    Juan Administrador
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    12/02/2026, 12:00 p. m.
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex flex-wrap gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-secondary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-secondary/80 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-secondary-foreground text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-eye mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                          />
+                        </svg>
+                        Ver detalle
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+                        disabled=""
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-rotate-ccw mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                          />
+                          <path
+                            d="M3 3v5h5"
+                          />
+                        </svg>
+                        Restaurado
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="border-b data-[state=selected]:bg-muted hover:bg-muted/50 transition-colors"
+                >
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4"
+                  >
+                    <div
+                      class="bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring font-semibold hover:bg-secondary/80 inline-flex items-center px-2.5 py-0.5 rounded-full text-secondary-foreground text-xs transition-colors"
+                    >
+                      Proveedores
+                    </div>
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle font-medium p-4"
+                  >
+                    Proveedor antiguo
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    Juan Administrador
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-muted-foreground"
+                  >
+                    11/02/2026, 10:30 a. m.
+                  </td>
+                  <td
+                    class="[&:has([role=checkbox])]:pr-0 align-middle p-4 text-right"
+                  >
+                    <div
+                      class="flex flex-wrap gap-2 justify-end"
+                    >
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-secondary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-secondary/80 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-secondary-foreground text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-eye mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                          />
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                          />
+                        </svg>
+                        Ver detalle
+                      </button>
+                      <button
+                        class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+                        type="button"
+                      >
+                        <svg
+                          class="h-4 lucide lucide-rotate-ccw mr-2 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"
+                          />
+                          <path
+                            d="M3 3v5h5"
+                          />
+                        </svg>
+                        Deshacer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+`;
+
+exports[`Auditoría > restaura un proveedor y recarga inventario y auditoría > peticiones 1`] = `
+[
+  "POST /api/audit/logs/1/restore/",
+  "GET /api/inventory/unidades-medida/",
+  "GET /api/inventory/materias-primas/",
+  "GET /api/inventory/movimientos/",
+  "GET /api/inventory/proveedores/",
+  "GET /api/inventory/trabajadores/",
+  "GET /api/audit/logs/",
+]
+`;
+
+exports[`Auditoría > restaura una pieza y recarga producción y auditoría > peticiones 1`] = `
+[
+  "POST /api/audit/logs/6/restore/",
+  "GET /api/accounts/users/",
+  "GET /api/production/proyectos/",
+  "GET /api/production/ordenes/",
+  "GET /api/production/piezas/",
+  "GET /api/audit/logs/",
+]
+`;
+
+exports[`Auditoría > restaura una pieza y recarga producción y auditoría > registro tras restaurar 1`] = `
+[
+  "Módulo | Registro eliminado | Eliminado por | Fecha | Acción",
+  "Piezas | TR-0040 - Codo de prueba | Juan Administrador | 10/03/2026, 02:05 p. m. | Ver detalleRestaurado",
+  "Inventario | OC-0999 | Carla Mejía | 08/03/2026, 09:20 a. m. | Ver detalleDeshacer",
+  "Materias primas | Pigmento azul | Juan Administrador | 25/02/2026, 05:45 p. m. | Ver detalleDeshacer",
+  "Trabajadores | Marta Solano | Usuario no disponible | 20/02/2026, 08:10 a. m. | Ver detalleDeshacer",
+  "Usuarios | Sofía Pardo | Juan Administrador | 12/02/2026, 12:00 p. m. | Ver detalleRestaurado",
+  "Proveedores | Proveedor antiguo | Juan Administrador | 11/02/2026, 10:30 a. m. | Ver detalleDeshacer",
+]
+`;
