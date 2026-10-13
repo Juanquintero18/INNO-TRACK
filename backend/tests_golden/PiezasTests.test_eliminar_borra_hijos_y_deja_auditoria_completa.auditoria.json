@@ -1,0 +1,64 @@
+{
+  "body": [
+    {
+      "action": "delete",
+      "data": {
+        "fecha_gelcoat": "2026-01-20",
+        "fecha_qc": "2026-01-28",
+        "historial": [
+          {
+            "accion": "creacion",
+            "descripcion": "Pieza creada desde la API.",
+            "fecha": "2026-01-20T14:15:00Z",
+            "id": 1,
+            "pieza_id": 1,
+            "usuario_id": null
+          },
+          {
+            "accion": "edicion",
+            "descripcion": "Se corrigió el peso a mano.",
+            "fecha": "2026-01-28T21:40:00Z",
+            "id": 2,
+            "pieza_id": 1,
+            "usuario_id": 1
+          }
+        ],
+        "id": 1,
+        "materias_primas": [
+          {
+            "cantidad_real": "21.50",
+            "cantidad_teorica": "20.00",
+            "id": 1,
+            "materia_prima_id": 1,
+            "pieza_id": 1
+          },
+          {
+            "cantidad_real": null,
+            "cantidad_teorica": "1.00",
+            "id": 2,
+            "materia_prima_id": 4,
+            "pieza_id": 1
+          }
+        ],
+        "nombre": "Tobogán curva A",
+        "orden_id": 1,
+        "peso_real": "45.50",
+        "trace_id": "TR-0001",
+        "usuario_id": 3
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 1,
+      "entityLabel": "TR-0001 - Tobogán curva A",
+      "entityType": "pieza",
+      "id": 1,
+      "isRestored": false,
+      "restoredAt": null,
+      "restoredBy": null
+    }
+  ],
+  "status": 200
+}

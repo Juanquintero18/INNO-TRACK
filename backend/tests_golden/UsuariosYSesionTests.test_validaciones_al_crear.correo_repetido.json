@@ -1,0 +1,8 @@
+{
+  "body": {
+    "email": [
+      "Ya existe un/a app user con este/a email."
+    ]
+  },
+  "status": 400
+}

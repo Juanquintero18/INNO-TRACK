@@ -1,0 +1,8 @@
+{
+  "body": {
+    "non_field_errors": [
+      "Credenciales incorrectas."
+    ]
+  },
+  "status": 400
+}

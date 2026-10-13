@@ -1,0 +1,8 @@
+{
+  "body": {
+    "materias_primas": [
+      "Estas materias primas no están habilitadas para nuevos registros en piezas: Catalizador MEKP. Configúralas desde el módulo de Piezas."
+    ]
+  },
+  "status": 400
+}

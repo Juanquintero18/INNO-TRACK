@@ -1,0 +1,8 @@
+{
+  "body": {
+    "stock_bajo_max": [
+      "El límite de stock bajo debe ser mayor que el límite crítico."
+    ]
+  },
+  "status": 400
+}

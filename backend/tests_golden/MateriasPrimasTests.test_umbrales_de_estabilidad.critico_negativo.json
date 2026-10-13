@@ -1,0 +1,8 @@
+{
+  "body": {
+    "stock_critico_max": [
+      "El límite crítico no puede ser negativo."
+    ]
+  },
+  "status": 400
+}

@@ -1,0 +1,8 @@
+{
+  "body": {
+    "enabled_materia_ids": [
+      "Hay materias primas inexistentes en la selección: 998, 999."
+    ]
+  },
+  "status": 400
+}

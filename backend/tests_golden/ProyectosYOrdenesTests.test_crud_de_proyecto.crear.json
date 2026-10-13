@@ -1,0 +1,12 @@
+{
+  "body": {
+    "codigo": "RL-05",
+    "descripcion": null,
+    "estado": "pausado",
+    "fecha_fin": null,
+    "fecha_inicio": "2026-04-01",
+    "id": 3,
+    "nombre": "Río Lento"
+  },
+  "status": 201
+}

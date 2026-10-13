@@ -1,0 +1,32 @@
+{
+  "body": [
+    {
+      "action": "delete",
+      "data": {
+        "cantidad": "60.00",
+        "fecha": "2026-01-08",
+        "id": 4,
+        "materia_prima_id": 2,
+        "motivo": null,
+        "proveedor_id": 2,
+        "referencia": "OC-1002",
+        "tipo": "entrada",
+        "trabajador_produccion_id": null,
+        "usuario_id": 2
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 4,
+      "entityLabel": "OC-1002",
+      "entityType": "movimiento-inventario",
+      "id": 1,
+      "isRestored": false,
+      "restoredAt": null,
+      "restoredBy": null
+    }
+  ],
+  "status": 200
+}

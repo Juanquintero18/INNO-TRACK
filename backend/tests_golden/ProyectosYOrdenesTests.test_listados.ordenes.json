@@ -1,0 +1,37 @@
+{
+  "body": [
+    {
+      "codigo_orden": "ORD-001",
+      "estado": "abierta",
+      "fecha_creacion": "2026-01-15",
+      "id": 1,
+      "proyecto": {
+        "codigo": "AQ-01",
+        "descripcion": "Toboganes del parque.",
+        "estado": "activo",
+        "fecha_fin": null,
+        "fecha_inicio": "2026-01-10",
+        "id": 1,
+        "nombre": "Aquaventura"
+      },
+      "proyecto_id": 1
+    },
+    {
+      "codigo_orden": "ORD-002",
+      "estado": "en_proceso",
+      "fecha_creacion": "2026-02-03",
+      "id": 2,
+      "proyecto": {
+        "codigo": "AQ-01",
+        "descripcion": "Toboganes del parque.",
+        "estado": "activo",
+        "fecha_fin": null,
+        "fecha_inicio": "2026-01-10",
+        "id": 1,
+        "nombre": "Aquaventura"
+      },
+      "proyecto_id": 1
+    }
+  ],
+  "status": 200
+}

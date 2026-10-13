@@ -26,3 +26,6 @@ MIGRATION_MODULES = {app.rsplit(".", 1)[-1]: None for app in INSTALLED_APPS}
 TEST_RUNNER = "config.test_runner.LegacyTablesTestRunner"
 
 FRONTEND_URL = "http://frontend.test"
+
+# Hash rápido: las pruebas crean muchos usuarios y no necesitan uno costoso.
+PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]

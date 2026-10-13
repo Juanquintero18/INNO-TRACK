@@ -1,0 +1,15 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [
+      "El archivo no contiene filas de datos para importar."
+    ],
+    "file_name": "movimientos.csv",
+    "header_observations": [],
+    "invalid_rows": 0,
+    "rows": [],
+    "total_rows": 0,
+    "valid_rows": 0
+  },
+  "status": 200
+}

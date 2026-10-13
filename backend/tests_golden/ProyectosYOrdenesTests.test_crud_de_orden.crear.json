@@ -1,0 +1,19 @@
+{
+  "body": {
+    "codigo_orden": "ORD-300",
+    "estado": "abierta",
+    "fecha_creacion": "2026-03-14",
+    "id": 3,
+    "proyecto": {
+      "codigo": null,
+      "descripcion": null,
+      "estado": "pausado",
+      "fecha_fin": null,
+      "fecha_inicio": null,
+      "id": 2,
+      "nombre": "Sin órdenes"
+    },
+    "proyecto_id": 2
+  },
+  "status": 201
+}

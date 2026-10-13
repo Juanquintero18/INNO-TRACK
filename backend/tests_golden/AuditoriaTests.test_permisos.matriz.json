@@ -1,0 +1,8 @@
+{
+  "almacenista lista": 200,
+  "almacenista restaura": 403,
+  "sin sesion lista": 403,
+  "sin sesion restaura": 403,
+  "trabajador lista": 200,
+  "trabajador restaura": 403
+}

@@ -1,0 +1,15 @@
+{
+  "body": [
+    {
+      "codigo_trabajador": "TRB-001",
+      "id": 1,
+      "nombre": "Pedro Gómez"
+    },
+    {
+      "codigo_trabajador": "TRB-002",
+      "id": 2,
+      "nombre": "Laura Ríos"
+    }
+  ],
+  "status": 200
+}

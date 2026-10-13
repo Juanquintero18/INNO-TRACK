@@ -1,0 +1,6 @@
+{
+  "body": {
+    "contrasena": "<hash>"
+  },
+  "status": 400
+}

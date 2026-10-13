@@ -1,0 +1,10 @@
+{
+  "almacenista crea materias-primas": 201,
+  "almacenista crea proveedores": 201,
+  "almacenista crea trabajadores": 403,
+  "almacenista crea unidades-medida": 403,
+  "trabajador crea materias-primas": 403,
+  "trabajador crea proveedores": 403,
+  "trabajador crea trabajadores": 403,
+  "trabajador crea unidades-medida": 403
+}

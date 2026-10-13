@@ -1,0 +1,11 @@
+{
+  "body": {
+    "email": [
+      "Introduzca una dirección de correo electrónico válida."
+    ],
+    "password": [
+      "Este campo es requerido."
+    ]
+  },
+  "status": 400
+}

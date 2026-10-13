@@ -1,0 +1,8 @@
+{
+  "body": {
+    "enabled_materia_ids": [
+      "Esta lista no puede estar vacía."
+    ]
+  },
+  "status": 400
+}

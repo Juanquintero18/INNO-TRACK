@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "El token no es valido."
+  },
+  "status": 403
+}

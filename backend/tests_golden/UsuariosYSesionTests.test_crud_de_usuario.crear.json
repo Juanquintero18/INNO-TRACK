@@ -1,0 +1,10 @@
+{
+  "body": {
+    "apellido": "Paz",
+    "email": "nora@innolution.test",
+    "id": 4,
+    "nombre": "Nora",
+    "rol": "trabajador"
+  },
+  "status": 201
+}

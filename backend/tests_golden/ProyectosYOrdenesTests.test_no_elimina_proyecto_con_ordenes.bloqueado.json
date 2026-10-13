@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "No se puede eliminar este proyecto porque tiene 2 orden(es) asociada(s)."
+  },
+  "status": 400
+}

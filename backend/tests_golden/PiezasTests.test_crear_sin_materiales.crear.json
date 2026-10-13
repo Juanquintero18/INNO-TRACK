@@ -1,0 +1,68 @@
+{
+  "body": {
+    "fecha_gelcoat": "2026-03-12",
+    "fecha_qc": null,
+    "historial": [
+      {
+        "accion": "creacion",
+        "descripcion": "Pieza creada desde la API con 0 materia(s) prima(s) asociada(s).",
+        "detalle": {
+          "accion": "creacion",
+          "initial": {
+            "fecha_gelcoat": "2026-03-12",
+            "fecha_qc": null,
+            "materias_primas": [],
+            "nombre": "Curva doble",
+            "orden_id": 2,
+            "peso_real": "30.25",
+            "trace_id": "TR-0050",
+            "usuario_id": 3
+          },
+          "schema": "pieza_historial_v1",
+          "summary": "Pieza creada desde la API con 0 materia(s) prima(s) asociada(s)."
+        },
+        "fecha": "2026-03-15T10:00:00-05:00",
+        "id": 3,
+        "usuario": {
+          "apellido": "Administrador",
+          "email": "admin@innolution.test",
+          "id": 1,
+          "nombre": "Juan",
+          "rol": "administrador"
+        },
+        "usuario_id": 1
+      }
+    ],
+    "id": 2,
+    "materias_primas": [],
+    "nombre": "Curva doble",
+    "orden": {
+      "codigo_orden": "ORD-002",
+      "estado": "en_proceso",
+      "fecha_creacion": "2026-02-03",
+      "id": 2,
+      "proyecto": {
+        "codigo": "AQ-01",
+        "descripcion": "Toboganes del parque.",
+        "estado": "activo",
+        "fecha_fin": null,
+        "fecha_inicio": "2026-01-10",
+        "id": 1,
+        "nombre": "Aquaventura"
+      },
+      "proyecto_id": 1
+    },
+    "orden_id": 2,
+    "peso_real": 30.25,
+    "trace_id": "TR-0050",
+    "usuario": {
+      "apellido": null,
+      "email": "carlos@innolution.test",
+      "id": 3,
+      "nombre": "Carlos",
+      "rol": "trabajador"
+    },
+    "usuario_id": 3
+  },
+  "status": 201
+}

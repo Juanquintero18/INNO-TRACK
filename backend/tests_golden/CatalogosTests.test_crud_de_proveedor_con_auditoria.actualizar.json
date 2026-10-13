@@ -1,0 +1,10 @@
+{
+  "body": {
+    "direccion": "Medellín",
+    "email": "hola@pinturas.test",
+    "id": 3,
+    "nombre": "Pinturas del Norte",
+    "telefono": "6045551212"
+  },
+  "status": 200
+}

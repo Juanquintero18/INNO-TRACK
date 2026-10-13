@@ -1,0 +1,26 @@
+{
+  "body": [
+    {
+      "apellido": "Administrador",
+      "email": "admin@innolution.test",
+      "id": 1,
+      "nombre": "Juan",
+      "rol": "administrador"
+    },
+    {
+      "apellido": "Mejía",
+      "email": "almacen@innolution.test",
+      "id": 2,
+      "nombre": "Carla",
+      "rol": "almacenista"
+    },
+    {
+      "apellido": null,
+      "email": "carlos@innolution.test",
+      "id": 3,
+      "nombre": "Carlos",
+      "rol": "trabajador"
+    }
+  ],
+  "status": 200
+}

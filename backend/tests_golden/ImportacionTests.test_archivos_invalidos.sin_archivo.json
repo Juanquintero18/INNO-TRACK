@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "Selecciona un archivo Excel o CSV."
+  },
+  "status": 400
+}

@@ -1,0 +1,21 @@
+{
+  "body": {
+    "costo": 18.4,
+    "enabled_for_piezas": true,
+    "fecha_actualizacion": "2026-03-14",
+    "id": 5,
+    "nombre": "Resina viniléster",
+    "piezas_usage_count": 0,
+    "stability_thresholds": {
+      "stock_bajo_max": 50,
+      "stock_critico_max": 20
+    },
+    "unidad_medida": {
+      "abreviatura": "L",
+      "id": 2,
+      "nombre": "Litro"
+    },
+    "unidad_medida_id": 2
+  },
+  "status": 201
+}

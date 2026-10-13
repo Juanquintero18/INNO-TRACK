@@ -1,0 +1,27 @@
+{
+  "body": [
+    {
+      "action": "delete",
+      "data": {
+        "direccion": "Medellín",
+        "email": "hola@pinturas.test",
+        "id": 3,
+        "nombre": "Pinturas del Norte",
+        "telefono": "6045551212"
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 3,
+      "entityLabel": "Pinturas del Norte",
+      "entityType": "proveedor",
+      "id": 1,
+      "isRestored": false,
+      "restoredAt": null,
+      "restoredBy": null
+    }
+  ],
+  "status": 200
+}

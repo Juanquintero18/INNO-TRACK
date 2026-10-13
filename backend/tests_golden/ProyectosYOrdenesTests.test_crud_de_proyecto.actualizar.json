@@ -1,0 +1,12 @@
+{
+  "body": {
+    "codigo": null,
+    "descripcion": null,
+    "estado": null,
+    "fecha_fin": null,
+    "fecha_inicio": "2026-04-01",
+    "id": 3,
+    "nombre": "Río Lento II"
+  },
+  "status": 200
+}

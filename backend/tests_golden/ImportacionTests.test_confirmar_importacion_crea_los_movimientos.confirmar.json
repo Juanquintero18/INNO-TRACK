@@ -1,0 +1,82 @@
+{
+  "body": {
+    "created_count": 3,
+    "created_ids": [
+      6,
+      7,
+      8
+    ],
+    "preview": {
+      "can_import": true,
+      "file_errors": [],
+      "file_name": "movimientos.csv",
+      "header_observations": [],
+      "invalid_rows": 0,
+      "rows": [
+        {
+          "errors": [],
+          "resolved": {
+            "materia_prima": "Resina poliéster",
+            "proveedor": "FibraMax",
+            "trabajador": null
+          },
+          "row_number": 2,
+          "status": "valid",
+          "values": {
+            "cantidad": "25.5",
+            "fecha": "2026-03-12",
+            "materia_prima": "Resina poliéster",
+            "motivo": "Compra",
+            "proveedor": "FibraMax",
+            "referencia": "OC-4001",
+            "tipo": "entrada",
+            "trabajador": ""
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {
+            "materia_prima": "Resina poliéster",
+            "proveedor": null,
+            "trabajador": "Laura Ríos"
+          },
+          "row_number": 3,
+          "status": "valid",
+          "values": {
+            "cantidad": "10",
+            "fecha": "2026-03-13",
+            "materia_prima": "Resina poliéster",
+            "motivo": "",
+            "proveedor": "",
+            "referencia": "PRD-4002",
+            "tipo": "salida",
+            "trabajador": "TRB-002"
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {
+            "materia_prima": "Fibra de vidrio",
+            "proveedor": null,
+            "trabajador": null
+          },
+          "row_number": 4,
+          "status": "valid",
+          "values": {
+            "cantidad": "-2",
+            "fecha": "2026-03-13",
+            "materia_prima": "Fibra de vidrio",
+            "motivo": "Conteo",
+            "proveedor": "",
+            "referencia": "AJU-4003",
+            "tipo": "ajuste",
+            "trabajador": ""
+          }
+        }
+      ],
+      "total_rows": 3,
+      "valid_rows": 3
+    }
+  },
+  "status": 201
+}

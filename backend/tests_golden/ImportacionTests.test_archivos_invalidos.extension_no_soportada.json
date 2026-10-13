@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "El archivo debe estar en formato .xlsx, .xls o .csv."
+  },
+  "status": 400
+}

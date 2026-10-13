@@ -1,0 +1,48 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_movimientos_inventario.xlsx\"",
+  "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "filas": [
+    [
+      "materia_prima",
+      "tipo",
+      "cantidad",
+      "fecha",
+      "proveedor",
+      "trabajador",
+      "motivo",
+      "referencia"
+    ],
+    [
+      "Resina Poliester",
+      "entrada",
+      "120.5",
+      "2026-05-02",
+      "Proveedor Alfa",
+      null,
+      "Compra inicial de materia prima",
+      "ENT-0001"
+    ],
+    [
+      "Resina Poliester",
+      "salida",
+      "25",
+      "2026-05-03",
+      null,
+      "TR-001",
+      "Consumo para orden de producción",
+      "SAL-0001"
+    ],
+    [
+      "Catalizador MEKP",
+      "ajuste",
+      "-2",
+      "2026-05-04",
+      null,
+      null,
+      "Corrección por conteo físico",
+      "AJU-0001"
+    ]
+  ],
+  "hoja": "movimientos",
+  "status": 200
+}

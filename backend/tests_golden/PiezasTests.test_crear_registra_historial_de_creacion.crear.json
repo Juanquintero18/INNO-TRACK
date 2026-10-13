@@ -1,0 +1,132 @@
+{
+  "body": {
+    "fecha_gelcoat": "2026-03-12",
+    "fecha_qc": null,
+    "historial": [
+      {
+        "accion": "creacion",
+        "descripcion": "Pieza creada desde la API con 2 materia(s) prima(s) asociada(s).",
+        "detalle": {
+          "accion": "creacion",
+          "initial": {
+            "fecha_gelcoat": "2026-03-12",
+            "fecha_qc": null,
+            "materias_primas": [
+              {
+                "cantidad_real": "12.50",
+                "cantidad_teorica": "12.50",
+                "materia_prima_id": 1,
+                "materia_prima_nombre": "Resina poliéster"
+              },
+              {
+                "cantidad_real": null,
+                "cantidad_teorica": "2.00",
+                "materia_prima_id": 3,
+                "materia_prima_nombre": "Gelcoat blanco"
+              }
+            ],
+            "nombre": "Curva doble",
+            "orden_id": 2,
+            "peso_real": "30.25",
+            "trace_id": "TR-0050",
+            "usuario_id": 3
+          },
+          "schema": "pieza_historial_v1",
+          "summary": "Pieza creada desde la API con 2 materia(s) prima(s) asociada(s)."
+        },
+        "fecha": "2026-03-15T10:00:00-05:00",
+        "id": 3,
+        "usuario": {
+          "apellido": null,
+          "email": "carlos@innolution.test",
+          "id": 3,
+          "nombre": "Carlos",
+          "rol": "trabajador"
+        },
+        "usuario_id": 3
+      }
+    ],
+    "id": 2,
+    "materias_primas": [
+      {
+        "cantidad_real": 12.5,
+        "cantidad_teorica": 12.5,
+        "id": 3,
+        "materia_prima": {
+          "costo": 12.5,
+          "enabled_for_piezas": true,
+          "fecha_actualizacion": "2026-02-10",
+          "id": 1,
+          "nombre": "Resina poliéster",
+          "piezas_usage_count": 2,
+          "stability_thresholds": {
+            "stock_bajo_max": 50,
+            "stock_critico_max": 20
+          },
+          "unidad_medida": {
+            "abreviatura": "kg",
+            "id": 1,
+            "nombre": "Kilogramo"
+          },
+          "unidad_medida_id": 1
+        },
+        "materia_prima_id": 1,
+        "pieza_id": 2
+      },
+      {
+        "cantidad_real": null,
+        "cantidad_teorica": 2.0,
+        "id": 4,
+        "materia_prima": {
+          "costo": 22.0,
+          "enabled_for_piezas": true,
+          "fecha_actualizacion": null,
+          "id": 3,
+          "nombre": "Gelcoat blanco",
+          "piezas_usage_count": 1,
+          "stability_thresholds": {
+            "stock_bajo_max": 50,
+            "stock_critico_max": 20
+          },
+          "unidad_medida": {
+            "abreviatura": "L",
+            "id": 2,
+            "nombre": "Litro"
+          },
+          "unidad_medida_id": 2
+        },
+        "materia_prima_id": 3,
+        "pieza_id": 2
+      }
+    ],
+    "nombre": "Curva doble",
+    "orden": {
+      "codigo_orden": "ORD-002",
+      "estado": "en_proceso",
+      "fecha_creacion": "2026-02-03",
+      "id": 2,
+      "proyecto": {
+        "codigo": "AQ-01",
+        "descripcion": "Toboganes del parque.",
+        "estado": "activo",
+        "fecha_fin": null,
+        "fecha_inicio": "2026-01-10",
+        "id": 1,
+        "nombre": "Aquaventura"
+      },
+      "proyecto_id": 1
+    },
+    "orden_id": 2,
+    "peso_real": 30.25,
+    "trace_id": "TR-0050",
+    "usuario": {
+      "apellido": null,
+      "email": "carlos@innolution.test",
+      "id": 3,
+      "nombre": "Carlos",
+      "rol": "trabajador"
+    },
+    "usuario_id": 3
+  },
+  "status": 201
+}

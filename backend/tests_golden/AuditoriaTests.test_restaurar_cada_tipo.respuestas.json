@@ -1,0 +1,50 @@
+{
+  "materia-prima": {
+    "body": {
+      "detail": "Registro restaurado correctamente.",
+      "entityId": 4,
+      "entityType": "materia-prima"
+    },
+    "status": 200
+  },
+  "movimiento-inventario": {
+    "body": {
+      "detail": "Registro restaurado correctamente.",
+      "entityId": 4,
+      "entityType": "movimiento-inventario"
+    },
+    "status": 200
+  },
+  "pieza": {
+    "body": {
+      "detail": "Registro restaurado correctamente.",
+      "entityId": 1,
+      "entityType": "pieza"
+    },
+    "status": 200
+  },
+  "proveedor": {
+    "body": {
+      "detail": "Registro restaurado correctamente.",
+      "entityId": 2,
+      "entityType": "proveedor"
+    },
+    "status": 200
+  },
+  "trabajador": {
+    "body": {
+      "detail": "Registro restaurado correctamente.",
+      "entityId": 2,
+      "entityType": "trabajador"
+    },
+    "status": 200
+  },
+  "usuario": {
+    "body": {
+      "detail": "Registro restaurado correctamente.",
+      "entityId": 3,
+      "entityType": "usuario"
+    },
+    "status": 200
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "almacenista crea": 403,
+  "almacenista elimina": 403,
+  "almacenista lista": 200,
+  "trabajador crea": 403,
+  "trabajador elimina": 403,
+  "trabajador lista": 200
+}

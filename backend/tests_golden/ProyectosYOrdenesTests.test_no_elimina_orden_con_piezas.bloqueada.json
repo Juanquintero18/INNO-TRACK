@@ -1,0 +1,6 @@
+{
+  "body": {
+    "detail": "No se puede eliminar esta orden porque tiene 1 pieza(s) asociada(s)."
+  },
+  "status": 400
+}

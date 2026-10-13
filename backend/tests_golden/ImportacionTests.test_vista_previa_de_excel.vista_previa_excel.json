@@ -1,0 +1,37 @@
+{
+  "body": {
+    "can_import": true,
+    "file_errors": [],
+    "file_name": "movimientos.xlsx",
+    "header_observations": [
+      "Se interpretó 'nombre proveedor' como 'proveedor'.",
+      "Se interpretó 'trabajador_codigo' como 'trabajador'."
+    ],
+    "invalid_rows": 0,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {
+          "materia_prima": "Gelcoat blanco",
+          "proveedor": "Química Industrial S.A.",
+          "trabajador": null
+        },
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "cantidad": "4.25",
+          "fecha": "2026-03-12",
+          "materia_prima": "Gelcoat blanco",
+          "motivo": "",
+          "proveedor": "Química Industrial S.A.",
+          "referencia": "OC-5001",
+          "tipo": "entrada",
+          "trabajador": ""
+        }
+      }
+    ],
+    "total_rows": 1,
+    "valid_rows": 1
+  },
+  "status": 200
+}

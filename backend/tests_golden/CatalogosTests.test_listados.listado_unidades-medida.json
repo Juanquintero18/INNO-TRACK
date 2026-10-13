@@ -1,0 +1,15 @@
+{
+  "body": [
+    {
+      "abreviatura": "kg",
+      "id": 1,
+      "nombre": "Kilogramo"
+    },
+    {
+      "abreviatura": "L",
+      "id": 2,
+      "nombre": "Litro"
+    }
+  ],
+  "status": 200
+}

@@ -1,0 +1,13 @@
+{
+  "body": {
+    "access": "<token>",
+    "user": {
+      "apellido": "Mejía",
+      "email": "almacen@innolution.test",
+      "id": 2,
+      "nombre": "Carla",
+      "rol": "almacenista"
+    }
+  },
+  "status": 200
+}

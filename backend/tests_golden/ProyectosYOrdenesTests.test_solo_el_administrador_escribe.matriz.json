@@ -1,0 +1,8 @@
+{
+  "almacenista crea orden": 403,
+  "almacenista crea proyecto": 403,
+  "almacenista lista proyectos": 200,
+  "trabajador crea orden": 403,
+  "trabajador crea proyecto": 403,
+  "trabajador lista proyectos": 200
+}

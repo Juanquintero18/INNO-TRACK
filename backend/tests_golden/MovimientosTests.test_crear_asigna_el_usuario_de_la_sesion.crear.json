@@ -1,0 +1,48 @@
+{
+  "body": {
+    "cantidad": 12.5,
+    "fecha": "2026-03-14",
+    "id": 6,
+    "materia_prima": {
+      "costo": 22.0,
+      "enabled_for_piezas": true,
+      "fecha_actualizacion": null,
+      "id": 3,
+      "nombre": "Gelcoat blanco",
+      "piezas_usage_count": 0,
+      "stability_thresholds": {
+        "stock_bajo_max": 50,
+        "stock_critico_max": 20
+      },
+      "unidad_medida": {
+        "abreviatura": "L",
+        "id": 2,
+        "nombre": "Litro"
+      },
+      "unidad_medida_id": 2
+    },
+    "materia_prima_id": 3,
+    "motivo": null,
+    "proveedor": {
+      "direccion": null,
+      "email": null,
+      "id": 2,
+      "nombre": "FibraMax",
+      "telefono": null
+    },
+    "proveedor_id": 2,
+    "referencia": "OC-2001",
+    "tipo": "entrada",
+    "trabajador": null,
+    "trabajador_produccion_id": null,
+    "usuario": {
+      "apellido": "Mejía",
+      "email": "almacen@innolution.test",
+      "id": 2,
+      "nombre": "Carla",
+      "rol": "almacenista"
+    },
+    "usuario_id": 2
+  },
+  "status": 201
+}

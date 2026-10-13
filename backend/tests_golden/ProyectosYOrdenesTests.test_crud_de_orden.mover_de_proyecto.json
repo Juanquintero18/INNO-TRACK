@@ -1,0 +1,19 @@
+{
+  "body": {
+    "codigo_orden": "ORD-300",
+    "estado": "cerrada",
+    "fecha_creacion": null,
+    "id": 3,
+    "proyecto": {
+      "codigo": "AQ-01",
+      "descripcion": "Toboganes del parque.",
+      "estado": "activo",
+      "fecha_fin": null,
+      "fecha_inicio": "2026-01-10",
+      "id": 1,
+      "nombre": "Aquaventura"
+    },
+    "proyecto_id": 1
+  },
+  "status": 200
+}

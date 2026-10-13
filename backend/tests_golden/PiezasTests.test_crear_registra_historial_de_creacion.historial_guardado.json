@@ -1,0 +1,5 @@
+{
+  "accion": "creacion",
+  "descripcion": "{\"schema\": \"pieza_historial_v1\", \"accion\": \"creacion\", \"summary\": \"Pieza creada desde la API con 2 materia(s) prima(s) asociada(s).\", \"initial\": {\"trace_id\": \"TR-0050\", \"nombre\": \"Curva doble\", \"orden_id\": 2, \"usuario_id\": 3, \"fecha_gelcoat\": \"2026-03-12\", \"fecha_qc\": null, \"peso_real\": \"30.25\", \"materias_primas\": [{\"materia_prima_id\": 1, \"materia_prima_nombre\": \"Resina poliéster\", \"cantidad_teorica\": \"12.50\", \"cantidad_real\": \"12.50\"}, {\"materia_prima_id\": 3, \"materia_prima_nombre\": \"Gelcoat blanco\", \"cantidad_teorica\": \"2.00\", \"cantidad_real\": null}]}}",
+  "usuario_id": 3
+}

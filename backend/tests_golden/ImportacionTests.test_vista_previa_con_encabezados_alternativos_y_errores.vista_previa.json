@@ -1,0 +1,131 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "movimientos.csv",
+    "header_observations": [
+      "Se interpretó 'Tipo movimiento' como 'tipo'.",
+      "Se interpretó 'Responsable' como 'trabajador'.",
+      "Se interpretó 'Codigo referencia' como 'referencia'."
+    ],
+    "invalid_rows": 4,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {
+          "materia_prima": "Resina poliéster",
+          "proveedor": "FibraMax",
+          "trabajador": null
+        },
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "cantidad": "25,5",
+          "fecha": "12/03/2026",
+          "materia_prima": "resina poliester",
+          "motivo": "Compra",
+          "proveedor": "FibraMax",
+          "referencia": "OC-3001",
+          "tipo": "Entrada",
+          "trabajador": ""
+        }
+      },
+      {
+        "errors": [
+          "La materia prima no existe o no coincide con el catálogo. ¿Quisiste decir 'Fibra de vidrio'?"
+        ],
+        "resolved": {
+          "materia_prima": null,
+          "proveedor": null,
+          "trabajador": "Pedro Gómez"
+        },
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "cantidad": "10",
+          "fecha": "2026-03-12",
+          "materia_prima": "Fibra de vidro",
+          "motivo": "Consumo",
+          "proveedor": "",
+          "referencia": "PRD-3002",
+          "tipo": "salida",
+          "trabajador": "trb-001"
+        }
+      },
+      {
+        "errors": [
+          "Este movimiento dejaría el stock de 'Gelcoat blanco' en negativo (-92.00)."
+        ],
+        "resolved": {
+          "materia_prima": "Gelcoat blanco",
+          "proveedor": null,
+          "trabajador": "Pedro Gómez"
+        },
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "cantidad": "100",
+          "fecha": "2026-03-12",
+          "materia_prima": "Gelcoat blanco",
+          "motivo": "",
+          "proveedor": "",
+          "referencia": "PRD-3003",
+          "tipo": "salida",
+          "trabajador": "Pedro Gomez"
+        }
+      },
+      {
+        "errors": [
+          "El proveedor indicado no existe o no coincide con el catálogo.",
+          "El trabajador indicado no existe o no coincide con el catálogo.",
+          "El tipo debe ser entrada, salida o ajuste.",
+          "La cantidad debe ser numérica.",
+          "La fecha debe usar formato YYYY-MM-DD o DD/MM/YYYY.",
+          "La referencia es obligatoria."
+        ],
+        "resolved": {
+          "materia_prima": "Gelcoat blanco",
+          "proveedor": null,
+          "trabajador": null
+        },
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "cantidad": "abc",
+          "fecha": "31-31-2026",
+          "materia_prima": "Gelcoat blanco",
+          "motivo": "",
+          "proveedor": "Proveedor X",
+          "referencia": "",
+          "tipo": "traslado",
+          "trabajador": "Nadie"
+        }
+      },
+      {
+        "errors": [
+          "El ajuste no puede ser cero."
+        ],
+        "resolved": {
+          "materia_prima": "Catalizador MEKP",
+          "proveedor": null,
+          "trabajador": null
+        },
+        "row_number": 6,
+        "status": "error",
+        "values": {
+          "cantidad": "0",
+          "fecha": "2026/03/12",
+          "materia_prima": "Catalizador MEKP",
+          "motivo": "Conteo",
+          "proveedor": "",
+          "referencia": "AJU-3004",
+          "tipo": "ajuste",
+          "trabajador": ""
+        }
+      }
+    ],
+    "total_rows": 5,
+    "valid_rows": 1
+  },
+  "status": 200
+}

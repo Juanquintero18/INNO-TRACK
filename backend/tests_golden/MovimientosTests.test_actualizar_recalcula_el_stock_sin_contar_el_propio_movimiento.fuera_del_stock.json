@@ -1,0 +1,8 @@
+{
+  "body": {
+    "cantidad": [
+      "Este movimiento dejaría el stock de 'Resina poliéster' en negativo (-0.01)."
+    ]
+  },
+  "status": 400
+}

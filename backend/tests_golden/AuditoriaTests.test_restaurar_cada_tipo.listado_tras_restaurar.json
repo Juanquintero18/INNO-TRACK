@@ -1,0 +1,196 @@
+{
+  "body": [
+    {
+      "action": "delete",
+      "data": {
+        "apellido": null,
+        "contrasena": "<hash>",
+        "email": "carlos@innolution.test",
+        "id": 3,
+        "nombre": "Carlos",
+        "rol": "trabajador"
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 3,
+      "entityLabel": "Carlos None",
+      "entityType": "usuario",
+      "id": 6,
+      "isRestored": true,
+      "restoredAt": "2026-03-15T10:00:00-05:00",
+      "restoredBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      }
+    },
+    {
+      "action": "delete",
+      "data": {
+        "codigo_trabajador": "TRB-002",
+        "id": 2,
+        "nombre": "Laura Ríos"
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 2,
+      "entityLabel": "Laura Ríos",
+      "entityType": "trabajador",
+      "id": 5,
+      "isRestored": true,
+      "restoredAt": "2026-03-15T10:00:00-05:00",
+      "restoredBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      }
+    },
+    {
+      "action": "delete",
+      "data": {
+        "direccion": null,
+        "email": null,
+        "id": 2,
+        "nombre": "FibraMax",
+        "telefono": null
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 2,
+      "entityLabel": "FibraMax",
+      "entityType": "proveedor",
+      "id": 4,
+      "isRestored": true,
+      "restoredAt": "2026-03-15T10:00:00-05:00",
+      "restoredBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      }
+    },
+    {
+      "action": "delete",
+      "data": {
+        "costo": null,
+        "fecha_actualizacion": null,
+        "id": 4,
+        "nombre": "Catalizador MEKP",
+        "unidad_medida_id": null
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 4,
+      "entityLabel": "Catalizador MEKP",
+      "entityType": "materia-prima",
+      "id": 3,
+      "isRestored": true,
+      "restoredAt": "2026-03-15T10:00:00-05:00",
+      "restoredBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      }
+    },
+    {
+      "action": "delete",
+      "data": {
+        "cantidad": "60.00",
+        "fecha": "2026-01-08",
+        "id": 4,
+        "materia_prima_id": 2,
+        "motivo": null,
+        "proveedor_id": 2,
+        "referencia": "OC-1002",
+        "tipo": "entrada",
+        "trabajador_produccion_id": null,
+        "usuario_id": 2
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 4,
+      "entityLabel": "OC-1002",
+      "entityType": "movimiento-inventario",
+      "id": 2,
+      "isRestored": true,
+      "restoredAt": "2026-03-15T10:00:00-05:00",
+      "restoredBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      }
+    },
+    {
+      "action": "delete",
+      "data": {
+        "fecha_gelcoat": "2026-01-20",
+        "fecha_qc": "2026-01-28",
+        "historial": [
+          {
+            "accion": "creacion",
+            "descripcion": "Pieza creada desde la API.",
+            "fecha": "2026-01-20T14:15:00Z",
+            "id": 1,
+            "pieza_id": 1,
+            "usuario_id": null
+          },
+          {
+            "accion": "edicion",
+            "descripcion": "Se corrigió el peso a mano.",
+            "fecha": "2026-01-28T21:40:00Z",
+            "id": 2,
+            "pieza_id": 1,
+            "usuario_id": 1
+          }
+        ],
+        "id": 1,
+        "materias_primas": [
+          {
+            "cantidad_real": "21.50",
+            "cantidad_teorica": "20.00",
+            "id": 1,
+            "materia_prima_id": 1,
+            "pieza_id": 1
+          },
+          {
+            "cantidad_real": null,
+            "cantidad_teorica": "1.00",
+            "id": 2,
+            "materia_prima_id": 4,
+            "pieza_id": 1
+          }
+        ],
+        "nombre": "Tobogán curva A",
+        "orden_id": 1,
+        "peso_real": "45.50",
+        "trace_id": "TR-0001",
+        "usuario_id": 3
+      },
+      "deletedAt": "2026-03-15T10:00:00-05:00",
+      "deletedBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      },
+      "entityId": 1,
+      "entityLabel": "TR-0001 - Tobogán curva A",
+      "entityType": "pieza",
+      "id": 1,
+      "isRestored": true,
+      "restoredAt": "2026-03-15T10:00:00-05:00",
+      "restoredBy": {
+        "id": 1,
+        "nombre": "Juan Administrador"
+      }
+    }
+  ],
+  "status": 200
+}

@@ -1,0 +1,10 @@
+{
+  "body": {
+    "apellido": "Paz Gil",
+    "email": "nora@innolution.test",
+    "id": 4,
+    "nombre": "Nora",
+    "rol": "almacenista"
+  },
+  "status": 200
+}

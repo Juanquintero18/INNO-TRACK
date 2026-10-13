@@ -1,0 +1,19 @@
+{
+  "body": [
+    {
+      "direccion": "Zona Industrial, Barranquilla",
+      "email": "ventas@quimica.test",
+      "id": 1,
+      "nombre": "Química Industrial S.A.",
+      "telefono": "+57 300 111 2233"
+    },
+    {
+      "direccion": null,
+      "email": null,
+      "id": 2,
+      "nombre": "FibraMax",
+      "telefono": null
+    }
+  ],
+  "status": 200
+}

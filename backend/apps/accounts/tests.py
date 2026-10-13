@@ -14,6 +14,7 @@ from rest_framework.test import APITestCase
 
 from apps.accounts.models import AppUser
 from apps.accounts.password_reset import password_reset_token_generator
+from config.testing import ApiTestCase
 
 
 REQUEST_URL = "/api/auth/password-reset/"
@@ -147,3 +148,70 @@ class PasswordResetTests(APITestCase):
 
         response = self.client.post(CONFIRM_URL, {**params, "password": NEW_PASSWORD}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class UsuariosYSesionTests(ApiTestCase):
+    """Caracterización del acceso (login, perfil, refresh) y del CRUD de usuarios."""
+
+    def test_login(self):
+        self.login_as(None)
+
+        correcto = self.client.post("/api/auth/login/", {"email": "almacen@innolution.test", "password": "clave-de-prueba"}, format="json")
+        self.assert_golden("correcto", correcto)
+        self.assert_golden("clave_incorrecta", self.client.post("/api/auth/login/", {"email": "almacen@innolution.test", "password": "otra"}, format="json"))
+        self.assert_golden("correo_desconocido", self.client.post("/api/auth/login/", {"email": "nadie@innolution.test", "password": "x"}, format="json"))
+        self.assert_golden("datos_incompletos", self.client.post("/api/auth/login/", {"email": "no-es-correo"}, format="json"))
+
+        # El token emitido sirve para consultar el perfil y para renovarse.
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {correcto.json()['access']}")
+        self.assert_golden("perfil", self.client.get("/api/me/"))
+        self.assert_golden("renovar", self.client.post("/api/auth/refresh/", {"token": correcto.json()["access"]}, format="json"))
+
+    def test_token_invalido_o_ausente(self):
+        self.login_as(None)
+        self.assert_golden("sin_token", self.client.get("/api/me/"))
+
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer no-es-un-token")
+        self.assert_golden("token_invalido", self.client.get("/api/me/"))
+
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer uno dos")
+        self.assert_golden("cabecera_mal_formada", self.client.get("/api/me/"))
+
+    def test_listado_no_expone_contrasenas(self):
+        response = self.client.get("/api/accounts/users/")
+
+        self.assert_golden("listado", response)
+        self.assertNotIn("contrasena", response.content.decode())
+
+    def test_crud_de_usuario(self):
+        creado = self.client.post("/api/accounts/users/", {"nombre": "Nora", "apellido": "Paz", "email": "nora@innolution.test", "rol": "trabajador", "contrasena": "Clave-Segura-9"}, format="json")
+        self.assert_golden("crear", creado)
+
+        usuario = AppUser.objects.get(pk=creado.json()["id"])
+        self.assertTrue(check_password("Clave-Segura-9", usuario.contrasena))
+
+        url = f"/api/accounts/users/{usuario.id}/"
+        self.assert_golden("actualizar_sin_clave", self.client.put(url, {"nombre": "Nora", "apellido": "Paz Gil", "email": "nora@innolution.test", "rol": "almacenista"}, format="json"))
+        usuario.refresh_from_db()
+        self.assertTrue(check_password("Clave-Segura-9", usuario.contrasena))
+
+        self.client.patch(url, {"contrasena": "Otra-Clave-77"}, format="json")
+        usuario.refresh_from_db()
+        self.assertTrue(check_password("Otra-Clave-77", usuario.contrasena))
+
+        self.assert_golden("eliminar", self.client.delete(url))
+        self.assert_golden("auditoria", self.client.get("/api/audit/logs/"))
+
+    def test_validaciones_al_crear(self):
+        self.assert_golden("sin_clave", self.client.post("/api/accounts/users/", {"nombre": "Sin", "email": "sin@innolution.test"}, format="json"))
+        self.assert_golden("correo_repetido", self.client.post("/api/accounts/users/", {"nombre": "Otro", "email": "admin@innolution.test", "contrasena": "x"}, format="json"))
+
+    def test_solo_el_administrador_escribe(self):
+        resultado = {}
+
+        for rol, usuario in (("almacenista", self.almacenista), ("trabajador", self.trabajador)):
+            self.login_as(usuario)
+            resultado[f"{rol} lista"] = self.client.get("/api/accounts/users/").status_code
+            resultado[f"{rol} crea"] = self.client.post("/api/accounts/users/", {"nombre": "X", "contrasena": "x"}, format="json").status_code
+            resultado[f"{rol} elimina"] = self.client.delete(f"/api/accounts/users/{self.admin.id}/").status_code
+
+        self.assert_golden_data("matriz", resultado)
