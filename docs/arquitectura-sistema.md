@@ -98,6 +98,27 @@ El cliente de API:
 - Adjunta Authorization: Bearer token cuando aplica.
 - Normaliza mensajes de error para UI.
 
+## 4.4 Organizacion del codigo
+
+El frontend separa lo que se ve de la logica y de las reglas del dominio:
+
+- src/pages/: una pantalla por ruta. Solo guarda filtros y orden, y compone las piezas de su modulo.
+- src/features/<modulo>/: lo propio de cada modulo.
+  - use<Algo>Form.ts: logica de un formulario (validacion, guardado, apertura y cierre).
+  - <Algo>Dialog(s).tsx y <Algo>Table.tsx: vistas sin logica de negocio; reciben el controlador del hook.
+  - <modulo>-list.ts o -utils.ts: funciones puras de filtro, orden y hojas de Excel.
+- src/components/data/ y src/components/form/: piezas compartidas (encabezado ordenable, busqueda, rango de fechas, campos, dialogo de formulario).
+- src/hooks/: useSort, useFormState y useModulePermission.
+- src/lib/: cliente API y rutas (api.ts), fechas (dates.ts), orden (sorting.ts), reglas del dominio (domain-utils.ts), exportacion (excel-export.ts) y tipos (types.ts).
+
+Regla de los dialogos: cerrar con la X o Escape limpia el formulario; el boton Cancelar solo lo oculta. Es el comportamiento historico y las pruebas lo fijan.
+
+En el backend, la logica que no es de serializacion vive fuera de los serializers:
+
+- apps/production/historial.py: construccion y lectura del historial de cambios de piezas.
+- apps/inventory/services.py: efecto de un movimiento sobre el stock y materiales habilitados para piezas.
+- apps/audit/mixins.py: AuditedDestroyMixin, para los ViewSets cuyo borrado queda en auditoria.
+
 ## 5. Flujo de autenticacion
 
 1. Usuario envia email y password desde Login.
@@ -132,11 +153,24 @@ Backend:
 - ./.venv/Scripts/python.exe backend/manage.py migrate
 - ./.venv/Scripts/python.exe backend/manage.py runserver --noreload
 
-## 8. Siguiente iteracion recomendada
+## 8. Pruebas
+
+Las pruebas fijan el comportamiento actual del sistema: si un cambio lo altera, fallan.
+
+Frontend (`npm run test`):
+
+- src/pages/*.test.tsx montan la aplicacion completa en cada ruta contra una API falsa en memoria (src/test/fake-api.ts) y comparan lo que se ve, lo que se envia al backend, los avisos y las hojas de Excel con las capturas de src/pages/__snapshots__/.
+- Si un cambio de interfaz es intencional, las capturas se regraban con `npx vitest run -u` y se revisa el diff antes de confirmarlo.
+
+Backend (`./.venv/Scripts/python.exe backend/manage.py test apps --settings=config.settings_test`):
+
+- Usan SQLite en memoria; no tocan PostgreSQL.
+- Comparan cada respuesta de la API con su archivo en backend/tests_golden/. Para regrabar una respuesta a proposito, se borra su archivo y se vuelve a ejecutar la prueba.
+
+## 9. Siguiente iteracion recomendada
 
 Para continuar la documentacion sin tocar logica:
 
 1. Documentar modelos y relaciones por app (campos clave y reglas).
 2. Documentar serializers con contratos de entrada/salida.
 3. Documentar cada pagina del frontend con sus dependencias de contexto.
-4. Agregar guia de pruebas (frontend y backend) con casos minimos.

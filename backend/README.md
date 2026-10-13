@@ -52,6 +52,7 @@ backend/
 
 - `./.venv/Scripts/python.exe backend/manage.py test apps --settings=config.settings_test`
 - Usan SQLite en memoria y crean las tablas legacy desde los modelos, asi que no tocan PostgreSQL.
+- Las pruebas de cada app comparan las respuestas de la API con los archivos de `tests_golden/`. Si una respuesta cambia, la prueba falla; para aceptar un cambio intencional se borra el archivo correspondiente y se vuelve a ejecutar.
 
 ## Puesta en marcha
 
