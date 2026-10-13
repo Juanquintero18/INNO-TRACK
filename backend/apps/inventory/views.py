@@ -7,14 +7,14 @@ from django.db import transaction
 from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.accounts.permissions import AdminOrAlmacenistaWritePermission, AdminWritePermission
-from apps.audit.services import create_audit_log
+from apps.audit.mixins import AuditedDestroyMixin
 from apps.inventory.import_services import (
     build_movimiento_import_preview,
     build_movimiento_import_template_response,
@@ -42,15 +42,10 @@ from apps.inventory.serializers import (
 )
 
 
-class BaseInventoryViewSet(ModelViewSet):
+class BaseInventoryViewSet(AuditedDestroyMixin, ModelViewSet):
     """Base CRUD con borrado auditado para entidades de inventario."""
 
     permission_classes = [AdminWritePermission]
-
-    def perform_destroy(self, instance):
-        """Registra auditoría antes de eliminar definitivamente."""
-        create_audit_log(instance, self.request.user)
-        instance.delete()
 
 
 class UnidadMedidaViewSet(BaseInventoryViewSet):
@@ -163,12 +158,12 @@ class MovimientoInventarioImportBaseView(APIView):
     permission_classes = [AdminOrAlmacenistaWritePermission]
     parser_classes = [MultiPartParser, FormParser]
 
-    def _get_uploaded_file(self):
-        """Obtiene el archivo subido o responde con error de validación."""
+    def read_upload(self) -> tuple[str, bytes]:
+        """Nombre y contenido del archivo subido; responde 400 si no llegó ninguno."""
         uploaded_file = self.request.FILES.get("file")
         if uploaded_file is None:
-            return None, Response({"detail": "Selecciona un archivo Excel o CSV."}, status=status.HTTP_400_BAD_REQUEST)
-        return uploaded_file, None
+            raise ValidationError({"detail": "Selecciona un archivo Excel o CSV."})
+        return uploaded_file.name, uploaded_file.read()
 
 
 class MovimientoInventarioImportTemplateView(APIView):
@@ -185,12 +180,10 @@ class MovimientoInventarioImportPreviewView(MovimientoInventarioImportBaseView):
     """Valida archivo de importación y retorna vista previa detallada."""
 
     def post(self, request):
-        uploaded_file, error_response = self._get_uploaded_file()
-        if error_response is not None:
-            return error_response
+        file_name, file_bytes = self.read_upload()
 
         try:
-            preview = build_movimiento_import_preview(uploaded_file.name, uploaded_file.read())
+            preview = build_movimiento_import_preview(file_name, file_bytes)
         except ValueError as exc:
             return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -201,12 +194,10 @@ class MovimientoInventarioImportCommitView(MovimientoInventarioImportBaseView):
     """Confirma importación y crea movimientos en lote atómico."""
 
     def post(self, request):
-        uploaded_file, error_response = self._get_uploaded_file()
-        if error_response is not None:
-            return error_response
+        file_name, file_bytes = self.read_upload()
 
         try:
-            result = import_movimientos(uploaded_file.name, uploaded_file.read(), request.user)
+            result = import_movimientos(file_name, file_bytes, request.user)
         except ValueError as exc:
             return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
 

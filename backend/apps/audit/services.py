@@ -20,6 +20,17 @@ from apps.inventory.models import MateriaPrima, MovimientoInventario, Proveedor,
 from apps.production.models import Pieza, PiezaHistorial, PiezaMateriaPrima
 
 
+# Modelo de cada tipo de entidad que se audita al eliminarse.
+AUDITED_MODELS = {
+    AuditLog.ENTITY_PIEZA: Pieza,
+    AuditLog.ENTITY_MATERIA_PRIMA: MateriaPrima,
+    AuditLog.ENTITY_MOVIMIENTO: MovimientoInventario,
+    AuditLog.ENTITY_PROVEEDOR: Proveedor,
+    AuditLog.ENTITY_TRABAJADOR: TrabajadorProduccion,
+    AuditLog.ENTITY_USUARIO: AppUser,
+}
+
+
 def _actor_name(user: AppUser | None) -> str:
     """Obtiene una etiqueta legible del usuario que ejecuta la acción."""
 
@@ -31,10 +42,7 @@ def _actor_name(user: AppUser | None) -> str:
 def _serialize_instance(instance) -> dict[str, Any]:
     """Serializa campos concretos del modelo a un dict JSON-safe."""
 
-    data: dict[str, Any] = {}
-
-    for field in instance._meta.concrete_fields:
-        data[field.attname] = getattr(instance, field.attname)
+    data = {field.attname: getattr(instance, field.attname) for field in instance._meta.concrete_fields}
 
     return json.loads(json.dumps(data, cls=DjangoJSONEncoder))
 
@@ -51,18 +59,11 @@ def _serialize_pieza(instance: Pieza) -> dict[str, Any]:
 def build_entity_snapshot(instance) -> tuple[str, dict[str, Any]]:
     """Normaliza tipo de entidad y snapshot según su modelo de origen."""
 
-    if isinstance(instance, Pieza):
-        return AuditLog.ENTITY_PIEZA, _serialize_pieza(instance)
-    if isinstance(instance, MateriaPrima):
-        return AuditLog.ENTITY_MATERIA_PRIMA, _serialize_instance(instance)
-    if isinstance(instance, MovimientoInventario):
-        return AuditLog.ENTITY_MOVIMIENTO, _serialize_instance(instance)
-    if isinstance(instance, Proveedor):
-        return AuditLog.ENTITY_PROVEEDOR, _serialize_instance(instance)
-    if isinstance(instance, TrabajadorProduccion):
-        return AuditLog.ENTITY_TRABAJADOR, _serialize_instance(instance)
-    if isinstance(instance, AppUser):
-        return AuditLog.ENTITY_USUARIO, _serialize_instance(instance)
+    for entity_type, model in AUDITED_MODELS.items():
+        if isinstance(instance, model):
+            serialize = _serialize_pieza if model is Pieza else _serialize_instance
+            return entity_type, serialize(instance)
+
     raise ValueError("Tipo de entidad no soportado para auditoria.")
 
 
@@ -112,36 +113,6 @@ class RestoreResult:
     entity_id: int
 
 
-def _restore_materia_prima(snapshot: dict[str, Any]) -> None:
-    """Restaura una materia prima desde snapshot."""
-
-    MateriaPrima.objects.create(**snapshot)
-
-
-def _restore_movimiento(snapshot: dict[str, Any]) -> None:
-    """Restaura un movimiento de inventario desde snapshot."""
-
-    MovimientoInventario.objects.create(**snapshot)
-
-
-def _restore_proveedor(snapshot: dict[str, Any]) -> None:
-    """Restaura un proveedor desde snapshot."""
-
-    Proveedor.objects.create(**snapshot)
-
-
-def _restore_trabajador(snapshot: dict[str, Any]) -> None:
-    """Restaura un trabajador desde snapshot."""
-
-    TrabajadorProduccion.objects.create(**snapshot)
-
-
-def _restore_usuario(snapshot: dict[str, Any]) -> None:
-    """Restaura un usuario desde snapshot."""
-
-    AppUser.objects.create(**snapshot)
-
-
 def _restore_pieza(snapshot: dict[str, Any]) -> None:
     """Restaura pieza con sus materiales e historial asociados."""
 
@@ -156,6 +127,20 @@ def _restore_pieza(snapshot: dict[str, Any]) -> None:
         PiezaHistorial.objects.create(**historial_item)
 
 
+def _restore_entity(entity_type: str, snapshot: dict[str, Any]) -> None:
+    """Vuelve a crear el registro eliminado a partir de su snapshot."""
+
+    model = AUDITED_MODELS.get(entity_type)
+
+    if model is None:
+        raise ValueError("Tipo de entidad no soportado para restauracion.")
+
+    if model is Pieza:
+        _restore_pieza(snapshot)
+    else:
+        model.objects.create(**snapshot)
+
+
 @transaction.atomic
 def restore_audit_log(audit_log: AuditLog, user: AppUser | None) -> RestoreResult:
     """Restaura una entidad auditada y marca el log como restaurado.
@@ -166,22 +151,9 @@ def restore_audit_log(audit_log: AuditLog, user: AppUser | None) -> RestoreResul
     if audit_log.restored_at is not None:
         raise ValueError("Este registro ya fue restaurado.")
 
+    # Copia profunda: la restauración consume el snapshot y el log debe quedar intacto.
     snapshot = json.loads(json.dumps(audit_log.snapshot))
-
-    if audit_log.entity_type == AuditLog.ENTITY_PIEZA:
-        _restore_pieza(snapshot)
-    elif audit_log.entity_type == AuditLog.ENTITY_MATERIA_PRIMA:
-        _restore_materia_prima(snapshot)
-    elif audit_log.entity_type == AuditLog.ENTITY_MOVIMIENTO:
-        _restore_movimiento(snapshot)
-    elif audit_log.entity_type == AuditLog.ENTITY_PROVEEDOR:
-        _restore_proveedor(snapshot)
-    elif audit_log.entity_type == AuditLog.ENTITY_TRABAJADOR:
-        _restore_trabajador(snapshot)
-    elif audit_log.entity_type == AuditLog.ENTITY_USUARIO:
-        _restore_usuario(snapshot)
-    else:
-        raise ValueError("Tipo de entidad no soportado para restauracion.")
+    _restore_entity(audit_log.entity_type, snapshot)
 
     audit_log.restored_at = timezone.now()
     audit_log.restored_by_id = getattr(user, "pk", None)

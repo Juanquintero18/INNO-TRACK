@@ -7,6 +7,7 @@ previa de validación y confirma el lote en una sola transacción.
 from __future__ import annotations
 
 import csv
+from dataclasses import dataclass
 from datetime import date, datetime
 from difflib import get_close_matches
 from decimal import Decimal, InvalidOperation
@@ -22,6 +23,7 @@ import xlrd
 from apps.accounts.models import AppUser
 from apps.inventory.models import MateriaPrima, Proveedor, TrabajadorProduccion
 from apps.inventory.serializers import MovimientoInventarioSerializer
+from apps.inventory.services import TIPO_AJUSTE, TIPO_ENTRADA, TIPO_SALIDA, TIPOS_MOVIMIENTO
 
 
 TEMPLATE_HEADERS = [
@@ -310,94 +312,101 @@ def _read_source_rows(file_name: str, file_bytes: bytes) -> tuple[list[tuple[int
     raise ValueError("El archivo debe estar en formato .xlsx, .xls o .csv.")
 
 
-def _register_lookup_value(lookup: dict[str, object], aliases: dict[str, str], raw_value: object, instance: object) -> None:
-    """Registra múltiples variantes de un valor para resolución flexible."""
+class CatalogLookup:
+    """Catálogo en memoria para resolver textos del archivo a registros del sistema.
 
-    display_value = _cell_to_text(raw_value)
-    keys = {
-        _normalize_text(raw_value),
-        _normalize_lookup_key(raw_value),
-        _compact_lookup_key(raw_value),
-    }
+    Cada registro se indexa bajo varias normalizaciones de su nombre (sin
+    acentos, sin signos, sin espacios) para tolerar diferencias de escritura.
+    """
 
-    for key in keys:
-        if not key:
-            continue
-        lookup.setdefault(key, instance)
-        aliases.setdefault(key, display_value)
+    def __init__(self, not_found_message: str):
+        self.not_found_message = not_found_message
+        self._instances: dict[str, object] = {}
+        self._display_names: dict[str, str] = {}
 
+    @staticmethod
+    def _keys(raw_value: object) -> tuple[str, str, str]:
+        return _normalize_text(raw_value), _normalize_lookup_key(raw_value), _compact_lookup_key(raw_value)
 
-def _find_lookup_value(raw_value: object, lookup: dict[str, object]) -> object | None:
-    """Busca una referencia de catálogo usando distintas normalizaciones."""
+    def register(self, raw_value: object, instance: object) -> None:
+        """Registra múltiples variantes de un valor para resolución flexible."""
+        display_value = _cell_to_text(raw_value)
 
-    for key in (_normalize_text(raw_value), _normalize_lookup_key(raw_value), _compact_lookup_key(raw_value)):
-        if key and key in lookup:
-            return lookup[key]
-    return None
+        for key in set(self._keys(raw_value)):
+            if not key:
+                continue
+            # Ante nombres equivalentes gana el primer registro cargado.
+            self._instances.setdefault(key, instance)
+            self._display_names.setdefault(key, display_value)
 
-
-def _find_closest_alias(raw_value: object, aliases: dict[str, str]) -> str | None:
-    """Sugiere el alias más cercano para mejorar mensajes de validación."""
-
-    compact_target = _compact_lookup_key(raw_value)
-    if not compact_target:
+    def find(self, raw_value: object):
+        """Busca una referencia de catálogo usando distintas normalizaciones."""
+        for key in self._keys(raw_value):
+            if key and key in self._instances:
+                return self._instances[key]
         return None
 
-    compact_candidates = [key for key in aliases if key and " " not in key]
-    matches = get_close_matches(compact_target, compact_candidates, n=1, cutoff=0.8)
-    if matches:
-        return aliases[matches[0]]
+    def suggest(self, raw_value: object) -> str | None:
+        """Sugiere el nombre más cercano para mejorar mensajes de validación."""
+        compact_target = _compact_lookup_key(raw_value)
+        if not compact_target:
+            return None
 
-    normalized_target = _normalize_lookup_key(raw_value)
-    normalized_candidates = [key for key in aliases if key and " " in key]
-    matches = get_close_matches(normalized_target, normalized_candidates, n=1, cutoff=0.8)
-    if matches:
-        return aliases[matches[0]]
+        compact_candidates = [key for key in self._display_names if key and " " not in key]
+        matches = get_close_matches(compact_target, compact_candidates, n=1, cutoff=0.8)
+        if matches:
+            return self._display_names[matches[0]]
 
-    return None
+        normalized_candidates = [key for key in self._display_names if key and " " in key]
+        matches = get_close_matches(_normalize_lookup_key(raw_value), normalized_candidates, n=1, cutoff=0.8)
+        if matches:
+            return self._display_names[matches[0]]
+
+        return None
+
+    def not_found_error(self, raw_value: object) -> str:
+        """Mensaje de error para un valor ausente del catálogo, con sugerencia si la hay."""
+        suggestion = self.suggest(raw_value)
+
+        if suggestion:
+            return f"{self.not_found_message} ¿Quisiste decir '{suggestion}'?"
+        return self.not_found_message
 
 
-def _build_catalog_error(entity_label: str, suggestion: str | None, generic_message: str) -> str:
-    """Construye mensajes de error enriquecidos con sugerencia opcional."""
+@dataclass
+class ImportCatalogs:
+    """Catálogos de referencia que necesita la validación de cada fila."""
 
-    if suggestion:
-        return f"{generic_message} ¿Quisiste decir '{suggestion}'?"
-    return generic_message
+    materias: CatalogLookup
+    proveedores: CatalogLookup
+    trabajadores: CatalogLookup
 
 
-def _build_lookup_maps() -> tuple[
-    dict[str, MateriaPrima],
-    dict[str, str],
-    dict[str, Proveedor],
-    dict[str, str],
-    dict[str, TrabajadorProduccion],
-    dict[str, str],
-]:
-    """Precarga catálogos de referencia para validar filas eficientemente."""
+def _load_catalogs() -> ImportCatalogs:
+    """Precarga catálogos en memoria para validar cientos de filas sin consultar por fila."""
 
-    # Precarga catálogos en memoria para validar cientos de filas en O(1) por campo.
-    materias: dict[str, MateriaPrima] = {}
-    materia_aliases: dict[str, str] = {}
-    proveedores: dict[str, Proveedor] = {}
-    proveedor_aliases: dict[str, str] = {}
-    trabajadores: dict[str, TrabajadorProduccion] = {}
-    trabajador_aliases: dict[str, str] = {}
+    catalogs = ImportCatalogs(
+        materias=CatalogLookup("La materia prima no existe o no coincide con el catálogo."),
+        proveedores=CatalogLookup("El proveedor indicado no existe o no coincide con el catálogo."),
+        trabajadores=CatalogLookup("El trabajador indicado no existe o no coincide con el catálogo."),
+    )
 
     for materia in MateriaPrima.objects.select_related("unidad_medida").all():
         if materia.nombre:
-            _register_lookup_value(materias, materia_aliases, materia.nombre, materia)
+            catalogs.materias.register(materia.nombre, materia)
 
     for proveedor in Proveedor.objects.all():
         if proveedor.nombre:
-            _register_lookup_value(proveedores, proveedor_aliases, proveedor.nombre, proveedor)
+            catalogs.proveedores.register(proveedor.nombre, proveedor)
 
+    # Un trabajador puede indicarse por su código o por su nombre.
     for trabajador in TrabajadorProduccion.objects.all():
         if trabajador.codigo_trabajador:
-            _register_lookup_value(trabajadores, trabajador_aliases, trabajador.codigo_trabajador, trabajador)
+            catalogs.trabajadores.register(trabajador.codigo_trabajador, trabajador)
         if trabajador.nombre:
-            _register_lookup_value(trabajadores, trabajador_aliases, trabajador.nombre, trabajador)
+            catalogs.trabajadores.register(trabajador.nombre, trabajador)
 
-    return materias, materia_aliases, proveedores, proveedor_aliases, trabajadores, trabajador_aliases
+    return catalogs
 
 
 def _flatten_serializer_errors(detail: object) -> list[str]:
@@ -419,26 +428,12 @@ def _flatten_serializer_errors(detail: object) -> list[str]:
 def _build_row_preview(
     row_number: int,
     raw_row: dict[str, object],
-    materias: dict[str, MateriaPrima],
-    materia_aliases: dict[str, str],
-    proveedores: dict[str, Proveedor],
-    proveedor_aliases: dict[str, str],
-    trabajadores: dict[str, TrabajadorProduccion],
-    trabajador_aliases: dict[str, str],
+    catalogs: ImportCatalogs,
 ) -> tuple[dict[str, object], dict[str, object] | None]:
     """Valida una fila de importación y retorna preview + payload persistible."""
 
     # La vista previa conserva valores originales del archivo para explicar errores al usuario.
-    display_values = {
-        "materia_prima": _cell_to_text(raw_row.get("materia_prima")),
-        "tipo": _cell_to_text(raw_row.get("tipo")),
-        "cantidad": _cell_to_text(raw_row.get("cantidad")),
-        "fecha": _cell_to_text(raw_row.get("fecha")),
-        "proveedor": _cell_to_text(raw_row.get("proveedor")),
-        "trabajador": _cell_to_text(raw_row.get("trabajador")),
-        "motivo": _cell_to_text(raw_row.get("motivo")),
-        "referencia": _cell_to_text(raw_row.get("referencia")),
-    }
+    display_values = {header: _cell_to_text(raw_row.get(header)) for header in TEMPLATE_HEADERS}
     errors: list[str] = []
 
     materia_nombre = display_values["materia_prima"]
@@ -448,38 +443,20 @@ def _build_row_preview(
     motivo = display_values["motivo"].strip() or None
     referencia = display_values["referencia"].strip()
 
-    materia = _find_lookup_value(materia_nombre, materias)
-    proveedor = _find_lookup_value(proveedor_nombre, proveedores) if proveedor_nombre else None
-    trabajador = _find_lookup_value(trabajador_referencia, trabajadores) if trabajador_referencia else None
+    materia = catalogs.materias.find(materia_nombre)
+    proveedor = catalogs.proveedores.find(proveedor_nombre) if proveedor_nombre else None
+    trabajador = catalogs.trabajadores.find(trabajador_referencia) if trabajador_referencia else None
 
     if not materia:
-        errors.append(
-            _build_catalog_error(
-                "materia prima",
-                _find_closest_alias(materia_nombre, materia_aliases),
-                "La materia prima no existe o no coincide con el catálogo.",
-            )
-        )
+        errors.append(catalogs.materias.not_found_error(materia_nombre))
 
     if proveedor_nombre and not proveedor:
-        errors.append(
-            _build_catalog_error(
-                "proveedor",
-                _find_closest_alias(proveedor_nombre, proveedor_aliases),
-                "El proveedor indicado no existe o no coincide con el catálogo.",
-            )
-        )
+        errors.append(catalogs.proveedores.not_found_error(proveedor_nombre))
 
     if trabajador_referencia and not trabajador:
-        errors.append(
-            _build_catalog_error(
-                "trabajador",
-                _find_closest_alias(trabajador_referencia, trabajador_aliases),
-                "El trabajador indicado no existe o no coincide con el catálogo.",
-            )
-        )
+        errors.append(catalogs.trabajadores.not_found_error(trabajador_referencia))
 
-    if tipo not in {"entrada", "salida", "ajuste"}:
+    if tipo not in TIPOS_MOVIMIENTO:
         errors.append("El tipo debe ser entrada, salida o ajuste.")
 
     try:
@@ -498,17 +475,18 @@ def _build_row_preview(
         errors.append("La referencia es obligatoria.")
 
     if cantidad is not None:
-        if tipo in {"entrada", "salida"} and cantidad <= 0:
+        if tipo in {TIPO_ENTRADA, TIPO_SALIDA} and cantidad <= 0:
             errors.append("La cantidad debe ser mayor que cero para entradas y salidas.")
-        if tipo == "ajuste" and cantidad == 0:
+        if tipo == TIPO_AJUSTE and cantidad == 0:
             errors.append("El ajuste no puede ser cero.")
 
     payload = None
     if not errors:
+        # El proveedor solo aplica a entradas y el trabajador solo a salidas.
         payload = {
             "materia_prima_id": materia.id,
-            "proveedor_id": proveedor.id if tipo == "entrada" and proveedor else None,
-            "trabajador_produccion_id": trabajador.id if tipo == "salida" and trabajador else None,
+            "proveedor_id": proveedor.id if tipo == TIPO_ENTRADA and proveedor else None,
+            "trabajador_produccion_id": trabajador.id if tipo == TIPO_SALIDA and trabajador else None,
             "tipo": tipo,
             "cantidad": str(cantidad),
             "fecha": fecha,
@@ -539,7 +517,7 @@ def analyze_movimiento_import(file_name: str, file_bytes: bytes) -> tuple[dict[s
 
     # Preview y commit comparten exactamente este análisis para evitar diferencias.
     source_rows, header_observations = _read_source_rows(file_name, file_bytes)
-    materias, materia_aliases, proveedores, proveedor_aliases, trabajadores, trabajador_aliases = _build_lookup_maps()
+    catalogs = _load_catalogs()
     preview_rows: list[dict[str, object]] = []
     payloads: list[dict[str, object]] = []
     file_errors: list[str] = []
@@ -548,16 +526,7 @@ def analyze_movimiento_import(file_name: str, file_bytes: bytes) -> tuple[dict[s
         file_errors.append("El archivo no contiene filas de datos para importar.")
 
     for row_number, raw_row in source_rows:
-        preview_row, payload = _build_row_preview(
-            row_number,
-            raw_row,
-            materias,
-            materia_aliases,
-            proveedores,
-            proveedor_aliases,
-            trabajadores,
-            trabajador_aliases,
-        )
+        preview_row, payload = _build_row_preview(row_number, raw_row, catalogs)
         preview_rows.append(preview_row)
         if payload:
             payloads.append(payload)

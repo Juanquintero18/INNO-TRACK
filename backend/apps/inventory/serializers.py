@@ -4,21 +4,19 @@ Incluye reglas de validación de stock, serialización de catálogos y
 configuraciones de estabilidad/materiales habilitados para piezas.
 """
 
-from decimal import Decimal
-
 from rest_framework import serializers
 
 from apps.inventory.models import (
     DEFAULT_STOCK_BAJO_MAX,
     DEFAULT_STOCK_CRITICO_MAX,
     MateriaPrima,
-    MateriaPrimaPiezaConfig,
     MateriaPrimaStabilityThreshold,
     MovimientoInventario,
     Proveedor,
     TrabajadorProduccion,
     UnidadMedida,
 )
+from apps.inventory.services import current_stock, is_enabled_for_piezas, movement_delta
 from apps.accounts.serializers import AppUserSerializer
 
 
@@ -77,12 +75,7 @@ class MateriaPrimaSerializer(serializers.ModelSerializer):
 
     def get_enabled_for_piezas(self, obj: MateriaPrima):
         """Indica si la materia está habilitada para nuevas piezas."""
-        try:
-            config = obj.pieza_config
-        except MateriaPrimaPiezaConfig.DoesNotExist:
-            return True
-
-        return bool(config.enabled_for_piezas)
+        return is_enabled_for_piezas(obj)
 
     def get_piezas_usage_count(self, obj: MateriaPrima):
         """Cuenta en cuántas piezas está referenciada la materia prima."""
@@ -164,31 +157,6 @@ class MovimientoInventarioSerializer(serializers.ModelSerializer):
     )
     usuario_id = serializers.PrimaryKeyRelatedField(source="usuario", read_only=True)
 
-    def _movement_delta(self, tipo: str | None, cantidad: Decimal | None) -> Decimal:
-        """Convierte tipo de movimiento a delta aritmético sobre stock."""
-        amount = cantidad or Decimal("0")
-
-        if tipo == "entrada":
-            return amount
-        if tipo == "salida":
-            return -amount
-        if tipo == "ajuste":
-            return amount
-        return Decimal("0")
-
-    def _current_stock_without_instance(self, materia_prima: MateriaPrima) -> Decimal:
-        """Calcula stock acumulado excluyendo instancia en edición (si existe)."""
-        movimientos = MovimientoInventario.objects.filter(materia_prima=materia_prima)
-
-        if self.instance and self.instance.pk:
-            movimientos = movimientos.exclude(pk=self.instance.pk)
-
-        stock = Decimal("0")
-        for movimiento in movimientos:
-            stock += self._movement_delta(movimiento.tipo, movimiento.cantidad)
-
-        return stock
-
     def validate(self, attrs):
         """Evita guardar movimientos que dejen el stock en negativo."""
         attrs = super().validate(attrs)
@@ -200,7 +168,9 @@ class MovimientoInventarioSerializer(serializers.ModelSerializer):
         if materia_prima is None or tipo is None or cantidad is None:
             return attrs
 
-        projected_stock = self._current_stock_without_instance(materia_prima) + self._movement_delta(tipo, cantidad)
+        # Al editar, el propio movimiento no cuenta: se reemplaza por sus nuevos valores.
+        editing_id = self.instance.pk if self.instance else None
+        projected_stock = current_stock(materia_prima, exclude_movimiento_id=editing_id) + movement_delta(tipo, cantidad)
 
         if projected_stock < 0:
             raise serializers.ValidationError(

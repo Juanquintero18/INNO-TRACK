@@ -23,7 +23,7 @@ from apps.accounts.throttling import (
     PasswordResetEmailThrottle,
     PasswordResetIPThrottle,
 )
-from apps.audit.services import create_audit_log
+from apps.audit.mixins import AuditedDestroyMixin
 
 
 logger = logging.getLogger(__name__)
@@ -118,14 +118,9 @@ class CurrentUserView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class AppUserViewSet(ModelViewSet):
-    """CRUD de usuarios con escritura limitada a rol administrador."""
+class AppUserViewSet(AuditedDestroyMixin, ModelViewSet):
+    """CRUD de usuarios con escritura limitada a rol administrador y borrado auditado."""
 
     permission_classes = [AdminWritePermission]
     queryset = AppUser.objects.all().order_by("id")
     serializer_class = AppUserSerializer
-
-    def perform_destroy(self, instance):
-        """Registra auditoría de eliminación antes de borrar usuario."""
-        create_audit_log(instance, self.request.user)
-        instance.delete()

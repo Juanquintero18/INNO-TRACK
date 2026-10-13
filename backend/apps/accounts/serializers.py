@@ -8,8 +8,7 @@ Este módulo concentra:
 """
 
 from rest_framework import serializers
-from django.contrib.auth.hashers import check_password, identify_hasher
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password, identify_hasher, make_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 from apps.accounts.authentication import build_access_token, read_access_token
