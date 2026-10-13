@@ -12,7 +12,8 @@ import { AuthCard } from '@/components/AuthCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { apiRequest } from '@/lib/api';
+import { apiRequest, ENDPOINTS } from '@/lib/api';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function RecuperarContrasena() {
   const [email, setEmail] = useState('');
@@ -27,14 +28,14 @@ export default function RecuperarContrasena() {
     setIsSubmitting(true);
 
     try {
-      await apiRequest('/api/auth/password-reset/', {
+      await apiRequest(ENDPOINTS.passwordReset, {
         method: 'POST',
         json: { email: email.trim() },
         omitAuth: true,
       });
       setSentTo(email.trim());
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : 'No se pudo enviar la solicitud.');
+      setError(getErrorMessage(requestError, 'No se pudo enviar la solicitud.'));
     } finally {
       setIsSubmitting(false);
     }

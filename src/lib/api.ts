@@ -26,6 +26,24 @@ export function clearAccessToken() {
   window.localStorage.removeItem(ACCESS_TOKEN_KEY);
 }
 
+/**
+ * `fetch` con la URL base y el token de sesion.
+ *
+ * Se usa directamente solo cuando la peticion o la respuesta no son JSON
+ * (subida de archivos, descargas); para lo demas esta `apiRequest`.
+ */
+export function apiFetch(path: string, init: RequestInit = {}) {
+  const token = getAccessToken();
+
+  return fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init.headers,
+    },
+  });
+}
+
 type ApiRequestOptions = RequestInit & {
   json?: unknown;
   omitAuth?: boolean;
@@ -76,3 +94,28 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
 
   return response.json() as Promise<T>;
 }
+
+/** Crea (POST) o actualiza (PUT) un recurso REST segun tenga o no identificador. */
+export function saveResource<T>(collectionPath: string, id: number | null | undefined, payload: unknown) {
+  return id != null
+    ? apiRequest<T>(`${collectionPath}${id}/`, { method: 'PUT', json: payload })
+    : apiRequest<T>(collectionPath, { method: 'POST', json: payload });
+}
+
+/** Rutas de la API agrupadas por recurso. */
+export const ENDPOINTS = {
+  me: '/api/me/',
+  login: '/api/auth/login/',
+  passwordReset: '/api/auth/password-reset/',
+  passwordResetConfirm: '/api/auth/password-reset/confirm/',
+  usuarios: '/api/accounts/users/',
+  auditLogs: '/api/audit/logs/',
+  unidadesMedida: '/api/inventory/unidades-medida/',
+  materiasPrimas: '/api/inventory/materias-primas/',
+  movimientos: '/api/inventory/movimientos/',
+  proveedores: '/api/inventory/proveedores/',
+  trabajadores: '/api/inventory/trabajadores/',
+  proyectos: '/api/production/proyectos/',
+  ordenes: '/api/production/ordenes/',
+  piezas: '/api/production/piezas/',
+} as const;

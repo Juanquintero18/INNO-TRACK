@@ -11,7 +11,8 @@ import { AuthCard } from '@/components/AuthCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { apiRequest } from '@/lib/api';
+import { apiRequest, ENDPOINTS } from '@/lib/api';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function RestablecerContrasena() {
   const [searchParams] = useSearchParams();
@@ -37,14 +38,14 @@ export default function RestablecerContrasena() {
     setIsSubmitting(true);
 
     try {
-      await apiRequest('/api/auth/password-reset/confirm/', {
+      await apiRequest(ENDPOINTS.passwordResetConfirm, {
         method: 'POST',
         json: { uid, token, password },
         omitAuth: true,
       });
       setIsDone(true);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : 'No se pudo cambiar la contraseña.');
+      setError(getErrorMessage(requestError, 'No se pudo cambiar la contraseña.'));
     } finally {
       setIsSubmitting(false);
     }

@@ -208,3 +208,32 @@ export interface MovimientoImportCommitResult {
   created_ids: number[];
   preview: MovimientoImportPreview;
 }
+
+/** Tipos de registro cuya eliminación queda en la auditoría y puede deshacerse. */
+export type DeletedEntityType =
+  | 'pieza'
+  | 'materia-prima'
+  | 'movimiento-inventario'
+  | 'proveedor'
+  | 'trabajador'
+  | 'usuario';
+
+/** Usuario que eliminó o restauró un registro, tal como quedó guardado en el log. */
+export type AuditActor = {
+  id: number | null;
+  nombre: string;
+} | null;
+
+export interface DeletedAuditItem {
+  id: number;
+  entityType: DeletedEntityType;
+  entityId: number;
+  entityLabel: string;
+  deletedAt: string;
+  deletedBy: AuditActor;
+  restoredAt?: string | null;
+  restoredBy?: AuditActor;
+  isRestored: boolean;
+  /** Copia del registro tal como estaba al eliminarse. */
+  data: Record<string, unknown>;
+}

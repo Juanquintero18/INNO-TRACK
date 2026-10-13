@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { FileSpreadsheet, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { exportToExcel, type ExcelSheet } from '@/lib/excel-export';
+import { getErrorMessage } from '@/lib/utils';
 
 interface ExportExcelButtonProps {
   /** Nombre base del archivo, sin fecha ni extension. */
@@ -31,7 +32,7 @@ export function ExportExcelButton({ fileName, getSheets }: ExportExcelButtonProp
     try {
       await exportToExcel(fileName, sheets);
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : 'No se pudo generar el archivo de Excel.');
+      window.alert(getErrorMessage(error, 'No se pudo generar el archivo de Excel.'));
     } finally {
       setIsExporting(false);
     }

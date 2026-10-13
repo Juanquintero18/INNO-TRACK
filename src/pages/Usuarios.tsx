@@ -6,77 +6,64 @@
  */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Plus, Users } from 'lucide-react';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
+import { RowActions } from '@/components/data/RowActions';
+import { SearchInput } from '@/components/data/SearchInput';
+import { SortableHeader } from '@/components/data/SortableHeader';
+import { FormDialog } from '@/components/form/FormDialog';
+import {
+  FormActions,
+  FormError,
+  RequiredFieldsHint,
+  SelectField,
+  TextField,
+  type SelectOption,
+} from '@/components/form/FormParts';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppData } from '@/contexts/AppDataContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { apiRequest } from '@/lib/api';
+import { useFormState } from '@/hooks/useFormState';
+import { useModulePermission } from '@/hooks/useModulePermission';
+import { useSort } from '@/hooks/useSort';
+import { ENDPOINTS, saveResource } from '@/lib/api';
 import { buildSheet } from '@/lib/excel-export';
-import { ExportExcelButton } from '@/components/ExportExcelButton';
-import { Users, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
+import { sortRows, textSortValue } from '@/lib/sorting';
+import type { Usuario } from '@/lib/types';
+import { getErrorMessage } from '@/lib/utils';
 
-type Usuario = {
-  id: number;
-  nombre: string;
-  apellido: string | null;
-  email: string | null;
-  contrasena?: string;
-  rol: string | null;
-};
+type SortField = 'nombre' | 'apellido' | 'email' | 'rol';
+
+const EMPTY_FORM = { nombre: '', apellido: '', email: '', contrasena: '', rol: '' };
+
+const ROLE_OPTIONS: SelectOption[] = [
+  { value: 'administrador', label: 'Administrador' },
+  { value: 'almacenista', label: 'Almacenista' },
+  { value: 'trabajador', label: 'Trabajador' },
+];
 
 /** Controla el CRUD de usuarios y sus reglas basicas de validacion. */
 export default function Usuarios() {
-  const { canEditModule } = useAuth();
   const { usuariosList, setUsuariosList, deleteEntity } = useAppData();
-  const canManage = canEditModule('usuarios');
+  const { canManage, showPermissionDenied } = useModulePermission('usuarios');
   const [search, setSearch] = useState('');
-  const [sortField, setSortField] = useState<'nombre' | 'apellido' | 'email' | 'rol'>('nombre');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const { sortField, sortDirection, toggleSort } = useSort<SortField>('nombre');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
-  const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    contrasena: '',
-    rol: '',
-  });
-  const [formError, setFormError] = useState('');
-
-  /** Mensaje estandar para intentos de escritura sin permisos administrativos. */
-  const showPermissionDenied = () => {
-    window.alert('No tienes permisos para editar en el módulo de Usuarios.');
-  };
+  const form = useFormState(EMPTY_FORM);
 
   // Filtra coincidencias por nombre, apellido, correo o rol.
-  const filtered = usuariosList.filter(u =>
-    u.nombre.toLowerCase().includes(search.toLowerCase()) ||
-    (u.apellido ?? '').toLowerCase().includes(search.toLowerCase()) ||
-    (u.email ?? '').toLowerCase().includes(search.toLowerCase()) ||
-    (u.rol ?? '').toLowerCase().includes(search.toLowerCase())
+  const term = search.toLowerCase();
+  const filtered = usuariosList.filter(
+    usuario =>
+      usuario.nombre.toLowerCase().includes(term) ||
+      (usuario.apellido ?? '').toLowerCase().includes(term) ||
+      (usuario.email ?? '').toLowerCase().includes(term) ||
+      (usuario.rol ?? '').toLowerCase().includes(term)
   );
-
-  // Ordena la vista segun el campo seleccionado desde la cabecera.
-  const sorted = [...filtered].sort((left, right) => {
-    const leftValue = (left[sortField] ?? '').toString().toLowerCase();
-    const rightValue = (right[sortField] ?? '').toString().toLowerCase();
-
-    if (leftValue < rightValue) {
-      return sortDirection === 'asc' ? -1 : 1;
-    }
-
-    if (leftValue > rightValue) {
-      return sortDirection === 'asc' ? 1 : -1;
-    }
-
-    return 0;
-  });
+  const sorted = sortRows(filtered, usuario => textSortValue(usuario[sortField]), sortDirection);
 
   /** Exporta los usuarios visibles. Nunca incluye contrasenas. */
   const getExportSheets = () => [
@@ -92,45 +79,13 @@ export default function Usuarios() {
     }),
   ];
 
-  /** Cambia el criterio de orden o invierte el sentido del campo actual. */
-  const handleSort = (field: 'nombre' | 'apellido' | 'email' | 'rol') => {
-    if (sortField === field) {
-      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
-      return;
-    }
-
-    setSortField(field);
-    setSortDirection('asc');
-  };
-
-  const renderSortableHeader = (label: string, field: 'nombre' | 'apellido' | 'email' | 'rol') => (
-    <button
-      type="button"
-      onClick={() => handleSort(field)}
-      className="inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
-    >
-      <span>{label}</span>
-      <ArrowUpDown className={`h-4 w-4 ${sortField === field ? 'text-primary' : 'text-muted-foreground'}`} />
-      {sortField === field && (
-        <span className="text-xs text-primary">{sortDirection === 'asc' ? 'ASC' : 'DESC'}</span>
-      )}
-    </button>
-  );
-
   const resetForm = () => {
-    setFormData({
-      nombre: '',
-      apellido: '',
-      email: '',
-      contrasena: '',
-      rol: '',
-    });
-    setFormError('');
+    form.reset();
     setEditingUsuario(null);
   };
 
   /** Valida la unicidad del correo y persiste el usuario en el backend. */
-  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -138,58 +93,51 @@ export default function Usuarios() {
       return;
     }
 
-    const nombre = formData.nombre.trim();
-    const apellido = formData.apellido.trim();
-    const email = formData.email.trim();
-    const contrasena = formData.contrasena.trim();
-    const rol = formData.rol.trim();
+    const nombre = form.values.nombre.trim();
+    const apellido = form.values.apellido.trim();
+    const email = form.values.email.trim();
+    const contrasena = form.values.contrasena.trim();
+    const rol = form.values.rol.trim();
 
     if (!nombre || !apellido || !email || !rol) {
-      setFormError('Completa todos los campos del usuario.');
+      form.setError('Completa todos los campos del usuario.');
       return;
     }
 
     if (!editingUsuario && !contrasena) {
-      setFormError('La contraseña es obligatoria para crear el usuario.');
+      form.setError('La contraseña es obligatoria para crear el usuario.');
       return;
     }
 
     const emailExiste = usuariosList.some(
-      usuario => usuario.email.toLowerCase() === email.toLowerCase() && usuario.id !== editingUsuario?.id
+      usuario => (usuario.email ?? '').toLowerCase() === email.toLowerCase() && usuario.id !== editingUsuario?.id
     );
 
     if (emailExiste) {
-      setFormError('Ese correo de usuario ya existe.');
+      form.setError('Ese correo de usuario ya existe.');
       return;
     }
 
     try {
-      const payload = {
+      // La contraseña solo viaja cuando se escribe una nueva.
+      const saved = await saveResource<Usuario>(ENDPOINTS.usuarios, editingUsuario?.id, {
         nombre,
         apellido,
         email,
         rol,
         ...(contrasena ? { contrasena } : {}),
-      };
+      });
 
       if (editingUsuario) {
-        const updatedUsuario = await apiRequest<Usuario>(`/api/accounts/users/${editingUsuario.id}/`, {
-          method: 'PUT',
-          json: payload,
-        });
-        setUsuariosList(prev => prev.map(usuario => usuario.id === editingUsuario.id ? updatedUsuario : usuario));
+        setUsuariosList(prev => prev.map(usuario => (usuario.id === editingUsuario.id ? saved : usuario)));
       } else {
-        const createdUsuario = await apiRequest<Usuario>('/api/accounts/users/', {
-          method: 'POST',
-          json: payload,
-        });
-        setUsuariosList(prev => [createdUsuario, ...prev]);
+        setUsuariosList(prev => [saved, ...prev]);
       }
 
       resetForm();
       setOpenCreate(false);
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : 'No se pudo guardar el usuario.');
+      form.setError(getErrorMessage(error, 'No se pudo guardar el usuario.'));
     }
   };
 
@@ -200,14 +148,13 @@ export default function Usuarios() {
     }
 
     setEditingUsuario(usuario);
-    setFormData({
+    form.reset({
       nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      email: usuario.email,
+      apellido: usuario.apellido ?? '',
+      email: usuario.email ?? '',
       contrasena: '',
-      rol: usuario.rol,
+      rol: usuario.rol ?? '',
     });
-    setFormError('');
     setOpenCreate(true);
   };
 
@@ -222,9 +169,18 @@ export default function Usuarios() {
     try {
       await deleteEntity('usuario', usuario);
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar el usuario.');
+      window.alert(getErrorMessage(error, 'No se pudo eliminar el usuario.'));
     }
   };
+
+  const sortableHeader = (label: string, field: SortField) => (
+    <SortableHeader
+      label={label}
+      active={sortField === field}
+      direction={sortDirection}
+      onSort={() => toggleSort(field)}
+    />
+  );
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -248,61 +204,38 @@ export default function Usuarios() {
 
       <Card>
         <CardHeader className="pb-3">
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por nombre, apellido, email o rol..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
+          <SearchInput
+            placeholder="Buscar por nombre, apellido, email o rol..."
+            value={search}
+            onChange={setSearch}
+            className="max-w-sm"
+          />
         </CardHeader>
 
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{renderSortableHeader('Nombre', 'nombre')}</TableHead>
-                <TableHead>{renderSortableHeader('Apellido', 'apellido')}</TableHead>
-                <TableHead>{renderSortableHeader('Email', 'email')}</TableHead>
-                <TableHead>{renderSortableHeader('Rol', 'rol')}</TableHead>
+                <TableHead>{sortableHeader('Nombre', 'nombre')}</TableHead>
+                <TableHead>{sortableHeader('Apellido', 'apellido')}</TableHead>
+                <TableHead>{sortableHeader('Email', 'email')}</TableHead>
+                <TableHead>{sortableHeader('Rol', 'rol')}</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {sorted.map(u => (
-                <TableRow key={u.id}>
-                  <TableCell className="font-medium">{u.nombre}</TableCell>
-                  <TableCell>{u.apellido}</TableCell>
-                  <TableCell className="text-muted-foreground">{u.email}</TableCell>
+              {sorted.map(usuario => (
+                <TableRow key={usuario.id}>
+                  <TableCell className="font-medium">{usuario.nombre}</TableCell>
+                  <TableCell>{usuario.apellido}</TableCell>
+                  <TableCell className="text-muted-foreground">{usuario.email}</TableCell>
                   <TableCell>
-                    <Badge variant={u.rol === 'administrador' ? 'default' : 'secondary'}>
-                      {u.rol}
-                    </Badge>
+                    <Badge variant={usuario.rol === 'administrador' ? 'default' : 'secondary'}>{usuario.rol}</Badge>
                   </TableCell>
 
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleEdit(u)}
-                        title="Editar"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleDelete(u)}
-                        title="Eliminar"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <RowActions onEdit={() => handleEdit(usuario)} onDelete={() => handleDelete(usuario)} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -311,111 +244,62 @@ export default function Usuarios() {
         </CardContent>
       </Card>
 
-      <Dialog
+      <FormDialog
         open={openCreate}
         onOpenChange={open => {
           setOpenCreate(open);
           if (!open) resetForm();
         }}
+        title={editingUsuario ? 'Editar usuario' : 'Nuevo usuario'}
+        onSubmit={handleSubmit}
       >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editingUsuario ? 'Editar usuario' : 'Nuevo usuario'}</DialogTitle>
-          </DialogHeader>
+        <RequiredFieldsHint />
+        <TextField
+          id="nombre"
+          label="Nombre"
+          required
+          placeholder="Ej. Laura"
+          value={form.values.nombre}
+          onValueChange={value => form.setField('nombre', value)}
+        />
+        <TextField
+          id="apellido"
+          label="Apellido"
+          required
+          placeholder="Ej. Gómez"
+          value={form.values.apellido}
+          onValueChange={value => form.setField('apellido', value)}
+        />
+        <TextField
+          id="email"
+          label="Correo electrónico"
+          required
+          type="email"
+          placeholder="usuario@innolution.com"
+          value={form.values.email}
+          onValueChange={value => form.setField('email', value)}
+        />
+        <TextField
+          id="contrasena"
+          label="Contraseña"
+          required
+          type="password"
+          placeholder="••••••••"
+          value={form.values.contrasena}
+          onValueChange={value => form.setField('contrasena', value)}
+        />
+        <SelectField
+          label="Rol"
+          required
+          placeholder="Selecciona un rol"
+          options={ROLE_OPTIONS}
+          value={form.values.rol}
+          onValueChange={value => form.setField('rol', value)}
+        />
 
-          <form onSubmit={handleCreateSubmit} className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-primary">*</span> es obligatorio
-            </p>
-            <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre <span className="text-primary">*</span></Label>
-              <Input
-                id="nombre"
-                placeholder="Ej. Laura"
-                value={formData.nombre}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, nombre: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="apellido">Apellido <span className="text-primary">*</span></Label>
-              <Input
-                id="apellido"
-                placeholder="Ej. Gómez"
-                value={formData.apellido}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, apellido: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico <span className="text-primary">*</span></Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="usuario@innolution.com"
-                value={formData.email}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, email: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="contrasena">Contraseña <span className="text-primary">*</span></Label>
-              <Input
-                id="contrasena"
-                type="password"
-                placeholder="••••••••"
-                value={formData.contrasena}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, contrasena: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Rol <span className="text-primary">*</span></Label>
-              <Select
-                value={formData.rol}
-                onValueChange={value => {
-                  setFormData(prev => ({ ...prev, rol: value }));
-                  if (formError) setFormError('');
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un rol" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="administrador">Administrador</SelectItem>
-                  <SelectItem value="almacenista">Almacenista</SelectItem>
-                  <SelectItem value="trabajador">Trabajador</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {formError && (
-              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-                {formError}
-              </p>
-            )}
-
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={() => setOpenCreate(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit">{editingUsuario ? 'Actualizar' : 'Guardar'}</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+        <FormError message={form.error} />
+        <FormActions onCancel={() => setOpenCreate(false)} submitLabel={editingUsuario ? 'Actualizar' : 'Guardar'} />
+      </FormDialog>
     </motion.div>
   );
 }

@@ -5,7 +5,7 @@
  * inicial y las reglas de acceso por modulo para administradores y operarios.
  */
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { apiRequest, clearAccessToken, setAccessToken } from '@/lib/api';
+import { apiRequest, clearAccessToken, ENDPOINTS, setAccessToken } from '@/lib/api';
 import type { Usuario } from '@/lib/types';
 
 export type AppModule =
@@ -29,6 +29,26 @@ interface AuthContextType {
   canEditModule: (module: AppModule) => boolean;
 }
 
+const ROLE_ADMIN = 'administrador';
+const ROLE_ALMACENISTA = 'almacenista';
+
+interface ModulePermissions {
+  view: AppModule[];
+  edit: AppModule[];
+}
+
+const ALMACENISTA_PERMISSIONS: ModulePermissions = {
+  view: ['dashboard', 'piezas', 'inventario', 'materias-primas', 'proveedores', 'trabajadores'],
+  edit: ['inventario', 'proveedores', 'materias-primas'],
+};
+
+// Los operarios tienen una vista mas restringida y solo pueden editar piezas.
+// Es tambien el permiso de cualquier rol que no sea administrador ni almacenista.
+const TRABAJADOR_PERMISSIONS: ModulePermissions = {
+  view: ['dashboard', 'piezas', 'inventario', 'materias-primas', 'trabajadores'],
+  edit: ['dashboard', 'piezas'],
+};
+
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 /**
@@ -38,37 +58,15 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Usuario | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const isAdmin = user?.rol === 'administrador';
-  const isAlmacenista = user?.rol === 'almacenista';
-
-  // Los operarios tienen una vista mas restringida y solo pueden editar piezas.
-  const workerViewModules: AppModule[] = [
-    'dashboard',
-    'piezas',
-    'inventario',
-    'materias-primas',
-    'trabajadores',
-  ];
-
-  const workerEditModules: AppModule[] = ['dashboard', 'piezas'];
-
-  const almacenistaViewModules: AppModule[] = [
-    'dashboard',
-    'piezas',
-    'inventario',
-    'materias-primas',
-    'proveedores',
-    'trabajadores',
-  ];
-
-  const almacenistaEditModules: AppModule[] = ['inventario', 'proveedores', 'materias-primas'];
+  const isAdmin = user?.rol === ROLE_ADMIN;
+  const permissions = user?.rol === ROLE_ALMACENISTA ? ALMACENISTA_PERMISSIONS : TRABAJADOR_PERMISSIONS;
 
   useEffect(() => {
     // Al recargar la pagina, la app intenta recuperar el usuario a partir del
     // token guardado. Si falla, limpia la sesion local para evitar estados rotos.
     const bootstrap = async () => {
       try {
-        const currentUser = await apiRequest<Usuario>('/api/me/');
+        const currentUser = await apiRequest<Usuario>(ENDPOINTS.me);
         setUser(currentUser);
       } catch {
         clearAccessToken();
@@ -84,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<{ ok: boolean; error?: string }> => {
     try {
       // El backend retorna el token y el usuario serializado en una sola llamada.
-      const response = await apiRequest<{ access: string; user: Usuario }>('/api/auth/login/', {
+      const response = await apiRequest<{ access: string; user: Usuario }>(ENDPOINTS.login, {
         method: 'POST',
         json: { email, password },
         omitAuth: true,
@@ -112,17 +110,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /** Determina si un modulo debe mostrarse en la navegacion segun el rol. */
   const canAccessModule = (module: AppModule) => {
     if (!user) return false;
-    if (isAdmin) return true;
-    if (isAlmacenista) return almacenistaViewModules.includes(module);
-    return workerViewModules.includes(module);
+    return isAdmin || permissions.view.includes(module);
   };
 
   /** Determina si el usuario puede modificar datos dentro de un modulo. */
   const canEditModule = (module: AppModule) => {
     if (!user) return false;
-    if (isAdmin) return true;
-    if (isAlmacenista) return almacenistaEditModules.includes(module);
-    return workerEditModules.includes(module);
+    return isAdmin || permissions.edit.includes(module);
   };
 
   return (

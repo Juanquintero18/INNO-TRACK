@@ -6,8 +6,8 @@
  * tipadas (numeros y fechas reales en lugar de texto).
  */
 import type { CellObject, SheetData } from 'write-excel-file/browser';
+import { BOGOTA_TIMEZONE } from '@/lib/dates';
 
-const BOGOTA_TIMEZONE = 'America/Bogota';
 const HEADER_BACKGROUND = '#013C7F';
 const HEADER_TEXT_COLOR = '#FFFFFF';
 const MIN_COLUMN_WIDTH = 10;

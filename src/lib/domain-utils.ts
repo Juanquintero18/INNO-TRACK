@@ -3,32 +3,50 @@
  *
  * Este módulo evita duplicar reglas de negocio en las distintas pantallas.
  */
-import type { MateriaPrima, Pieza } from '@/lib/types';
+import type { MateriaPrima, MovimientoInventario, Pieza, PiezaMateriaPrima } from '@/lib/types';
 
 export type StockStabilityState = 'critico' | 'bajo' | 'estable';
 
 const DEFAULT_STOCK_CRITICO_MAX = 20;
 const DEFAULT_STOCK_BAJO_MAX = 50;
 
-export function calcularCostoPieza(pieza: Pieza): number {
-  // El costo se deriva de cantidad consumida * costo unitario por material.
-  if (!pieza.materias_primas) return 0;
-
-  return pieza.materias_primas.reduce((total, material) => {
-    const cantidad = material.cantidad_real ?? material.cantidad_teorica ?? 0;
-    const costo = material.materia_prima?.costo ?? 0;
-    return total + cantidad * costo;
-  }, 0);
+/** Efecto de un movimiento sobre el stock: las salidas restan; entradas y ajustes suman su cantidad. */
+export function getMovementDelta(tipo: MovimientoInventario['tipo'], cantidad: number) {
+  return tipo === 'salida' ? -cantidad : cantidad;
 }
 
-export function calcularPesoTeoricoPieza(pieza: Pieza): number {
-  // Suma cantidades para mostrar un peso teórico de referencia.
+/**
+ * Indica si una materia prima puede agregarse a piezas.
+ *
+ * Si el backend no envía la bandera (despliegue parcial) se asume habilitada
+ * para no bloquear producción.
+ */
+export function isMateriaEnabledForPiezas(materia: MateriaPrima) {
+  return materia.enabled_for_piezas !== false;
+}
+
+/** Cantidad consumida de un material: la real si se registró; si no, la teórica. */
+export function getCantidadConsumida(material: PiezaMateriaPrima) {
+  return material.cantidad_real ?? material.cantidad_teorica ?? 0;
+}
+
+/** Costo de un material dentro de una pieza: cantidad consumida por costo unitario. */
+export function calcularSubtotalMaterial(material: PiezaMateriaPrima) {
+  return getCantidadConsumida(material) * (material.materia_prima?.costo ?? 0);
+}
+
+/** Costo total de una pieza: suma del costo de cada material consumido. */
+export function calcularCostoPieza(pieza: Pieza): number {
   if (!pieza.materias_primas) return 0;
 
-  return pieza.materias_primas.reduce((total, material) => {
-    const cantidad = material.cantidad_real ?? material.cantidad_teorica ?? 0;
-    return total + cantidad;
-  }, 0);
+  return pieza.materias_primas.reduce((total, material) => total + calcularSubtotalMaterial(material), 0);
+}
+
+/** Suma las cantidades consumidas para mostrar un peso teórico de referencia. */
+export function calcularPesoTeoricoPieza(pieza: Pieza): number {
+  if (!pieza.materias_primas) return 0;
+
+  return pieza.materias_primas.reduce((total, material) => total + getCantidadConsumida(material), 0);
 }
 
 export function getMateriaPrimaStabilityThresholds(materiaPrima: MateriaPrima) {

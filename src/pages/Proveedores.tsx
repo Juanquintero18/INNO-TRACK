@@ -1,70 +1,54 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAppData } from '@/contexts/AppDataContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { apiRequest } from '@/lib/api';
-import { buildSheet } from '@/lib/excel-export';
-import { ExportExcelButton } from '@/components/ExportExcelButton';
-import { Truck, Mail, Phone, MapPin, Plus, Pencil, Trash2, Search, ArrowUpDown } from 'lucide-react';
-
 /**
  * Pantalla de proveedores.
  *
  * Centraliza el directorio de empresas proveedoras y las operaciones CRUD que
  * alimentan los movimientos de entrada al inventario.
  */
-type Proveedor = { id: number; nombre: string; telefono: string | null; email: string | null; direccion: string | null };
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowUpDown, Mail, MapPin, Phone, Plus, Truck } from 'lucide-react';
+import { ExportExcelButton } from '@/components/ExportExcelButton';
+import { DeleteButton, EditButton } from '@/components/data/RowActions';
+import { SearchInput } from '@/components/data/SearchInput';
+import { FormDialog } from '@/components/form/FormDialog';
+import { FormActions, FormError, TextField } from '@/components/form/FormParts';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAppData } from '@/contexts/AppDataContext';
+import { useFormState } from '@/hooks/useFormState';
+import { useModulePermission } from '@/hooks/useModulePermission';
+import { useSort } from '@/hooks/useSort';
+import { ENDPOINTS, saveResource } from '@/lib/api';
+import { buildSheet } from '@/lib/excel-export';
+import { sortRows, textSortValue } from '@/lib/sorting';
+import type { Proveedor } from '@/lib/types';
+import { getErrorMessage } from '@/lib/utils';
+
+type SortField = 'nombre' | 'email' | 'telefono' | 'direccion';
+
+const EMPTY_FORM = { nombre: '', telefono: '', email: '', direccion: '' };
 
 /** Administra proveedores con busqueda, orden y formulario modal. */
 export default function Proveedores() {
-  const { canEditModule } = useAuth();
   const { proveedoresList, setProveedoresList, deleteEntity } = useAppData();
-  const canManage = canEditModule('proveedores');
+  const { canManage, showPermissionDenied } = useModulePermission('proveedores');
   const [search, setSearch] = useState('');
-  const [sortField, setSortField] = useState<'nombre' | 'email' | 'telefono' | 'direccion'>('nombre');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const { sortField, sortDirection, toggleSort, toggleDirection } = useSort<SortField>('nombre');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingProveedor, setEditingProveedor] = useState<Proveedor | null>(null);
-  const [formData, setFormData] = useState({
-    nombre: '',
-    telefono: '',
-    email: '',
-    direccion: '',
-  });
-  const [formError, setFormError] = useState('');
-
-  /** Mensaje estandar para operaciones bloqueadas por permisos. */
-  const showPermissionDenied = () => {
-    window.alert('No tienes permisos para editar en el módulo de Proveedores.');
-  };
+  const form = useFormState(EMPTY_FORM);
 
   // Permite localizar proveedores por cualquier dato de contacto.
-  const filtered = proveedoresList.filter(proveedor => {
-    const term = search.toLowerCase();
-
-    return (
+  const term = search.toLowerCase();
+  const filtered = proveedoresList.filter(
+    proveedor =>
       proveedor.nombre.toLowerCase().includes(term) ||
       (proveedor.email ?? '').toLowerCase().includes(term) ||
       (proveedor.telefono ?? '').toLowerCase().includes(term) ||
       (proveedor.direccion ?? '').toLowerCase().includes(term)
-    );
-  });
-
-  // Mantiene el listado ordenado segun el selector superior.
-  const sorted = [...filtered].sort((left, right) => {
-    const leftValue = (left[sortField] ?? '').toString().toLowerCase();
-    const rightValue = (right[sortField] ?? '').toString().toLowerCase();
-
-    if (leftValue < rightValue) return sortDirection === 'asc' ? -1 : 1;
-    if (leftValue > rightValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+  );
+  const sorted = sortRows(filtered, proveedor => textSortValue(proveedor[sortField]), sortDirection);
 
   /** Exporta el directorio con el filtro y el orden que estan en pantalla. */
   const getExportSheets = () => [
@@ -80,25 +64,13 @@ export default function Proveedores() {
     }),
   ];
 
-  /** Alterna el orden o cambia la columna principal de ordenamiento. */
-  const handleSortFieldChange = (value: 'nombre' | 'email' | 'telefono' | 'direccion') => {
-    if (sortField === value) {
-      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
-      return;
-    }
-
-    setSortField(value);
-    setSortDirection('asc');
-  };
-
   const resetForm = () => {
-    setFormData({ nombre: '', telefono: '', email: '', direccion: '' });
-    setFormError('');
+    form.reset();
     setEditingProveedor(null);
   };
 
   /** Valida datos obligatorios y persistencia del proveedor. */
-  const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!canManage) {
@@ -106,48 +78,44 @@ export default function Proveedores() {
       return;
     }
 
-    const nombre = formData.nombre.trim();
-    const telefono = formData.telefono.trim();
-    const email = formData.email.trim();
-    const direccion = formData.direccion.trim();
+    const nombre = form.values.nombre.trim();
+    const telefono = form.values.telefono.trim();
+    const email = form.values.email.trim();
+    const direccion = form.values.direccion.trim();
 
     if (!nombre || !telefono || !email || !direccion) {
-      setFormError('Completa todos los campos del proveedor.');
+      form.setError('Completa todos los campos del proveedor.');
       return;
     }
 
     const emailExiste = proveedoresList.some(
       proveedor =>
-        (proveedor.email ?? '').toLowerCase() === email.toLowerCase() &&
-        proveedor.id !== editingProveedor?.id
+        (proveedor.email ?? '').toLowerCase() === email.toLowerCase() && proveedor.id !== editingProveedor?.id
     );
 
     if (emailExiste) {
-      setFormError('Ese correo del proveedor ya existe.');
+      form.setError('Ese correo del proveedor ya existe.');
       return;
     }
 
     try {
-      const payload = { nombre, telefono, email, direccion };
+      const saved = await saveResource<Proveedor>(ENDPOINTS.proveedores, editingProveedor?.id, {
+        nombre,
+        telefono,
+        email,
+        direccion,
+      });
 
       if (editingProveedor) {
-        const updatedProveedor = await apiRequest<Proveedor>(`/api/inventory/proveedores/${editingProveedor.id}/`, {
-          method: 'PUT',
-          json: payload,
-        });
-        setProveedoresList(prev => prev.map(proveedor => proveedor.id === editingProveedor.id ? updatedProveedor : proveedor));
+        setProveedoresList(prev => prev.map(proveedor => (proveedor.id === editingProveedor.id ? saved : proveedor)));
       } else {
-        const createdProveedor = await apiRequest<Proveedor>('/api/inventory/proveedores/', {
-          method: 'POST',
-          json: payload,
-        });
-        setProveedoresList(prev => [createdProveedor, ...prev]);
+        setProveedoresList(prev => [saved, ...prev]);
       }
 
       resetForm();
       setOpenCreate(false);
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : 'No se pudo guardar el proveedor.');
+      form.setError(getErrorMessage(error, 'No se pudo guardar el proveedor.'));
     }
   };
 
@@ -158,13 +126,12 @@ export default function Proveedores() {
     }
 
     setEditingProveedor(proveedor);
-    setFormData({
+    form.reset({
       nombre: proveedor.nombre,
       telefono: proveedor.telefono ?? '',
       email: proveedor.email ?? '',
       direccion: proveedor.direccion ?? '',
     });
-    setFormError('');
     setOpenCreate(true);
   };
 
@@ -179,7 +146,7 @@ export default function Proveedores() {
     try {
       await deleteEntity('proveedor', proveedor);
     } catch (error) {
-      window.alert(error instanceof Error ? error.message : 'No se pudo eliminar el proveedor.');
+      window.alert(getErrorMessage(error, 'No se pudo eliminar el proveedor.'));
     }
   };
 
@@ -204,19 +171,16 @@ export default function Proveedores() {
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nombre, correo, teléfono o dirección..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+        <SearchInput
+          placeholder="Buscar por nombre, correo, teléfono o dirección..."
+          value={search}
+          onChange={setSearch}
+          className="w-full max-w-md"
+        />
 
         <div className="flex items-center gap-2">
           <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-          <Select value={sortField} onValueChange={value => handleSortFieldChange(value as 'nombre' | 'email' | 'telefono' | 'direccion')}>
+          <Select value={sortField} onValueChange={value => toggleSort(value as SortField)}>
             <SelectTrigger className="w-[220px]">
               <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
@@ -227,49 +191,34 @@ export default function Proveedores() {
               <SelectItem value="direccion">Dirección</SelectItem>
             </SelectContent>
           </Select>
-          <Button type="button" variant="outline" onClick={() => setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'))}>
+          <Button type="button" variant="outline" onClick={toggleDirection}>
             {sortDirection === 'asc' ? 'ASC' : 'DESC'}
           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sorted.map(p => (
-          <Card key={p.id} className="hover:shadow-md transition-shadow">
+        {sorted.map(proveedor => (
+          <Card key={proveedor.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3 mb-3">
-                <h3 className="font-semibold text-foreground text-lg">{p.nombre}</h3>
+                <h3 className="font-semibold text-foreground text-lg">{proveedor.nombre}</h3>
 
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleEdit(p)}
-                    title="Editar"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => handleDelete(p)}
-                    title="Eliminar"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <EditButton onClick={() => handleEdit(proveedor)} />
+                  <DeleteButton onClick={() => handleDelete(proveedor)} />
                 </div>
               </div>
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Phone className="w-4 h-4" /> {p.telefono}
+                  <Phone className="w-4 h-4" /> {proveedor.telefono}
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Mail className="w-4 h-4" /> {p.email}
+                  <Mail className="w-4 h-4" /> {proveedor.email}
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-4 h-4" /> {p.direccion}
+                  <MapPin className="w-4 h-4" /> {proveedor.direccion}
                 </div>
               </div>
             </CardContent>
@@ -285,89 +234,48 @@ export default function Proveedores() {
         )}
       </div>
 
-      <Dialog
+      <FormDialog
         open={openCreate}
         onOpenChange={open => {
           setOpenCreate(open);
           if (!open) resetForm();
         }}
+        title={editingProveedor ? 'Editar proveedor' : 'Nuevo proveedor'}
+        onSubmit={handleSubmit}
       >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>
-              {editingProveedor ? 'Editar proveedor' : 'Nuevo proveedor'}
-            </DialogTitle>
-          </DialogHeader>
+        <TextField
+          id="nombre"
+          label="Nombre del proveedor"
+          placeholder="Ej. Compuestos del Norte"
+          value={form.values.nombre}
+          onValueChange={value => form.setField('nombre', value)}
+        />
+        <TextField
+          id="telefono"
+          label="Teléfono"
+          placeholder="+57 300 123 4567"
+          value={form.values.telefono}
+          onValueChange={value => form.setField('telefono', value)}
+        />
+        <TextField
+          id="email"
+          label="Correo electrónico"
+          type="email"
+          placeholder="proveedor@empresa.com"
+          value={form.values.email}
+          onValueChange={value => form.setField('email', value)}
+        />
+        <TextField
+          id="direccion"
+          label="Dirección"
+          placeholder="Ej. Zona Industrial, Barranquilla"
+          value={form.values.direccion}
+          onValueChange={value => form.setField('direccion', value)}
+        />
 
-          <form onSubmit={handleCreateSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="nombre">Nombre del proveedor</Label>
-              <Input
-                id="nombre"
-                placeholder="Ej. Compuestos del Norte"
-                value={formData.nombre}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, nombre: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="telefono">Teléfono</Label>
-              <Input
-                id="telefono"
-                placeholder="+57 300 123 4567"
-                value={formData.telefono}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, telefono: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="proveedor@empresa.com"
-                value={formData.email}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, email: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="direccion">Dirección</Label>
-              <Input
-                id="direccion"
-                placeholder="Ej. Zona Industrial, Barranquilla"
-                value={formData.direccion}
-                onChange={e => {
-                  setFormData(prev => ({ ...prev, direccion: e.target.value }));
-                  if (formError) setFormError('');
-                }}
-              />
-            </div>
-
-            {formError && (
-              <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-                {formError}
-              </p>
-            )}
-
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={() => setOpenCreate(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit">{editingProveedor ? 'Actualizar' : 'Guardar'}</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+        <FormError message={form.error} />
+        <FormActions onCancel={() => setOpenCreate(false)} submitLabel={editingProveedor ? 'Actualizar' : 'Guardar'} />
+      </FormDialog>
     </motion.div>
   );
 }
