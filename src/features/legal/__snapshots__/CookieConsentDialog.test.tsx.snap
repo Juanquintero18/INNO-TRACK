@@ -1,0 +1,92 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Aviso de la política de cookies > aparece al entrar si falta aceptarla y desaparece al aceptar 1`] = `
+<div
+  aria-describedby="radix-:id:"
+  aria-labelledby="radix-:id:"
+  class="bg-background border data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 duration-200 fixed gap-4 grid left-[50%] max-w-lg p-6 shadow-lg sm:rounded-lg top-[50%] translate-x-[-50%] translate-y-[-50%] w-full z-50"
+  data-state="open"
+  id="radix-:id:"
+  role="alertdialog"
+  style="pointer-events: auto;"
+  tabindex="-1"
+>
+  <div
+    class="flex flex-col sm:text-left space-y-2 text-center"
+  >
+    <h2
+      class="flex font-semibold gap-2 items-center text-lg"
+      id="radix-:id:"
+    >
+      <svg
+        class="h-5 lucide lucide-cookie text-primary w-5"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"
+        />
+        <path
+          d="M8.5 8.5v.01"
+        />
+        <path
+          d="M16 15.5v.01"
+        />
+        <path
+          d="M12 12v.01"
+        />
+        <path
+          d="M11 17v.01"
+        />
+        <path
+          d="M7 14v.01"
+        />
+      </svg>
+      Política de cookies
+    </h2>
+    <div
+      class="space-y-3 text-muted-foreground text-sm"
+      id="radix-:id:"
+    >
+      <p>
+        INNO-TRACK guarda en tu navegador solo lo necesario para mantener tu sesión iniciada. No usa cookies de publicidad ni de analítica.
+      </p>
+      <p>
+        Antes de continuar, lee la 
+        <a
+          class="font-medium text-primary underline"
+          href="/cookies"
+          rel="noreferrer"
+          target="_blank"
+        >
+          política de cookies
+        </a>
+         y acéptala.
+      </p>
+    </div>
+  </div>
+  <div
+    class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2"
+  >
+    <button
+      class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-background border border-input disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-sm transition-colors whitespace-nowrap"
+      type="button"
+    >
+      Cerrar sesión
+    </button>
+    <button
+      class="[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4 bg-primary disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring font-medium gap-2 h-10 hover:bg-primary/90 inline-flex items-center justify-center px-4 py-2 ring-offset-background rounded-md text-primary-foreground text-sm transition-colors whitespace-nowrap"
+      type="button"
+    >
+      Aceptar y continuar
+    </button>
+  </div>
+</div>
+`;

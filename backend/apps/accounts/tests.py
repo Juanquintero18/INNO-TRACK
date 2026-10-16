@@ -12,7 +12,7 @@ from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.accounts.models import AppUser
+from apps.accounts.models import AceptacionPolitica, AppUser
 from apps.accounts.password_reset import password_reset_token_generator
 from config.testing import ApiTestCase
 
@@ -215,3 +215,41 @@ class UsuariosYSesionTests(ApiTestCase):
             resultado[f"{rol} elimina"] = self.client.delete(f"/api/accounts/users/{self.admin.id}/").status_code
 
         self.assert_golden_data("matriz", resultado)
+
+
+class PoliticaCookiesTests(ApiTestCase):
+    """Aceptación de la política de cookies por usuario y por versión."""
+
+    def test_usuario_sin_aceptar_y_luego_aceptada(self):
+        self.login_as(self.trabajador)
+
+        self.assert_golden("pendiente", self.client.get("/api/accounts/politicas/"))
+        self.assert_golden("aceptar", self.client.post("/api/accounts/politicas/cookies/aceptar/"))
+        self.assert_golden("aceptada", self.client.get("/api/accounts/politicas/"))
+
+        # Aceptar otra vez no duplica el registro.
+        self.client.post("/api/accounts/politicas/cookies/aceptar/")
+        self.assertEqual(AceptacionPolitica.objects.filter(usuario=self.trabajador).count(), 1)
+
+    def test_la_aceptacion_es_de_cada_usuario(self):
+        self.login_as(self.trabajador)
+        self.client.post("/api/accounts/politicas/cookies/aceptar/")
+
+        self.login_as(self.admin)
+        self.assertFalse(self.client.get("/api/accounts/politicas/").json()["cookies"]["aceptada"])
+
+    def test_una_version_nueva_pide_aceptar_de_nuevo(self):
+        self.login_as(self.trabajador)
+        self.client.post("/api/accounts/politicas/cookies/aceptar/")
+
+        with self.settings(POLITICA_COOKIES_VERSION="2027-01-01"):
+            estado = self.client.get("/api/accounts/politicas/").json()["cookies"]
+
+        self.assertEqual(estado, {"version": "2027-01-01", "aceptada": False, "aceptada_en": None})
+
+    def test_requiere_sesion(self):
+        self.login_as(None)
+
+        self.assertEqual(self.client.get("/api/accounts/politicas/").status_code, 403)
+        self.assertEqual(self.client.post("/api/accounts/politicas/cookies/aceptar/").status_code, 403)
+        self.assertEqual(AceptacionPolitica.objects.count(), 0)

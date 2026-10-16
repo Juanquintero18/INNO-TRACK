@@ -118,4 +118,6 @@ export const ENDPOINTS = {
   proyectos: '/api/production/proyectos/',
   ordenes: '/api/production/ordenes/',
   piezas: '/api/production/piezas/',
+  politicas: '/api/accounts/politicas/',
+  aceptarPoliticaCookies: '/api/accounts/politicas/cookies/aceptar/',
 } as const;

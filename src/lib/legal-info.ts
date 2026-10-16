@@ -13,5 +13,7 @@ export const LEGAL_INFO = {
   contactPhone: '[teléfono pendiente]',
   hostingProvider: '[proveedor de alojamiento pendiente]',
   emailProvider: '[proveedor de correo pendiente]',
-  lastUpdated: '11 de octubre de 2026',
+  // Al cambiar la política de cookies, actualiza también POLITICA_COOKIES_VERSION
+  // en backend/config/settings.py para que todos los usuarios la acepten de nuevo.
+  lastUpdated: '15 de octubre de 2026',
 } as const;

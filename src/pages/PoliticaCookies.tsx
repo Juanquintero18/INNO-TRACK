@@ -87,13 +87,20 @@ export default function PoliticaCookies() {
           <li>Botones o complementos de redes sociales.</li>
           <li>Cualquier otra tecnología que te siga entre sitios web.</li>
         </ul>
+      </LegalSection>
+
+      <LegalSection title="4. Aceptación de esta política">
         <p>
-          Como solo guardamos lo estrictamente necesario para que el sistema funcione, no mostramos un aviso para
-          aceptar o rechazar cookies.
+          La primera vez que inicias sesión, INNO-TRACK te pide leer y aceptar esta política antes de continuar. Si no
+          la aceptas, puedes cerrar la sesión.
+        </p>
+        <p>
+          Tu aceptación queda registrada en el sistema con la fecha y la versión de la política. Si la política cambia,
+          te pediremos aceptarla de nuevo.
         </p>
       </LegalSection>
 
-      <LegalSection title="4. Servicios de terceros">
+      <LegalSection title="5. Servicios de terceros">
         <p>
           La tipografía de la aplicación se carga desde <strong>Google Fonts</strong>. Para entregarla, los servidores
           de Google reciben la dirección IP y datos técnicos de tu navegador. Google indica que este servicio no usa
@@ -101,7 +108,7 @@ export default function PoliticaCookies() {
         </p>
       </LegalSection>
 
-      <LegalSection title="5. Cómo borrar estos datos">
+      <LegalSection title="6. Cómo borrar estos datos">
         <ul>
           <li>
             Al <strong>cerrar sesión</strong> en INNO-TRACK se borra el identificador de sesión de tu navegador.
@@ -118,7 +125,7 @@ export default function PoliticaCookies() {
         <p>En un computador compartido, cierra siempre la sesión al terminar.</p>
       </LegalSection>
 
-      <LegalSection title="6. Cambios y contacto">
+      <LegalSection title="7. Cambios y contacto">
         <p>
           Si INNO-TRACK empieza a guardar otros datos en tu navegador, actualizaremos esta página antes de hacerlo. Para
           cualquier duda escribe a <strong>{LEGAL_INFO.contactEmail}</strong>. El uso de tus datos personales se explica

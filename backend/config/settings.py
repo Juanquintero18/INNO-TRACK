@@ -116,6 +116,10 @@ REST_FRAMEWORK = {
 
 API_TOKEN_MAX_AGE_SECONDS = config("API_TOKEN_MAX_AGE_SECONDS", default=60 * 60 * 8, cast=int)
 
+# Versión vigente de la política de cookies. Al cambiarla, todos los usuarios
+# deben aceptarla de nuevo la próxima vez que entren al sistema.
+POLITICA_COOKIES_VERSION = "2026-10-15"
+
 # Correo saliente. Por defecto los mensajes se imprimen en la consola del
 # servidor (desarrollo); en producción se configura SMTP por variables de entorno.
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")

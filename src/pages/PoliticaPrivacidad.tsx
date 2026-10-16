@@ -76,6 +76,10 @@ export default function PoliticaPrivacidad() {
             la sesión iniciada. Cuando alguien solicita recuperar una contraseña, el sistema usa temporalmente la
             dirección IP y el correo de la solicitud, hasta por una hora, para limitar los intentos repetidos.
           </li>
+          <li>
+            <strong>Aceptación de políticas:</strong> la fecha y la versión de la política de cookies que aceptaste al
+            iniciar sesión.
+          </li>
         </ul>
         <p>
           INNO-TRACK no pide datos sensibles (como salud, datos biométricos u orientación política o religiosa) ni

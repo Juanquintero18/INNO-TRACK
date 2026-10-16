@@ -11,6 +11,8 @@ Alcance: listado resumido de endpoints observados en el backend.
 - Refresh token: POST /api/auth/refresh/
 - Solicitar recuperacion de contrasena: POST /api/auth/password-reset/
 - Confirmar nueva contrasena: POST /api/auth/password-reset/confirm/
+- Estado de aceptacion de politicas del usuario actual: GET /api/accounts/politicas/
+- Aceptar la politica de cookies vigente: POST /api/accounts/politicas/cookies/aceptar/
 
 ## Accounts
 

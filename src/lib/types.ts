@@ -237,3 +237,14 @@ export interface DeletedAuditItem {
   /** Copia del registro tal como estaba al eliminarse. */
   data: Record<string, unknown>;
 }
+
+/** Versión vigente de una política y si el usuario actual ya la aceptó. */
+export interface EstadoPolitica {
+  version: string;
+  aceptada: boolean;
+  aceptada_en: string | null;
+}
+
+export interface EstadoPoliticas {
+  cookies: EstadoPolitica;
+}

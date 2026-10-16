@@ -2,13 +2,14 @@
 
 import logging
 
+from django.conf import settings
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.accounts.models import AppUser
+from apps.accounts.models import AceptacionPolitica, AppUser
 from apps.accounts.password_reset import send_password_changed_email, send_password_reset_email
 from apps.accounts.permissions import AdminWritePermission
 from apps.accounts.serializers import (
@@ -105,6 +106,46 @@ class PasswordResetConfirmView(APIView):
             {"detail": "Tu contraseña fue actualizada. Ya puedes iniciar sesión."},
             status=status.HTTP_200_OK,
         )
+
+
+def _estado_politica_cookies(user: AppUser) -> dict:
+    """Versión vigente de la política de cookies y si el usuario ya la aceptó."""
+    version = settings.POLITICA_COOKIES_VERSION
+    aceptacion = AceptacionPolitica.objects.filter(
+        usuario=user,
+        politica=AceptacionPolitica.POLITICA_COOKIES,
+        version=version,
+    ).first()
+
+    return {
+        "version": version,
+        "aceptada": aceptacion is not None,
+        "aceptada_en": aceptacion.aceptada_en if aceptacion else None,
+    }
+
+
+class PoliticasView(APIView):
+    """Estado de las políticas que el usuario autenticado debe aceptar."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"cookies": _estado_politica_cookies(request.user)}, status=status.HTTP_200_OK)
+
+
+class AceptarPoliticaCookiesView(APIView):
+    """Registra que el usuario autenticado acepta la versión vigente de la política de cookies."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # Aceptar dos veces la misma versión no crea registros duplicados.
+        AceptacionPolitica.objects.get_or_create(
+            usuario=request.user,
+            politica=AceptacionPolitica.POLITICA_COOKIES,
+            version=settings.POLITICA_COOKIES_VERSION,
+        )
+        return Response({"cookies": _estado_politica_cookies(request.user)}, status=status.HTTP_200_OK)
 
 
 class CurrentUserView(APIView):

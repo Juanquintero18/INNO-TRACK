@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AppSidebar } from './AppSidebar';
+import { CookieConsentDialog } from '@/features/legal/CookieConsentDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import logo from '@/assets/logo-inno-transparente. RGB.png';
 import { Eye, EyeOff } from 'lucide-react';
@@ -66,6 +67,8 @@ export function AppLayout() {
           <Outlet />
         </div>
       </main>
+
+      <CookieConsentDialog />
     </div>
   );
 }

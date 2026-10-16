@@ -2,6 +2,7 @@
 
 exports[`Login y rutas > inicia sesión, guarda el token y carga los datos > carga de datos 1`] = `
 [
+  "GET /api/accounts/politicas/",
   "GET /api/accounts/users/",
   "GET /api/audit/logs/",
   "GET /api/inventory/materias-primas/",

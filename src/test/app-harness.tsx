@@ -64,10 +64,15 @@ interface RenderAppOptions {
   userId?: number;
   /** Con `false` se monta la aplicación sin sesión iniciada. */
   authenticated?: boolean;
+  /** Con `false` el usuario todavía no ha aceptado la política de cookies. */
+  cookiesAceptadas?: boolean;
 }
 
-export async function renderApp(path: string, { userId = USUARIO_ADMIN, authenticated = true }: RenderAppOptions = {}) {
-  const api = createFakeApi(userId);
+export async function renderApp(
+  path: string,
+  { userId = USUARIO_ADMIN, authenticated = true, cookiesAceptadas = true }: RenderAppOptions = {}
+) {
+  const api = createFakeApi(userId, { cookiesAceptadas });
 
   if (authenticated) {
     window.localStorage.setItem('inno_track_access_token', 'token-de-prueba');

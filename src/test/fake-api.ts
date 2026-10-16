@@ -33,7 +33,7 @@ const nextId = (rows: Row[]) => rows.reduce((max, row) => Math.max(max, row.id),
 const json = (status: number, payload: unknown) =>
   new Response(JSON.stringify(payload), { status, headers: { 'Content-Type': 'application/json' } });
 
-export function createFakeApi(currentUserId = 1) {
+export function createFakeApi(currentUserId = 1, { cookiesAceptadas = true } = {}) {
   const db = {
     usuarios: clone(fixtures.usuarios) as Row[],
     unidades: clone(fixtures.unidades) as Row[],
@@ -48,6 +48,10 @@ export function createFakeApi(currentUserId = 1) {
   };
 
   const requests: LoggedRequest[] = [];
+  let cookiesAceptadasEn: string | null = cookiesAceptadas ? '2026-01-01T13:00:00Z' : null;
+  const estadoPoliticas = () => ({
+    cookies: { version: '2026-10-15', aceptada: cookiesAceptadasEn !== null, aceptada_en: cookiesAceptadasEn },
+  });
   const failures: PlannedFailure[] = [];
   let pending = 0;
 
@@ -227,6 +231,13 @@ export function createFakeApi(currentUserId = 1) {
 
     if (method === 'POST' && path === '/api/auth/password-reset/confirm/') {
       return json(200, { detail: 'Tu contraseña fue actualizada. Ya puedes iniciar sesión.' });
+    }
+
+    if (method === 'GET' && path === '/api/accounts/politicas/') return json(200, estadoPoliticas());
+
+    if (method === 'POST' && path === '/api/accounts/politicas/cookies/aceptar/') {
+      cookiesAceptadasEn = cookiesAceptadasEn ?? NOW;
+      return json(200, estadoPoliticas());
     }
 
     if (method === 'GET' && path === '/api/audit/logs/') return json(200, db.auditLogs);
