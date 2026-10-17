@@ -6,16 +6,18 @@
  */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeftRight, Info, Plus, Upload } from 'lucide-react';
+import { ArrowLeftRight, Plus } from 'lucide-react';
 import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { DateRangeFilter } from '@/components/data/DateRangeFilter';
 import { SearchInput } from '@/components/data/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppData } from '@/contexts/AppDataContext';
-import { ImportMovimientosDialog } from '@/features/inventario/ImportMovimientosDialog';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog } from '@/features/importing/ImportExcelDialog';
+import { useExcelImport } from '@/features/importing/useExcelImport';
+import { MOVIMIENTOS_IMPORT_COLUMNS } from '@/features/inventario/movimientos-import';
 import { MovimientoFormDialog } from '@/features/inventario/MovimientoFormDialog';
 import { MovimientosTable } from '@/features/inventario/MovimientosTable';
 import {
@@ -26,15 +28,15 @@ import {
   type MovimientoSortField,
 } from '@/features/inventario/movimientos-list';
 import { useMovimientoForm } from '@/features/inventario/useMovimientoForm';
-import { useMovimientosImport } from '@/features/inventario/useMovimientosImport';
 import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
+import { ENDPOINTS } from '@/lib/api';
 import type { MovimientoInventario } from '@/lib/types';
 import { getErrorMessage } from '@/lib/utils';
 
 /** Orquesta la gestion visual de movimientos y su sincronizacion con la API. */
 export default function Inventario() {
-  const { movimientosList, deleteEntity } = useAppData();
+  const { movimientosList, deleteEntity, refreshInventoryData } = useAppData();
   const { canManage, showPermissionDenied } = useModulePermission('inventario');
   const [search, setSearch] = useState('');
   const [tipoFilter, setTipoFilter] = useState(TODOS_LOS_TIPOS);
@@ -42,7 +44,12 @@ export default function Inventario() {
   const [fechaFin, setFechaFin] = useState('');
   const { sortField, sortDirection, toggleSort } = useSort<MovimientoSortField>('fecha');
   const movimientoForm = useMovimientoForm();
-  const importer = useMovimientosImport();
+  const importer = useExcelImport({
+    resourcePath: ENDPOINTS.movimientos,
+    templateFileName: 'plantilla_movimientos_inventario.xlsx',
+    successMessage: count => `Se importaron ${count} movimientos correctamente.`,
+    onImported: refreshInventoryData,
+  });
 
   const filtered = filterMovimientos(movimientosList, { search, tipo: tipoFilter, fechaInicio, fechaFin });
   const sorted = sortMovimientos(filtered, sortField, sortDirection);
@@ -79,31 +86,7 @@ export default function Inventario() {
 
           {canManage && (
             <>
-              <div className="flex items-center gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
-                      aria-label="Recomendaciones para importar Excel"
-                    >
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align="end" className="border-emerald-100 bg-emerald-50/90">
-                    <p className="text-sm leading-6 text-emerald-950">
-                      El Excel debe venir claro, con encabezados consistentes, una fila por movimiento y datos limpios para evitar errores al importar.
-                    </p>
-                  </PopoverContent>
-                </Popover>
-
-                <Button type="button" onClick={importer.open} className="bg-emerald-600 text-white hover:bg-emerald-700">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Importar Excel
-                </Button>
-              </div>
+              <ImportExcelActions onImport={importer.open} rowHint="una fila por movimiento" />
 
               <Button type="button" onClick={movimientoForm.open}>
                 <Plus className="w-4 h-4 mr-2" />
@@ -151,7 +134,12 @@ export default function Inventario() {
         </CardContent>
       </Card>
 
-      <ImportMovimientosDialog importer={importer} />
+      <ImportExcelDialog
+        importer={importer}
+        title="Importar Excel de movimientos"
+        inputId="inventario-import-file"
+        columns={MOVIMIENTOS_IMPORT_COLUMNS}
+      />
       <MovimientoFormDialog form={movimientoForm} />
     </motion.div>
   );

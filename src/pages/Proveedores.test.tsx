@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   USUARIO_ALMACENISTA,
   USUARIO_TRABAJADOR,
@@ -146,5 +146,44 @@ describe('Proveedores', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Nuevo proveedor' }));
     expect(dom(screen.getByRole('dialog'))).toMatchSnapshot('tras cerrar con Escape');
+  });
+
+  it('importa proveedores desde Excel: plantilla, vista previa y confirmación', async () => {
+    const downloads: string[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+      downloads.push(this.download);
+    });
+    window.URL.createObjectURL = vi.fn(() => 'blob:plantilla');
+    window.URL.revokeObjectURL = vi.fn();
+
+    const api = await renderApp('/proveedores', { userId: USUARIO_ALMACENISTA });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Importar Excel' }));
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText('Importar Excel de proveedores')).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /Descargar plantilla ejemplo/ }));
+    await settle(api);
+    expect(downloads).toEqual(['plantilla_proveedores.xlsx']);
+
+    const file = new File(['contenido'], 'proveedores.xlsx');
+    fireEvent.change(within(dialog).getByLabelText('Archivo Excel'), { target: { files: [file] } });
+    fireEvent.click(within(dialog).getByRole('button', { name: /Analizar archivo/ }));
+    await settle(api);
+    expect(dom(dialog)).toMatchSnapshot('vista previa con errores');
+    expect(within(dialog).getByRole('button', { name: /Importar definitivamente/ })).toBeDisabled();
+
+    const { importPreviews } = await import('@/test/fixtures');
+    const limpia = { ...importPreviews['/api/inventory/proveedores/'], can_import: true, invalid_rows: 0 };
+    api.respondNext('POST', '/api/inventory/proveedores/import/preview/', 200, limpia);
+    fireEvent.click(within(dialog).getByRole('button', { name: /Analizar archivo/ }));
+    await settle(api);
+    const before = api.requests.length;
+    fireEvent.click(within(dialog).getByRole('button', { name: /Importar definitivamente/ }));
+    await settle(api);
+
+    expect(dialogs).toEqual(['alert: Se importaron 2 proveedores correctamente.']);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(api.requests.slice(before).map(request => `${request.method} ${request.path}`)).toMatchSnapshot('confirmacion y recarga');
   });
 });

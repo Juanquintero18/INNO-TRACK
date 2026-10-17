@@ -1,25 +1,18 @@
 """Vistas REST del módulo de inventario.
 
-Incluye CRUD de catálogos, movimientos y endpoints de importación masiva.
+Incluye CRUD de catálogos y movimientos. Los endpoints de importación se
+arman en urls.py con `apps.common.import_views`.
 """
 
 from django.db import transaction
 from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.accounts.permissions import AdminOrAlmacenistaWritePermission, AdminWritePermission
 from apps.audit.mixins import AuditedDestroyMixin
-from apps.inventory.import_services import (
-    build_movimiento_import_preview,
-    build_movimiento_import_template_response,
-    import_movimientos,
-)
 from apps.inventory.models import (
     DEFAULT_STOCK_BAJO_MAX,
     DEFAULT_STOCK_CRITICO_MAX,
@@ -150,58 +143,3 @@ class MovimientoInventarioViewSet(BaseInventoryViewSet):
     def perform_update(self, serializer):
         """Actualiza usuario actor en cada modificación de movimiento."""
         serializer.save(usuario=self.request.user)
-
-
-class MovimientoInventarioImportBaseView(APIView):
-    """Base para endpoints de importación con parser multipart."""
-
-    permission_classes = [AdminOrAlmacenistaWritePermission]
-    parser_classes = [MultiPartParser, FormParser]
-
-    def read_upload(self) -> tuple[str, bytes]:
-        """Nombre y contenido del archivo subido; responde 400 si no llegó ninguno."""
-        uploaded_file = self.request.FILES.get("file")
-        if uploaded_file is None:
-            raise ValidationError({"detail": "Selecciona un archivo Excel o CSV."})
-        return uploaded_file.name, uploaded_file.read()
-
-
-class MovimientoInventarioImportTemplateView(APIView):
-    """Entrega plantilla oficial de importación de movimientos."""
-
-    permission_classes = [AdminOrAlmacenistaWritePermission]
-
-    def get(self, _request):
-        """Descarga de archivo ejemplo para carga masiva."""
-        return build_movimiento_import_template_response()
-
-
-class MovimientoInventarioImportPreviewView(MovimientoInventarioImportBaseView):
-    """Valida archivo de importación y retorna vista previa detallada."""
-
-    def post(self, request):
-        file_name, file_bytes = self.read_upload()
-
-        try:
-            preview = build_movimiento_import_preview(file_name, file_bytes)
-        except ValueError as exc:
-            return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(preview, status=status.HTTP_200_OK)
-
-
-class MovimientoInventarioImportCommitView(MovimientoInventarioImportBaseView):
-    """Confirma importación y crea movimientos en lote atómico."""
-
-    def post(self, request):
-        file_name, file_bytes = self.read_upload()
-
-        try:
-            result = import_movimientos(file_name, file_bytes, request.user)
-        except ValueError as exc:
-            return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not result["preview"]["can_import"]:
-            return Response(result, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(result, status=status.HTTP_201_CREATED)

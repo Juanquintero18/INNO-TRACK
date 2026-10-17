@@ -1,13 +1,12 @@
-"""Rutas del módulo inventory para CRUD e importación de movimientos."""
+"""Rutas del módulo inventory: CRUD de catálogos y movimientos, e importaciones desde Excel."""
 
-from django.urls import path
 from rest_framework.routers import DefaultRouter
 
+from apps.accounts.permissions import AdminOrAlmacenistaWritePermission
+from apps.common.import_views import import_urls
+from apps.inventory.import_services import MOVIMIENTOS_IMPORT, PROVEEDORES_IMPORT
 from apps.inventory.views import (
     MateriaPrimaViewSet,
-    MovimientoInventarioImportCommitView,
-    MovimientoInventarioImportPreviewView,
-    MovimientoInventarioImportTemplateView,
     MovimientoInventarioViewSet,
     ProveedorViewSet,
     TrabajadorProduccionViewSet,
@@ -22,10 +21,9 @@ router.register("trabajadores", TrabajadorProduccionViewSet, basename="trabajado
 router.register("materias-primas", MateriaPrimaViewSet, basename="materia-prima")
 router.register("movimientos", MovimientoInventarioViewSet, basename="movimiento")
 
+# Las importaciones van antes del router para que `import/` no se interprete como un ID.
 urlpatterns = [
-    path("movimientos/import/template/", MovimientoInventarioImportTemplateView.as_view(), name="movimiento-import-template"),
-    path("movimientos/import/preview/", MovimientoInventarioImportPreviewView.as_view(), name="movimiento-import-preview"),
-    path("movimientos/import/commit/", MovimientoInventarioImportCommitView.as_view(), name="movimiento-import-commit"),
+    *import_urls("movimientos", MOVIMIENTOS_IMPORT, AdminOrAlmacenistaWritePermission, "movimiento"),
+    *import_urls("proveedores", PROVEEDORES_IMPORT, AdminOrAlmacenistaWritePermission, "proveedor"),
+    *router.urls,
 ]
-
-urlpatterns += router.urls

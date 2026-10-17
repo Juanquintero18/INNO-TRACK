@@ -1,0 +1,76 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "movimientos.csv",
+    "header_observations": [
+      "Se interpretó 'Razon social' como 'nombre'.",
+      "Se interpretó 'Celular' como 'telefono'.",
+      "Se interpretó 'Correo electronico' como 'email'.",
+      "Se interpretó 'Domicilio' como 'direccion'."
+    ],
+    "invalid_rows": 3,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {},
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "direccion": "Medellín",
+          "email": "hola@pinturasnorte.test",
+          "nombre": "Pinturas Norte",
+          "telefono": "6045551212"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe un registro con el correo 'VENTAS@quimica.test'."
+        ],
+        "resolved": {},
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "direccion": "Cali",
+          "email": "VENTAS@quimica.test",
+          "nombre": "Duplicado existente",
+          "telefono": "3001112233"
+        }
+      },
+      {
+        "errors": [
+          "El correo 'hola@pinturasnorte.test' está repetido en el archivo."
+        ],
+        "resolved": {},
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "direccion": "Cali",
+          "email": "hola@pinturasnorte.test",
+          "nombre": "Repetido en archivo",
+          "telefono": "3001112234"
+        }
+      },
+      {
+        "errors": [
+          "El nombre es obligatorio.",
+          "El teléfono es obligatorio.",
+          "La dirección es obligatoria.",
+          "El correo 'no-es-correo' no es válido."
+        ],
+        "resolved": {},
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "direccion": "",
+          "email": "no-es-correo",
+          "nombre": "",
+          "telefono": ""
+        }
+      }
+    ],
+    "total_rows": 4,
+    "valid_rows": 1
+  },
+  "status": 200
+}

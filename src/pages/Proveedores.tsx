@@ -16,6 +16,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppData } from '@/contexts/AppDataContext';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog, previewValue, type ImportPreviewColumn } from '@/features/importing/ImportExcelDialog';
+import { useExcelImport } from '@/features/importing/useExcelImport';
 import { useFormState } from '@/hooks/useFormState';
 import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
@@ -29,15 +32,28 @@ type SortField = 'nombre' | 'email' | 'telefono' | 'direccion';
 
 const EMPTY_FORM = { nombre: '', telefono: '', email: '', direccion: '' };
 
+const IMPORT_COLUMNS: ImportPreviewColumn[] = [
+  { header: 'Nombre', value: row => previewValue(row, 'nombre') },
+  { header: 'Teléfono', value: row => previewValue(row, 'telefono') },
+  { header: 'Correo', value: row => previewValue(row, 'email') },
+  { header: 'Dirección', value: row => previewValue(row, 'direccion') },
+];
+
 /** Administra proveedores con busqueda, orden y formulario modal. */
 export default function Proveedores() {
-  const { proveedoresList, setProveedoresList, deleteEntity } = useAppData();
+  const { proveedoresList, setProveedoresList, deleteEntity, refreshInventoryData } = useAppData();
   const { canManage, showPermissionDenied } = useModulePermission('proveedores');
   const [search, setSearch] = useState('');
   const { sortField, sortDirection, toggleSort, toggleDirection } = useSort<SortField>('nombre');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingProveedor, setEditingProveedor] = useState<Proveedor | null>(null);
   const form = useFormState(EMPTY_FORM);
+  const importer = useExcelImport({
+    resourcePath: ENDPOINTS.proveedores,
+    templateFileName: 'plantilla_proveedores.xlsx',
+    successMessage: count => `Se importaron ${count} proveedores correctamente.`,
+    onImported: refreshInventoryData,
+  });
 
   // Permite localizar proveedores por cualquier dato de contacto.
   const term = search.toLowerCase();
@@ -163,6 +179,8 @@ export default function Proveedores() {
         <div className="flex flex-wrap items-center justify-end gap-2">
           <ExportExcelButton fileName="proveedores" getSheets={getExportSheets} />
 
+          {canManage && <ImportExcelActions onImport={importer.open} rowHint="una fila por proveedor" />}
+
           <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
             <Plus className="w-4 h-4 mr-2" />
             Nuevo proveedor
@@ -276,6 +294,13 @@ export default function Proveedores() {
         <FormError message={form.error} />
         <FormActions onCancel={() => setOpenCreate(false)} submitLabel={editingProveedor ? 'Actualizar' : 'Guardar'} />
       </FormDialog>
+
+      <ImportExcelDialog
+        importer={importer}
+        title="Importar Excel de proveedores"
+        inputId="proveedores-import-file"
+        columns={IMPORT_COLUMNS}
+      />
     </motion.div>
   );
 }

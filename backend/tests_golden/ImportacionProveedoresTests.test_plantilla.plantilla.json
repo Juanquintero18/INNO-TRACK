@@ -1,0 +1,24 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_proveedores.xlsx\"",
+  "filas": [
+    [
+      "nombre",
+      "telefono",
+      "email",
+      "direccion"
+    ],
+    [
+      "Compuestos del Norte",
+      "+57 300 123 4567",
+      "ventas@compuestosnorte.com",
+      "Zona Industrial, Barranquilla"
+    ],
+    [
+      "Pinturas Andinas",
+      "6045551212",
+      "contacto@pinturasandinas.com",
+      "Calle 10 # 43-20, Medellín"
+    ]
+  ],
+  "status": 200
+}

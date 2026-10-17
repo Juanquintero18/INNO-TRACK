@@ -1,0 +1,45 @@
+{
+  "body": {
+    "created_count": 2,
+    "created_ids": [
+      3,
+      4
+    ],
+    "preview": {
+      "can_import": true,
+      "file_errors": [],
+      "file_name": "movimientos.csv",
+      "header_observations": [],
+      "invalid_rows": 0,
+      "rows": [
+        {
+          "errors": [],
+          "resolved": {},
+          "row_number": 2,
+          "status": "valid",
+          "values": {
+            "direccion": "Medellín",
+            "email": "hola@pinturasnorte.test",
+            "nombre": "Pinturas Norte",
+            "telefono": "6045551212"
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {},
+          "row_number": 3,
+          "status": "valid",
+          "values": {
+            "direccion": "Bogotá",
+            "email": "ventas@lijas.test",
+            "nombre": "Lijas y Abrasivos",
+            "telefono": "3105550000"
+          }
+        }
+      ],
+      "total_rows": 2,
+      "valid_rows": 2
+    }
+  },
+  "status": 201
+}

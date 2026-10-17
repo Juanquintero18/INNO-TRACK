@@ -1,5 +1,7 @@
 /**
- * Diálogo de importación masiva de movimientos: archivo, vista previa y confirmación.
+ * Diálogo de importación masiva desde Excel: archivo, vista previa y confirmación.
+ *
+ * Cada módulo indica qué columnas mostrar en la vista previa; el resto es común.
  */
 import { Download, Loader2, Search, Upload } from 'lucide-react';
 import { FormError } from '@/components/form/FormParts';
@@ -9,15 +11,21 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { MovimientoImportPreview, MovimientoImportPreviewRow } from '@/lib/types';
-import type { MovimientosImportController } from './useMovimientosImport';
+import type { ImportPreview as ImportPreviewData, ImportPreviewRow } from '@/lib/types';
+import type { ExcelImportController } from './useExcelImport';
 
 const EMPTY = '—';
 
-/** Responsable mostrado en la vista previa: el nombre reconocido o, si no, el texto del archivo. */
-function getRowResponsable({ resolved, values }: MovimientoImportPreviewRow) {
-  return (resolved.proveedor ?? values.proveedor ?? resolved.trabajador ?? values.trabajador) || EMPTY;
+/** Columna de la tabla de vista previa, entre "Estado" y "Errores". */
+export interface ImportPreviewColumn {
+  header: string;
+  value: (row: ImportPreviewRow) => string;
+  className?: string;
 }
+
+/** Valor de una columna: el nombre reconocido en el sistema o, si no, el texto del archivo. */
+export const previewValue = (row: ImportPreviewRow, ...keys: string[]) =>
+  keys.map(key => row.resolved[key] ?? row.values[key]).find(value => value) || EMPTY;
 
 function PreviewCounter({ label, value, valueClassName }: { label: string; value: number; valueClassName: string }) {
   return (
@@ -28,7 +36,7 @@ function PreviewCounter({ label, value, valueClassName }: { label: string; value
   );
 }
 
-function ImportPreview({ preview }: { preview: MovimientoImportPreview }) {
+function ImportPreview({ preview, columns }: { preview: ImportPreviewData; columns: ImportPreviewColumn[] }) {
   return (
     <div className="space-y-4 rounded-lg border bg-muted/20 p-4">
       <div className="grid gap-3 sm:grid-cols-3">
@@ -70,10 +78,9 @@ function ImportPreview({ preview }: { preview: MovimientoImportPreview }) {
               <TableRow>
                 <TableHead>Fila</TableHead>
                 <TableHead>Estado</TableHead>
-                <TableHead>Material</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Responsable</TableHead>
-                <TableHead>Referencia</TableHead>
+                {columns.map(column => (
+                  <TableHead key={column.header}>{column.header}</TableHead>
+                ))}
                 <TableHead>Errores</TableHead>
               </TableRow>
             </TableHeader>
@@ -87,10 +94,11 @@ function ImportPreview({ preview }: { preview: MovimientoImportPreview }) {
                       {row.status === 'valid' ? 'Válida' : 'Error'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{(row.resolved.materia_prima ?? row.values.materia_prima) || EMPTY}</TableCell>
-                  <TableCell>{row.values.tipo || EMPTY}</TableCell>
-                  <TableCell>{getRowResponsable(row)}</TableCell>
-                  <TableCell className="font-mono text-xs">{row.values.referencia || EMPTY}</TableCell>
+                  {columns.map(column => (
+                    <TableCell key={column.header} className={column.className}>
+                      {column.value(row)}
+                    </TableCell>
+                  ))}
                   <TableCell className="max-w-[260px] text-sm text-muted-foreground">
                     {row.errors.length > 0 ? row.errors.join(' ') : 'Sin observaciones'}
                   </TableCell>
@@ -104,14 +112,23 @@ function ImportPreview({ preview }: { preview: MovimientoImportPreview }) {
   );
 }
 
-export function ImportMovimientosDialog({ importer }: { importer: MovimientosImportController }) {
+interface ImportExcelDialogProps {
+  importer: ExcelImportController;
+  /** Por ejemplo "Importar Excel de proveedores". */
+  title: string;
+  /** `id` del campo de archivo, único en la pantalla. */
+  inputId: string;
+  columns: ImportPreviewColumn[];
+}
+
+export function ImportExcelDialog({ importer, title, inputId, columns }: ImportExcelDialogProps) {
   const isBusy = importer.isPreviewLoading || importer.isImporting;
 
   return (
     <Dialog open={importer.isOpen} onOpenChange={importer.handleOpenChange}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Importar Excel de movimientos</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             Sube un archivo .xlsx, .xls o .csv, revisa la vista previa y confirma la importación solo cuando no haya errores.
           </DialogDescription>
@@ -140,9 +157,9 @@ export function ImportMovimientosDialog({ importer }: { importer: MovimientosImp
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="inventario-import-file">Archivo Excel</Label>
+            <Label htmlFor={inputId}>Archivo Excel</Label>
             <Input
-              id="inventario-import-file"
+              id={inputId}
               type="file"
               accept=".xlsx,.xls,.csv"
               onChange={e => importer.selectFile(e.target.files?.[0] ?? null)}
@@ -156,7 +173,7 @@ export function ImportMovimientosDialog({ importer }: { importer: MovimientosImp
 
           <FormError message={importer.error} />
 
-          {importer.preview && <ImportPreview preview={importer.preview} />}
+          {importer.preview && <ImportPreview preview={importer.preview} columns={columns} />}
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={importer.close}>

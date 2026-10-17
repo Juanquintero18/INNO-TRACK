@@ -1,0 +1,33 @@
+{
+  "body": [
+    {
+      "direccion": "Zona Industrial, Barranquilla",
+      "email": "ventas@quimica.test",
+      "id": 1,
+      "nombre": "Química Industrial S.A.",
+      "telefono": "+57 300 111 2233"
+    },
+    {
+      "direccion": null,
+      "email": null,
+      "id": 2,
+      "nombre": "FibraMax",
+      "telefono": null
+    },
+    {
+      "direccion": "Medellín",
+      "email": "hola@pinturasnorte.test",
+      "id": 3,
+      "nombre": "Pinturas Norte",
+      "telefono": "6045551212"
+    },
+    {
+      "direccion": "Bogotá",
+      "email": "ventas@lijas.test",
+      "id": 4,
+      "nombre": "Lijas y Abrasivos",
+      "telefono": "3105550000"
+    }
+  ],
+  "status": 200
+}

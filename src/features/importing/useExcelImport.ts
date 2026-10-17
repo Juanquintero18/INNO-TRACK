@@ -1,15 +1,14 @@
 /**
- * Lógica de la importación masiva de movimientos desde Excel o CSV:
- * descarga de la plantilla, vista previa y confirmación.
+ * Lógica de una importación masiva desde Excel o CSV: descarga de la
+ * plantilla, vista previa y confirmación.
+ *
+ * Sirve para cualquier recurso cuyo backend exponga
+ * `<recurso>/import/template|preview|commit/` (ver backend/apps/common/import_views.py).
  */
 import { useState, type FormEvent } from 'react';
-import { useAppData } from '@/contexts/AppDataContext';
-import { apiFetch, ENDPOINTS } from '@/lib/api';
-import type { MovimientoImportCommitResult, MovimientoImportPreview } from '@/lib/types';
+import { apiFetch } from '@/lib/api';
+import type { ImportCommitResult, ImportPreview } from '@/lib/types';
 import { getErrorMessage } from '@/lib/utils';
-
-const IMPORT_URL = `${ENDPOINTS.movimientos}import/`;
-const TEMPLATE_FILE_NAME = 'plantilla_movimientos_inventario.xlsx';
 
 /** Sube el archivo al endpoint indicado como formulario multipart. */
 function postFile(path: string, file: File) {
@@ -30,11 +29,22 @@ function downloadBlob(blob: Blob, fileName: string) {
   window.URL.revokeObjectURL(downloadUrl);
 }
 
-export function useMovimientosImport() {
-  const { refreshInventoryData } = useAppData();
+interface UseExcelImportOptions {
+  /** Ruta del recurso en la API, por ejemplo `/api/inventory/proveedores/`. */
+  resourcePath: string;
+  /** Nombre con el que se guarda la plantilla descargada. */
+  templateFileName: string;
+  /** Mensaje de éxito, según cuántos registros se crearon. */
+  successMessage: (createdCount: number) => string;
+  /** Recarga los datos afectados después de importar. */
+  onImported: () => Promise<void>;
+}
+
+export function useExcelImport({ resourcePath, templateFileName, successMessage, onImported }: UseExcelImportOptions) {
+  const importUrl = `${resourcePath}import/`;
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<MovimientoImportPreview | null>(null);
+  const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [error, setError] = useState('');
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -64,13 +74,13 @@ export function useMovimientosImport() {
     setError('');
 
     try {
-      const response = await apiFetch(`${IMPORT_URL}template/`);
+      const response = await apiFetch(`${importUrl}template/`);
 
       if (!response.ok) {
         throw new Error('No se pudo descargar la plantilla de movimientos.');
       }
 
-      downloadBlob(await response.blob(), TEMPLATE_FILE_NAME);
+      downloadBlob(await response.blob(), templateFileName);
     } catch (downloadError) {
       setError(getErrorMessage(downloadError, 'No se pudo descargar la plantilla.'));
     } finally {
@@ -91,14 +101,14 @@ export function useMovimientosImport() {
     setError('');
 
     try {
-      const response = await postFile(`${IMPORT_URL}preview/`, selectedFile);
+      const response = await postFile(`${importUrl}preview/`, selectedFile);
       const payload = await response.json();
 
       if (!response.ok) {
         throw new Error(typeof payload?.detail === 'string' ? payload.detail : 'No se pudo analizar el archivo.');
       }
 
-      setPreview(payload as MovimientoImportPreview);
+      setPreview(payload as ImportPreview);
     } catch (previewError) {
       setPreview(null);
       setError(getErrorMessage(previewError, 'No se pudo analizar el archivo.'));
@@ -107,7 +117,7 @@ export function useMovimientosImport() {
     }
   };
 
-  /** Crea los movimientos del archivo ya validado y recarga el inventario. */
+  /** Crea los registros del archivo ya validado y recarga los datos afectados. */
   const confirmImport = async () => {
     if (!selectedFile || !preview?.can_import) {
       return;
@@ -117,22 +127,22 @@ export function useMovimientosImport() {
     setError('');
 
     try {
-      const response = await postFile(`${IMPORT_URL}commit/`, selectedFile);
+      const response = await postFile(`${importUrl}commit/`, selectedFile);
       const payload = await response.json();
 
       if (!response.ok) {
         // El backend devuelve la vista previa actualizada cuando el archivo dejó de ser válido.
         if (payload?.preview) {
-          setPreview(payload.preview as MovimientoImportPreview);
+          setPreview(payload.preview as ImportPreview);
         }
         throw new Error('Corrige los errores del archivo antes de importar definitivamente.');
       }
 
-      const result = payload as MovimientoImportCommitResult;
-      await refreshInventoryData();
+      const result = payload as ImportCommitResult;
+      await onImported();
       setIsOpen(false);
       reset();
-      window.alert(`Se importaron ${result.created_count} movimientos correctamente.`);
+      window.alert(successMessage(result.created_count));
     } catch (importError) {
       setError(getErrorMessage(importError, 'No se pudo completar la importación.'));
     } finally {
@@ -158,4 +168,4 @@ export function useMovimientosImport() {
   };
 }
 
-export type MovimientosImportController = ReturnType<typeof useMovimientosImport>;
+export type ExcelImportController = ReturnType<typeof useExcelImport>;

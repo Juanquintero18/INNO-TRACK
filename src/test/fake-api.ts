@@ -259,17 +259,22 @@ export function createFakeApi(currentUserId = 1, { cookiesAceptadas = true } = {
       });
     }
 
-    if (method === 'GET' && path === '/api/inventory/movimientos/import/template/') {
-      return new Response('plantilla', { status: 200 });
-    }
+    // Importaciones desde Excel: <recurso>/import/template|preview|commit/.
+    const importMatch = /^(.*\/)import\/(template|preview|commit)\/$/.exec(path);
+    if (importMatch) {
+      const [, resourcePath, step] = importMatch;
+      const preview: Row = clone(fixtures.importPreviews[resourcePath] ?? fixtures.importPreview);
 
-    if (method === 'POST' && path === '/api/inventory/movimientos/import/preview/') {
-      return json(200, clone(fixtures.importPreview));
-    }
-
-    if (method === 'POST' && path === '/api/inventory/movimientos/import/commit/') {
-      const preview = { ...clone(fixtures.importPreview), can_import: true, invalid_rows: 0, valid_rows: 2 };
-      return json(201, { created_count: 2, created_ids: [101, 102], preview });
+      if (method === 'GET' && step === 'template') return new Response('plantilla', { status: 200 });
+      if (method === 'POST' && step === 'preview') return json(200, preview);
+      if (method === 'POST' && step === 'commit') {
+        const validRows = preview.rows.length;
+        return json(201, {
+          created_count: validRows,
+          created_ids: preview.rows.map((_row: unknown, index: number) => 101 + index),
+          preview: { ...preview, can_import: true, invalid_rows: 0, valid_rows: validRows },
+        });
+      }
     }
 
     if (method === 'PUT' && path === '/api/inventory/materias-primas/piezas-materiales/') {

@@ -169,28 +169,18 @@ export interface MovimientoInventario {
   trabajador?: TrabajadorProduccion;
 }
 
-export interface MovimientoImportPreviewRow {
+/** Fila de la vista previa de una importación: lo leído del archivo y lo que se reconoció. */
+export interface ImportPreviewRow {
   row_number: number;
   status: 'valid' | 'error';
   errors: string[];
-  values: {
-    materia_prima: string;
-    tipo: string;
-    cantidad: string;
-    fecha: string;
-    proveedor: string;
-    trabajador: string;
-    motivo: string;
-    referencia: string;
-  };
-  resolved: {
-    materia_prima: string | null;
-    proveedor: string | null;
-    trabajador: string | null;
-  };
+  /** Texto de cada columna tal como venía en el archivo. */
+  values: Record<string, string>;
+  /** Nombre del registro del sistema al que se asoció una columna, si se reconoció. */
+  resolved: Record<string, string | null>;
 }
 
-export interface MovimientoImportPreview {
+export interface ImportPreview {
   // Resumen integral de validación previo a confirmar la importación.
   file_name: string;
   file_errors: string[];
@@ -199,14 +189,14 @@ export interface MovimientoImportPreview {
   valid_rows: number;
   invalid_rows: number;
   can_import: boolean;
-  rows: MovimientoImportPreviewRow[];
+  rows: ImportPreviewRow[];
 }
 
-export interface MovimientoImportCommitResult {
+export interface ImportCommitResult {
   // Resultado de ejecución del commit con IDs creados y preview base.
   created_count: number;
   created_ids: number[];
-  preview: MovimientoImportPreview;
+  preview: ImportPreview;
 }
 
 /** Tipos de registro cuya eliminación queda en la auditoría y puede deshacerse. */

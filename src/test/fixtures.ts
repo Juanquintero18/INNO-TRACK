@@ -415,3 +415,32 @@ export const importPreview = {
     },
   ],
 };
+
+/** Vistas previas de importación de otros recursos, por ruta del recurso en la API. */
+export const importPreviews: Record<string, typeof importPreview | Record<string, unknown>> = {
+  '/api/inventory/proveedores/': {
+    file_name: 'proveedores.xlsx',
+    file_errors: [],
+    header_observations: ["Se interpretó 'Razon social' como 'nombre'."],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      {
+        row_number: 2,
+        status: 'valid',
+        errors: [],
+        values: { nombre: 'Pinturas Norte', telefono: '6045551212', email: 'hola@pinturasnorte.test', direccion: 'Medellín' },
+        resolved: {},
+      },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ["Ya existe un registro con el correo 'ventas@quimica.test'."],
+        values: { nombre: 'Duplicado', telefono: '3001112233', email: 'ventas@quimica.test', direccion: 'Cali' },
+        resolved: {},
+      },
+    ],
+  },
+};
