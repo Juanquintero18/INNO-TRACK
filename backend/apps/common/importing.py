@@ -86,11 +86,15 @@ def cell_to_text(value: object) -> str:
 # --- Conversión de valores -------------------------------------------------------
 
 
-def parse_decimal(value: object, label: str = "La cantidad") -> Decimal:
-    """Parsea números permitiendo distintos formatos (coma o punto decimal)."""
+def parse_decimal(value: object, label: str = "La cantidad", masculine: bool = False) -> Decimal:
+    """Parsea números permitiendo distintos formatos (coma o punto decimal).
+
+    `masculine` concuerda los mensajes con etiquetas como "El costo" en vez de "La cantidad".
+    """
+    obligatorio, numerico = ("obligatorio", "numérico") if masculine else ("obligatoria", "numérica")
 
     if value is None or str(value).strip() == "":
-        raise ValueError(f"{label} es obligatoria.")
+        raise ValueError(f"{label} es {obligatorio}.")
 
     if isinstance(value, Decimal):
         return value
@@ -105,7 +109,7 @@ def parse_decimal(value: object, label: str = "La cantidad") -> Decimal:
     try:
         return Decimal(text)
     except InvalidOperation as exc:
-        raise ValueError(f"{label} debe ser numérica.") from exc
+        raise ValueError(f"{label} debe ser {numerico}.") from exc
 
 
 def parse_date(value: object, label: str = "La fecha") -> str:

@@ -1,0 +1,53 @@
+{
+  "body": {
+    "created_count": 2,
+    "created_ids": [
+      5,
+      6
+    ],
+    "preview": {
+      "can_import": true,
+      "file_errors": [],
+      "file_name": "movimientos.csv",
+      "header_observations": [],
+      "invalid_rows": 0,
+      "rows": [
+        {
+          "errors": [],
+          "resolved": {
+            "unidad_medida": "Litro"
+          },
+          "row_number": 2,
+          "status": "valid",
+          "values": {
+            "costo": "21.00",
+            "fecha_actualizacion": "2026-05-02",
+            "nombre": "Gelcoat gris",
+            "stock_bajo_max": "",
+            "stock_critico_max": "",
+            "unidad_medida": "Litro"
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {
+            "unidad_medida": "Kilogramo"
+          },
+          "row_number": 3,
+          "status": "valid",
+          "values": {
+            "costo": "18.40",
+            "fecha_actualizacion": "2026-05-02",
+            "nombre": "Resina viniléster",
+            "stock_bajo_max": "50",
+            "stock_critico_max": "20",
+            "unidad_medida": "kg"
+          }
+        }
+      ],
+      "total_rows": 2,
+      "valid_rows": 2
+    }
+  },
+  "status": 201
+}

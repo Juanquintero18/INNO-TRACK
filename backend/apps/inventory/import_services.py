@@ -17,8 +17,13 @@ from apps.common.importing import (
     parse_date,
     parse_decimal,
 )
-from apps.inventory.models import MateriaPrima, Proveedor, TrabajadorProduccion
-from apps.inventory.serializers import MovimientoInventarioSerializer, ProveedorSerializer, TrabajadorProduccionSerializer
+from apps.inventory.models import MateriaPrima, MateriaPrimaStabilityThreshold, Proveedor, TrabajadorProduccion, UnidadMedida
+from apps.inventory.serializers import (
+    MateriaPrimaSerializer,
+    MovimientoInventarioSerializer,
+    ProveedorSerializer,
+    TrabajadorProduccionSerializer,
+)
 from apps.inventory.services import TIPO_AJUSTE, TIPO_ENTRADA, TIPO_SALIDA, TIPOS_MOVIMIENTO
 
 
@@ -298,3 +303,131 @@ class TrabajadorImportSpec(ImportSpec):
 
 
 TRABAJADORES_IMPORT = TrabajadorImportSpec()
+
+
+# --- Materias primas ---------------------------------------------------------------
+
+
+@dataclass
+class MateriaPrimaImportContext:
+    unidades: CatalogLookup
+    nombres: DuplicateTracker
+
+
+class MateriaPrimaImportSpec(ImportSpec):
+    """Catálogo de materiales. Las mismas reglas del formulario, más umbrales de estabilidad opcionales."""
+
+    headers = ["nombre", "unidad_medida", "costo", "fecha_actualizacion", "stock_critico_max", "stock_bajo_max"]
+    aliases = {
+        "material": "nombre",
+        "materia prima": "nombre",
+        "nombre material": "nombre",
+        "unidad": "unidad_medida",
+        "unidad de medida": "unidad_medida",
+        "costo unitario": "costo",
+        "precio": "costo",
+        "fecha": "fecha_actualizacion",
+        "fecha actualizacion": "fecha_actualizacion",
+        "fecha de actualizacion": "fecha_actualizacion",
+        "critico hasta": "stock_critico_max",
+        "stock critico": "stock_critico_max",
+        "bajo hasta": "stock_bajo_max",
+        "stock bajo": "stock_bajo_max",
+    }
+    sheet_title = "materias_primas"
+    template_file_name = "plantilla_materias_primas.xlsx"
+    example_rows = [
+        ["Resina viniléster", "kg", "18.40", "2026-05-02", "20", "50"],
+        ["Gelcoat gris", "Litro", "21.00", "2026-05-02", "", ""],
+    ]
+
+    def new_context(self) -> MateriaPrimaImportContext:
+        unidades = CatalogLookup("La unidad de medida no existe. Usa el nombre o la abreviatura de una unidad registrada.")
+        for unidad in UnidadMedida.objects.all():
+            unidades.register(unidad.nombre, unidad)
+            if unidad.abreviatura:
+                unidades.register(unidad.abreviatura, unidad)
+
+        return MateriaPrimaImportContext(
+            unidades=unidades,
+            nombres=DuplicateTracker(MateriaPrima.objects.values_list("nombre", flat=True), "el nombre"),
+        )
+
+    def validate_row(self, values, raw_row, context: MateriaPrimaImportContext) -> RowResult:
+        errors: list[str] = []
+        nombre = values["nombre"].strip()
+        unidad_texto = values["unidad_medida"].strip()
+
+        if not nombre:
+            errors.append("El nombre del material es obligatorio.")
+        elif error_nombre := context.nombres.check(nombre):
+            errors.append(error_nombre)
+
+        unidad = context.unidades.find(unidad_texto) if unidad_texto else None
+        if not unidad_texto:
+            errors.append("La unidad de medida es obligatoria.")
+        elif unidad is None:
+            errors.append(context.unidades.not_found_error(unidad_texto))
+
+        costo = None
+        try:
+            costo = parse_decimal(raw_row.get("costo"), "El costo unitario", masculine=True)
+            if costo <= 0:
+                errors.append("El costo unitario debe ser mayor que cero.")
+        except ValueError as exc:
+            errors.append(str(exc))
+
+        try:
+            fecha = parse_date(raw_row.get("fecha_actualizacion"), "La fecha de actualización")
+        except ValueError as exc:
+            fecha = None
+            errors.append(str(exc))
+
+        umbrales = self._parse_umbrales(raw_row, values, errors)
+
+        payload = None
+        if not errors:
+            payload = {
+                "nombre": nombre,
+                "unidad_medida_id": unidad.id,
+                "costo": str(costo),
+                "fecha_actualizacion": fecha,
+                "umbrales": umbrales,
+            }
+
+        return RowResult(errors=errors, payload=payload, resolved={"unidad_medida": unidad.nombre if unidad else None})
+
+    @staticmethod
+    def _parse_umbrales(raw_row, values, errors: list[str]) -> dict | None:
+        """Umbrales de estabilidad opcionales: si viene uno, deben venir los dos."""
+        if not values["stock_critico_max"] and not values["stock_bajo_max"]:
+            return None
+
+        try:
+            critico = parse_decimal(raw_row.get("stock_critico_max"), "El límite crítico", masculine=True)
+            bajo = parse_decimal(raw_row.get("stock_bajo_max"), "El límite de stock bajo", masculine=True)
+        except ValueError as exc:
+            errors.append(str(exc))
+            return None
+
+        if critico < 0:
+            errors.append("El límite crítico no puede ser negativo.")
+        elif bajo <= critico:
+            errors.append("El límite de stock bajo debe ser mayor que el crítico.")
+
+        return {"stock_critico_max": str(critico), "stock_bajo_max": str(bajo)}
+
+    def save(self, payload, user):
+        datos = dict(payload)
+        umbrales = datos.pop("umbrales")
+        serializer = MateriaPrimaSerializer(data=datos)
+        serializer.is_valid(raise_exception=True)
+        materia = serializer.save()
+
+        if umbrales:
+            MateriaPrimaStabilityThreshold.objects.create(materia_prima=materia, **umbrales)
+
+        return materia
+
+
+MATERIAS_PRIMAS_IMPORT = MateriaPrimaImportSpec()

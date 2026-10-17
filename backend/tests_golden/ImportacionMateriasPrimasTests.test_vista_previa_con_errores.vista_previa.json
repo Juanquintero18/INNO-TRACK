@@ -1,0 +1,129 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "movimientos.csv",
+    "header_observations": [
+      "Se interpretó 'Material' como 'nombre'.",
+      "Se interpretó 'Unidad' como 'unidad_medida'.",
+      "Se interpretó 'Costo unitario' como 'costo'.",
+      "Se interpretó 'Fecha' como 'fecha_actualizacion'.",
+      "Se interpretó 'Critico hasta' como 'stock_critico_max'.",
+      "Se interpretó 'Bajo hasta' como 'stock_bajo_max'."
+    ],
+    "invalid_rows": 5,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {
+          "unidad_medida": "Litro"
+        },
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "costo": "21.00",
+          "fecha_actualizacion": "2026-05-02",
+          "nombre": "Gelcoat gris",
+          "stock_bajo_max": "",
+          "stock_critico_max": "",
+          "unidad_medida": "L"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe un registro con el nombre 'resina poliéster'."
+        ],
+        "resolved": {
+          "unidad_medida": "Kilogramo"
+        },
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "costo": "10",
+          "fecha_actualizacion": "2026-05-02",
+          "nombre": "resina poliéster",
+          "stock_bajo_max": "",
+          "stock_critico_max": "",
+          "unidad_medida": "kg"
+        }
+      },
+      {
+        "errors": [
+          "El nombre 'Gelcoat gris' está repetido en el archivo."
+        ],
+        "resolved": {
+          "unidad_medida": "Litro"
+        },
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "costo": "20",
+          "fecha_actualizacion": "2026-05-02",
+          "nombre": "Gelcoat gris",
+          "stock_bajo_max": "",
+          "stock_critico_max": "",
+          "unidad_medida": "litro"
+        }
+      },
+      {
+        "errors": [
+          "La unidad de medida no existe. Usa el nombre o la abreviatura de una unidad registrada.",
+          "El costo unitario debe ser mayor que cero.",
+          "La fecha de actualización es obligatoria."
+        ],
+        "resolved": {
+          "unidad_medida": null
+        },
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "costo": "0",
+          "fecha_actualizacion": "",
+          "nombre": "Pigmento",
+          "stock_bajo_max": "",
+          "stock_critico_max": "",
+          "unidad_medida": "toneladas"
+        }
+      },
+      {
+        "errors": [
+          "El límite de stock bajo debe ser mayor que el crítico."
+        ],
+        "resolved": {
+          "unidad_medida": "Kilogramo"
+        },
+        "row_number": 6,
+        "status": "error",
+        "values": {
+          "costo": "5",
+          "fecha_actualizacion": "2026-05-02",
+          "nombre": "Malla",
+          "stock_bajo_max": "10",
+          "stock_critico_max": "30",
+          "unidad_medida": "kilogramo"
+        }
+      },
+      {
+        "errors": [
+          "El límite de stock bajo es obligatorio."
+        ],
+        "resolved": {
+          "unidad_medida": "Kilogramo"
+        },
+        "row_number": 7,
+        "status": "error",
+        "values": {
+          "costo": "4",
+          "fecha_actualizacion": "02/05/2026",
+          "nombre": "Cera",
+          "stock_bajo_max": "",
+          "stock_critico_max": "5",
+          "unidad_medida": "kg"
+        }
+      }
+    ],
+    "total_rows": 6,
+    "valid_rows": 1
+  },
+  "status": 200
+}

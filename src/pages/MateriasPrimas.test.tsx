@@ -15,6 +15,7 @@ import {
   type,
   within,
 } from '@/test/app-harness';
+import { runImportFlow } from '@/test/import-flow';
 
 describe('Materias primas', () => {
   it('muestra el catálogo con stock y estabilidad al administrador', async () => {
@@ -178,5 +179,29 @@ describe('Materias primas', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Nuevo registro' }));
     expect(dom(screen.getByRole('dialog'))).toMatchSnapshot('tras cerrar con Escape');
+  });
+
+  it('importa materias primas desde Excel', async () => {
+    const result = await runImportFlow({
+      route: '/materias-primas',
+      resourcePath: '/api/inventory/materias-primas/',
+      title: 'Importar Excel de materias primas',
+      templateFileName: 'plantilla_materias_primas.xlsx',
+      successMessage: 'Se importaron 2 materias primas correctamente.',
+    });
+
+    expect(result.previewDom).toMatchSnapshot('vista previa con errores');
+    expect(result.requestsAfterConfirm).toMatchSnapshot('confirmacion y recarga');
+  });
+
+  it('muestra la importación al almacenista', async () => {
+    await renderApp('/materias-primas', { userId: USUARIO_ALMACENISTA });
+    expect(screen.getByRole('button', { name: 'Importar Excel' })).toBeInTheDocument();
+  });
+
+  it('no muestra la importación a quien no puede editar', async () => {
+    await renderApp('/materias-primas', { userId: USUARIO_TRABAJADOR });
+
+    expect(screen.queryByRole('button', { name: 'Importar Excel' })).not.toBeInTheDocument();
   });
 });

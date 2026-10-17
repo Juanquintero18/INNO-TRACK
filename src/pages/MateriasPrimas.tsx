@@ -13,6 +13,10 @@ import { SearchInput } from '@/components/data/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAppData } from '@/contexts/AppDataContext';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog } from '@/features/importing/ImportExcelDialog';
+import { previewValue, type ImportPreviewColumn } from '@/features/importing/import-preview';
+import { useExcelImport } from '@/features/importing/useExcelImport';
 import { MateriaPrimaFormDialog, StabilityConfigDialog } from '@/features/materias-primas/MateriaPrimaDialogs';
 import { MateriasPrimasTable, type MateriaPrimaSortField } from '@/features/materias-primas/MateriasPrimasTable';
 import { buildMateriasSheets, filterMaterias, sortMaterias } from '@/features/materias-primas/materias-list';
@@ -20,12 +24,20 @@ import { useMateriaPrimaForm } from '@/features/materias-primas/useMateriaPrimaF
 import { useStabilityForm } from '@/features/materias-primas/useStabilityForm';
 import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
+import { ENDPOINTS } from '@/lib/api';
 import type { MateriaPrima } from '@/lib/types';
 import { getErrorMessage } from '@/lib/utils';
 
+const IMPORT_COLUMNS: ImportPreviewColumn[] = [
+  { header: 'Material', value: row => previewValue(row, 'nombre') },
+  { header: 'Unidad', value: row => previewValue(row, 'unidad_medida') },
+  { header: 'Costo', value: row => previewValue(row, 'costo') },
+  { header: 'Fecha', value: row => previewValue(row, 'fecha_actualizacion') },
+];
+
 /** Administra el CRUD visual de materias primas y su lectura operativa. */
 export default function MateriasPrimas() {
-  const { materiasList, deleteEntity, getStockLevel } = useAppData();
+  const { materiasList, deleteEntity, getStockLevel, refreshInventoryData } = useAppData();
   const { canManage, showPermissionDenied } = useModulePermission('materias-primas');
   const [search, setSearch] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
@@ -33,6 +45,12 @@ export default function MateriasPrimas() {
   const { sortField, sortDirection, toggleSort, setSort } = useSort<MateriaPrimaSortField>('nombre');
   const materiaForm = useMateriaPrimaForm();
   const stabilityForm = useStabilityForm();
+  const importer = useExcelImport({
+    resourcePath: ENDPOINTS.materiasPrimas,
+    templateFileName: 'plantilla_materias_primas.xlsx',
+    successMessage: count => `Se importaron ${count} materias primas correctamente.`,
+    onImported: refreshInventoryData,
+  });
 
   const filtered = filterMaterias(materiasList, { search, fechaInicio, fechaFin });
   const sorted = sortMaterias(filtered, sortField, sortDirection, getStockLevel);
@@ -66,6 +84,8 @@ export default function MateriasPrimas() {
 
         <div className="flex flex-wrap items-center justify-end gap-2">
           <ExportExcelButton fileName="materias_primas" getSheets={() => buildMateriasSheets(sorted, getStockLevel)} />
+
+          {canManage && <ImportExcelActions onImport={importer.open} rowHint="una fila por material" />}
 
           {canManage && (
             <Button type="button" onClick={materiaForm.open}>
@@ -125,6 +145,12 @@ export default function MateriasPrimas() {
 
       <StabilityConfigDialog form={stabilityForm} />
       <MateriaPrimaFormDialog form={materiaForm} />
+      <ImportExcelDialog
+        importer={importer}
+        title="Importar Excel de materias primas"
+        inputId="materias-primas-import-file"
+        columns={IMPORT_COLUMNS}
+      />
     </motion.div>
   );
 }

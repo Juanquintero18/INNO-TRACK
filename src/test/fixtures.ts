@@ -418,6 +418,31 @@ export const importPreview = {
 
 /** Vistas previas de importación de otros recursos, por ruta del recurso en la API. */
 export const importPreviews: Record<string, typeof importPreview | Record<string, unknown>> = {
+  '/api/inventory/materias-primas/': {
+    file_name: 'materias_primas.xlsx',
+    file_errors: [],
+    header_observations: ["Se interpretó 'Unidad' como 'unidad_medida'."],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      {
+        row_number: 2,
+        status: 'valid',
+        errors: [],
+        values: { nombre: 'Gelcoat gris', unidad_medida: 'L', costo: '21.00', fecha_actualizacion: '2026-05-02' },
+        resolved: { unidad_medida: 'Litro' },
+      },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ["Ya existe un registro con el nombre 'Desmoldante'.", 'El costo unitario debe ser mayor que cero.'],
+        values: { nombre: 'Desmoldante', unidad_medida: 'kg', costo: '0', fecha_actualizacion: '2026-05-02' },
+        resolved: { unidad_medida: 'Kilogramo' },
+      },
+    ],
+  },
   '/api/inventory/trabajadores/': {
     file_name: 'trabajadores.xlsx',
     file_errors: [],

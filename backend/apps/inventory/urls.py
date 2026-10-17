@@ -4,7 +4,12 @@ from rest_framework.routers import DefaultRouter
 
 from apps.accounts.permissions import AdminOrAlmacenistaWritePermission, AdminWritePermission
 from apps.common.import_views import import_urls
-from apps.inventory.import_services import MOVIMIENTOS_IMPORT, PROVEEDORES_IMPORT, TRABAJADORES_IMPORT
+from apps.inventory.import_services import (
+    MATERIAS_PRIMAS_IMPORT,
+    MOVIMIENTOS_IMPORT,
+    PROVEEDORES_IMPORT,
+    TRABAJADORES_IMPORT,
+)
 from apps.inventory.views import (
     MateriaPrimaViewSet,
     MovimientoInventarioViewSet,
@@ -26,5 +31,6 @@ urlpatterns = [
     *import_urls("movimientos", MOVIMIENTOS_IMPORT, AdminOrAlmacenistaWritePermission, "movimiento"),
     *import_urls("proveedores", PROVEEDORES_IMPORT, AdminOrAlmacenistaWritePermission, "proveedor"),
     *import_urls("trabajadores", TRABAJADORES_IMPORT, AdminWritePermission, "trabajador"),
+    *import_urls("materias-primas", MATERIAS_PRIMAS_IMPORT, AdminOrAlmacenistaWritePermission, "materia-prima"),
     *router.urls,
 ]

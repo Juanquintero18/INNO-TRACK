@@ -291,3 +291,52 @@ class ImportacionTrabajadoresTests(ApiTestCase):
         response = self.client.post(f"{self.URL}/commit/", {"file": csv_file("codigo_trabajador,nombre\nTRB-020,Nora\n")}, format="multipart")
 
         self.assertEqual(response.status_code, 403)
+
+
+class ImportacionMateriasPrimasTests(ApiTestCase):
+    URL = f"{BASE}/materias-primas/import"
+
+    CSV_MIXTO = (
+        "Material,Unidad,Costo unitario,Fecha,Critico hasta,Bajo hasta\n"
+        "Gelcoat gris,L,21.00,2026-05-02,,\n"
+        "resina poliéster,kg,10,2026-05-02,,\n"
+        "Gelcoat gris,litro,20,2026-05-02,,\n"
+        "Pigmento,toneladas,0,,,\n"
+        "Malla,kilogramo,5,2026-05-02,30,10\n"
+        "Cera,kg,4,02/05/2026,5,\n"
+        ",,,,,\n"
+    )
+    CSV_LIMPIO = (
+        "nombre,unidad_medida,costo,fecha_actualizacion,stock_critico_max,stock_bajo_max\n"
+        "Gelcoat gris,Litro,21.00,2026-05-02,,\n"
+        "Resina viniléster,kg,18.40,2026-05-02,20,50\n"
+    )
+
+    def test_plantilla(self):
+        response = self.client.get(f"{self.URL}/template/")
+        filas = [list(fila) for fila in load_workbook(BytesIO(response.content)).active.iter_rows(values_only=True)]
+
+        self.assert_golden_data("plantilla", {"status": response.status_code, "content_disposition": response["Content-Disposition"], "filas": filas})
+
+    def test_vista_previa_con_errores(self):
+        self.assert_golden("vista_previa", self.client.post(f"{self.URL}/preview/", {"file": csv_file(self.CSV_MIXTO)}, format="multipart"))
+
+    def test_confirmar_crea_las_materias_con_sus_umbrales(self):
+        self.login_as(self.almacenista)
+
+        self.assert_golden("confirmar", self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO)}, format="multipart"))
+        self.assert_golden("materias", self.client.get(f"{BASE}/materias-primas/"))
+
+    def test_confirmar_con_errores_no_crea_nada(self):
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_MIXTO)}, format="multipart")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["created_count"], 0)
+        self.assertEqual(len(self.client.get(f"{BASE}/materias-primas/").json()), 4)
+
+    def test_el_trabajador_no_puede_importar(self):
+        self.login_as(self.trabajador)
+
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO)}, format="multipart")
+
+        self.assertEqual(response.status_code, 403)

@@ -1,0 +1,30 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_materias_primas.xlsx\"",
+  "filas": [
+    [
+      "nombre",
+      "unidad_medida",
+      "costo",
+      "fecha_actualizacion",
+      "stock_critico_max",
+      "stock_bajo_max"
+    ],
+    [
+      "Resina viniléster",
+      "kg",
+      "18.40",
+      "2026-05-02",
+      "20",
+      "50"
+    ],
+    [
+      "Gelcoat gris",
+      "Litro",
+      "21.00",
+      "2026-05-02",
+      null,
+      null
+    ]
+  ],
+  "status": 200
+}
