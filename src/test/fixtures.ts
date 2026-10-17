@@ -418,6 +418,31 @@ export const importPreview = {
 
 /** Vistas previas de importación de otros recursos, por ruta del recurso en la API. */
 export const importPreviews: Record<string, typeof importPreview | Record<string, unknown>> = {
+  '/api/accounts/users/': {
+    file_name: 'usuarios.xlsx',
+    file_errors: [],
+    header_observations: ["Se interpretó 'Perfil' como 'rol'."],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      {
+        row_number: 2,
+        status: 'valid',
+        errors: [],
+        values: { nombre: 'Nora', apellido: 'Paz', email: 'nora@innolution.test', rol: 'Almacenista' },
+        resolved: {},
+      },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ["Ya existe un registro con el correo 'admin@innolution.test'.", "El rol 'gerente' no existe. Usa administrador, almacenista o trabajador."],
+        values: { nombre: 'Otra', apellido: 'Persona', email: 'admin@innolution.test', rol: 'gerente' },
+        resolved: {},
+      },
+    ],
+  },
   '/api/inventory/materias-primas/': {
     file_name: 'materias_primas.xlsx',
     file_errors: [],

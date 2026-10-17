@@ -14,6 +14,7 @@ import {
   type,
   within,
 } from '@/test/app-harness';
+import { runImportFlow } from '@/test/import-flow';
 
 const SEARCH = 'Buscar por nombre, apellido, email o rol...';
 
@@ -147,5 +148,19 @@ describe('Usuarios', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Nuevo usuario' }));
     expect(dom(screen.getByRole('dialog'))).toMatchSnapshot('tras cerrar con Escape');
+  });
+
+  it('importa usuarios desde Excel y avisa que deben crear su contraseña', async () => {
+    const result = await runImportFlow({
+      route: '/usuarios',
+      resourcePath: '/api/accounts/users/',
+      title: 'Importar Excel de usuarios',
+      templateFileName: 'plantilla_usuarios.xlsx',
+      successMessage:
+        'Se importaron 2 usuarios correctamente. Cada uno debe crear su contraseña desde «¿Olvidaste tu contraseña?» en el inicio de sesión.',
+    });
+
+    expect(result.previewDom).toMatchSnapshot('vista previa con errores');
+    expect(result.requestsAfterConfirm).toMatchSnapshot('confirmacion y recarga');
   });
 });

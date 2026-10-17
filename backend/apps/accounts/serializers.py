@@ -8,7 +8,7 @@ Este módulo concentra:
 """
 
 from rest_framework import serializers
-from django.contrib.auth.hashers import check_password, identify_hasher, make_password
+from django.contrib.auth.hashers import check_password, identify_hasher, is_password_usable, make_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 from apps.accounts.authentication import build_access_token, read_access_token
@@ -50,7 +50,9 @@ class AppUserSerializer(serializers.ModelSerializer):
 def password_matches(raw_password: str, stored_password: str) -> bool:
     """Valida contraseña soportando hashes Django y valores legacy en texto plano."""
 
-    if not stored_password:
+    # Las contraseñas inutilizables ("!...", p. ej. usuarios importados) nunca coinciden,
+    # ni siquiera por la comparación legacy en texto plano.
+    if not stored_password or not is_password_usable(stored_password):
         return False
 
     try:

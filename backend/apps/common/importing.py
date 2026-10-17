@@ -142,6 +142,13 @@ def parse_optional_date(value: object, label: str) -> str | None:
     return parse_date(value, label)
 
 
+def email_format_error(value: str) -> str | None:
+    """Mensaje de error si el texto no parece un correo electrónico."""
+    if "@" not in value or "." not in value.split("@")[-1] or " " in value:
+        return f"El correo '{value}' no es válido."
+    return None
+
+
 def flatten_serializer_errors(detail: object) -> list[str]:
     """Aplana errores anidados de serializer a una lista simple de mensajes."""
 

@@ -2,7 +2,7 @@
  * Pantalla administrativa de usuarios.
  *
  * Desde aqui se consultan, crean, editan y eliminan usuarios del sistema,
- * incluyendo la gestion de rol y credenciales iniciales.
+ * incluyendo la gestion de rol y credenciales iniciales, y se importan desde Excel.
  */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -25,6 +25,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAppData } from '@/contexts/AppDataContext';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog } from '@/features/importing/ImportExcelDialog';
+import { previewValue, type ImportPreviewColumn } from '@/features/importing/import-preview';
+import { useExcelImport } from '@/features/importing/useExcelImport';
 import { useFormState } from '@/hooks/useFormState';
 import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
@@ -44,15 +48,30 @@ const ROLE_OPTIONS: SelectOption[] = [
   { value: 'trabajador', label: 'Trabajador' },
 ];
 
+const IMPORT_COLUMNS: ImportPreviewColumn[] = [
+  { header: 'Nombre', value: row => previewValue(row, 'nombre') },
+  { header: 'Apellido', value: row => previewValue(row, 'apellido') },
+  { header: 'Correo', value: row => previewValue(row, 'email') },
+  { header: 'Rol', value: row => previewValue(row, 'rol') },
+];
+
 /** Controla el CRUD de usuarios y sus reglas basicas de validacion. */
 export default function Usuarios() {
-  const { usuariosList, setUsuariosList, deleteEntity } = useAppData();
+  const { usuariosList, setUsuariosList, deleteEntity, refreshProductionData } = useAppData();
   const { canManage, showPermissionDenied } = useModulePermission('usuarios');
   const [search, setSearch] = useState('');
   const { sortField, sortDirection, toggleSort } = useSort<SortField>('nombre');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingUsuario, setEditingUsuario] = useState<Usuario | null>(null);
   const form = useFormState(EMPTY_FORM);
+  // El Excel no trae contraseñas: cada usuario importado define la suya con la recuperación de contraseña.
+  const importer = useExcelImport({
+    resourcePath: ENDPOINTS.usuarios,
+    templateFileName: 'plantilla_usuarios.xlsx',
+    successMessage: count =>
+      `Se importaron ${count} usuarios correctamente. Cada uno debe crear su contraseña desde «¿Olvidaste tu contraseña?» en el inicio de sesión.`,
+    onImported: refreshProductionData,
+  });
 
   // Filtra coincidencias por nombre, apellido, correo o rol.
   const term = search.toLowerCase();
@@ -195,6 +214,8 @@ export default function Usuarios() {
         <div className="flex flex-wrap items-center justify-end gap-2">
           <ExportExcelButton fileName="usuarios" getSheets={getExportSheets} />
 
+          {canManage && <ImportExcelActions onImport={importer.open} rowHint="una fila por usuario (sin contraseñas)" />}
+
           <Button type="button" onClick={() => (canManage ? setOpenCreate(true) : showPermissionDenied())}>
             <Plus className="w-4 h-4 mr-2" />
             Nuevo usuario
@@ -300,6 +321,13 @@ export default function Usuarios() {
         <FormError message={form.error} />
         <FormActions onCancel={() => setOpenCreate(false)} submitLabel={editingUsuario ? 'Actualizar' : 'Guardar'} />
       </FormDialog>
+
+      <ImportExcelDialog
+        importer={importer}
+        title="Importar Excel de usuarios"
+        inputId="usuarios-import-file"
+        columns={IMPORT_COLUMNS}
+      />
     </motion.div>
   );
 }

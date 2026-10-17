@@ -15,6 +15,7 @@ from unittest import mock
 
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.test import APITestCase
 
@@ -47,6 +48,11 @@ def _scrub(value):
     if isinstance(value, list):
         return [_scrub(item) for item in value]
     return value
+
+
+def csv_file(text: str, name: str = "movimientos.csv") -> SimpleUploadedFile:
+    """Archivo CSV en memoria para probar las importaciones desde Excel/CSV."""
+    return SimpleUploadedFile(name, text.encode("utf-8"), content_type="text/csv")
 
 
 class ApiTestCase(APITestCase):

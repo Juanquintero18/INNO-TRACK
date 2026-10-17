@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from openpyxl import Workbook, load_workbook
 
 from apps.inventory.models import MateriaPrimaPiezaConfig, MovimientoInventario
-from config.testing import ApiTestCase
+from config.testing import ApiTestCase, csv_file
 
 
 BASE = "/api/inventory"
@@ -120,10 +120,6 @@ class MovimientosTests(ApiTestCase):
 
         self.assert_golden("eliminar", self.client.delete(f"{BASE}/movimientos/{movimiento.id}/"))
         self.assert_golden("auditoria", self.client.get("/api/audit/logs/"))
-
-
-def csv_file(text, name="movimientos.csv"):
-    return SimpleUploadedFile(name, text.encode("utf-8"), content_type="text/csv")
 
 
 class ImportacionTests(ApiTestCase):

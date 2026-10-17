@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from apps.common.importing import (
     DuplicateTracker,
+    email_format_error,
     CatalogLookup,
     ImportSpec,
     RowResult,
@@ -189,13 +190,6 @@ class MovimientoImportSpec(ImportSpec):
 MOVIMIENTOS_IMPORT = MovimientoImportSpec()
 
 
-def _validate_email(value: str) -> str | None:
-    """Mensaje de error si el texto no parece un correo electrónico."""
-    if "@" not in value or "." not in value.split("@")[-1] or " " in value:
-        return f"El correo '{value}' no es válido."
-    return None
-
-
 # --- Proveedores -------------------------------------------------------------------
 
 
@@ -241,7 +235,7 @@ class ProveedorImportSpec(ImportSpec):
         errors = [self.REQUIRED_MESSAGES[campo] for campo, valor in datos.items() if not valor]
 
         if datos["email"]:
-            error_email = _validate_email(datos["email"]) or emails.check(datos["email"])
+            error_email = email_format_error(datos["email"]) or emails.check(datos["email"])
             if error_email:
                 errors.append(error_email)
 

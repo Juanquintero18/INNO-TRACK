@@ -1,20 +1,22 @@
 """Pruebas del flujo de recuperación de contraseña."""
 
 import re
+from io import BytesIO
 from datetime import datetime, timedelta
 from unittest import mock
 from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import check_password, is_password_usable, make_password
 from django.core import mail
 from django.core.cache import cache
+from openpyxl import load_workbook
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.accounts.models import AceptacionPolitica, AppUser
 from apps.accounts.password_reset import password_reset_token_generator
-from config.testing import ApiTestCase
+from config.testing import ApiTestCase, csv_file
 
 
 REQUEST_URL = "/api/auth/password-reset/"
@@ -253,3 +255,69 @@ class PoliticaCookiesTests(ApiTestCase):
         self.assertEqual(self.client.get("/api/accounts/politicas/").status_code, 403)
         self.assertEqual(self.client.post("/api/accounts/politicas/cookies/aceptar/").status_code, 403)
         self.assertEqual(AceptacionPolitica.objects.count(), 0)
+
+
+class ImportacionUsuariosTests(ApiTestCase):
+    URL = "/api/accounts/users/import"
+
+    CSV_MIXTO = (
+        "Nombres,Apellidos,Correo electronico,Perfil\n"
+        "Nora,Paz,nora@innolution.test,Almacenista\n"
+        "Otra,Persona,ADMIN@innolution.test,trabajador\n"
+        "Nora,Repetida,nora@innolution.test,trabajador\n"
+        "Iván,Mora,ivan-sin-arroba,gerente\n"
+        ",,,\n"
+        "Solo nombre,,,\n"
+    )
+    CSV_LIMPIO = "nombre,apellido,email,rol\nNora,Paz,nora@innolution.test,ALMACENISTA\nIván,Mora,ivan@innolution.test,trabajador\n"
+
+    def setUp(self):
+        super().setUp()
+        cache.clear()
+
+    def test_plantilla(self):
+        response = self.client.get(f"{self.URL}/template/")
+        filas = [list(fila) for fila in load_workbook(BytesIO(response.content)).active.iter_rows(values_only=True)]
+
+        self.assert_golden_data("plantilla", {"status": response.status_code, "content_disposition": response["Content-Disposition"], "filas": filas})
+
+    def test_vista_previa_con_errores(self):
+        self.assert_golden("vista_previa", self.client.post(f"{self.URL}/preview/", {"file": csv_file(self.CSV_MIXTO, "usuarios.csv")}, format="multipart"))
+
+    def test_confirmar_crea_usuarios_sin_contrasena_utilizable(self):
+        self.assert_golden("confirmar", self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "usuarios.csv")}, format="multipart"))
+        self.assert_golden("usuarios", self.client.get("/api/accounts/users/"))
+
+        nora = AppUser.objects.get(email="nora@innolution.test")
+        self.assertFalse(is_password_usable(nora.contrasena))
+        login = self.client.post("/api/auth/login/", {"email": nora.email, "password": nora.contrasena}, format="json")
+        self.assertEqual(login.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_el_usuario_importado_define_su_contrasena_con_la_recuperacion(self):
+        self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "usuarios.csv")}, format="multipart")
+        self.client.credentials()
+
+        self.client.post(REQUEST_URL, {"email": "nora@innolution.test"}, format="json")
+        query = parse_qs(urlparse(re.search(r"http\S+", mail.outbox[0].body).group(0)).query)
+        confirmacion = self.client.post(
+            CONFIRM_URL, {"uid": query["uid"][0], "token": query["token"][0], "password": NEW_PASSWORD}, format="json"
+        )
+        login = self.client.post("/api/auth/login/", {"email": "nora@innolution.test", "password": NEW_PASSWORD}, format="json")
+
+        self.assertEqual(confirmacion.status_code, status.HTTP_200_OK)
+        self.assertEqual(login.status_code, status.HTTP_200_OK)
+        self.assertEqual(login.json()["user"]["rol"], "almacenista")
+
+    def test_confirmar_con_errores_no_crea_nada(self):
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_MIXTO, "usuarios.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["created_count"], 0)
+        self.assertEqual(AppUser.objects.count(), 3)
+
+    def test_solo_el_administrador_importa(self):
+        self.login_as(self.almacenista)
+
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "usuarios.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 403)

@@ -1,0 +1,90 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "usuarios.csv",
+    "header_observations": [
+      "Se interpretó 'Nombres' como 'nombre'.",
+      "Se interpretó 'Apellidos' como 'apellido'.",
+      "Se interpretó 'Correo electronico' como 'email'.",
+      "Se interpretó 'Perfil' como 'rol'."
+    ],
+    "invalid_rows": 4,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {},
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "apellido": "Paz",
+          "email": "nora@innolution.test",
+          "nombre": "Nora",
+          "rol": "Almacenista"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe un registro con el correo 'ADMIN@innolution.test'."
+        ],
+        "resolved": {},
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "apellido": "Persona",
+          "email": "ADMIN@innolution.test",
+          "nombre": "Otra",
+          "rol": "trabajador"
+        }
+      },
+      {
+        "errors": [
+          "El correo 'nora@innolution.test' está repetido en el archivo."
+        ],
+        "resolved": {},
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "apellido": "Repetida",
+          "email": "nora@innolution.test",
+          "nombre": "Nora",
+          "rol": "trabajador"
+        }
+      },
+      {
+        "errors": [
+          "El correo 'ivan-sin-arroba' no es válido.",
+          "El rol 'gerente' no existe. Usa administrador, almacenista o trabajador."
+        ],
+        "resolved": {},
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "apellido": "Mora",
+          "email": "ivan-sin-arroba",
+          "nombre": "Iván",
+          "rol": "gerente"
+        }
+      },
+      {
+        "errors": [
+          "El apellido es obligatorio.",
+          "El correo es obligatorio.",
+          "El rol es obligatorio."
+        ],
+        "resolved": {},
+        "row_number": 6,
+        "status": "error",
+        "values": {
+          "apellido": "",
+          "email": "",
+          "nombre": "Solo nombre",
+          "rol": ""
+        }
+      }
+    ],
+    "total_rows": 5,
+    "valid_rows": 1
+  },
+  "status": 200
+}
