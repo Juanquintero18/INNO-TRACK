@@ -27,10 +27,51 @@ const statusFilters = () => within(screen.getByRole('main')).getAllByRole('combo
 const selectProject = (name: string) => fireEvent.click(within(tables()[0]).getByText(name));
 
 describe('Proyectos', () => {
-  it('muestra proyectos, órdenes y resumen del primer proyecto', async () => {
+  it('empieza sin proyecto seleccionado y pide elegir uno', async () => {
     await renderApp('/proyectos');
 
     expect(dom(screen.getByRole('main'))).toMatchSnapshot();
+    expect(screen.getByText('Selecciona un proyecto en la tabla de proyectos para ver su dashboard.')).toBeInTheDocument();
+    expect(screen.getByText('Aun no hay un proyecto seleccionado.')).toBeInTheDocument();
+  });
+
+  it('muestra el dashboard del proyecto seleccionado y permite quitar la selección', async () => {
+    await renderApp('/proyectos');
+
+    selectProject('Aquaventura');
+    const dashboard = screen.getByText('Dashboard del proyecto').closest('.rounded-lg.border') as HTMLElement;
+    expect(dom(dashboard)).toMatchSnapshot('dashboard de Aquaventura');
+
+    fireEvent.click(screen.getByRole('button', { name: /Quitar selección/ }));
+    expect(screen.getByText('Selecciona un proyecto en la tabla de proyectos para ver su dashboard.')).toBeInTheDocument();
+    expect(screen.getByText('Aun no hay un proyecto seleccionado.')).toBeInTheDocument();
+  });
+
+  it('las métricas del dashboard cambian según el proyecto', async () => {
+    await renderApp('/proyectos');
+    const kpis = () =>
+      Array.from(document.querySelectorAll('main .grid > .rounded-lg.border.p-4')).map(kpi =>
+        kpi.textContent?.replace(/\s+/g, ' ').trim()
+      );
+
+    selectProject('Aquaventura');
+    expect(kpis()).toMatchSnapshot('Aquaventura');
+
+    selectProject('Kalahari');
+    expect(kpis()).toMatchSnapshot('Kalahari');
+
+    selectProject('Sin órdenes');
+    expect(kpis()).toMatchSnapshot('Sin ordenes');
+  });
+
+  it('quita la selección si el proyecto seleccionado se elimina', async () => {
+    const api = await renderApp('/proyectos');
+
+    selectProject('Sin órdenes');
+    fireEvent.click(screen.getAllByTitle('Eliminar proyecto')[3]);
+    await settle(api);
+
+    expect(screen.getByText('Selecciona un proyecto en la tabla de proyectos para ver su dashboard.')).toBeInTheDocument();
   });
 
   it('redirige al dashboard a quien no es administrador', async () => {
@@ -79,6 +120,7 @@ describe('Proyectos', () => {
 
   it('filtra y ordena las órdenes del proyecto', async () => {
     await renderApp('/proyectos');
+    selectProject('Aquaventura');
 
     type(screen.getByPlaceholderText(ORDER_SEARCH), 'proceso');
     expect(orderRows()).toMatchSnapshot('busqueda por estado');
@@ -179,6 +221,7 @@ describe('Proyectos', () => {
 
   it('valida y crea una orden en otro proyecto, que pasa a estar seleccionado', async () => {
     const api = await renderApp('/proyectos');
+    selectProject('Aquaventura');
 
     fireEvent.click(screen.getByRole('button', { name: 'Nueva orden' }));
     const dialog = screen.getByRole('dialog');
@@ -206,6 +249,7 @@ describe('Proyectos', () => {
 
   it('edita una orden y la mueve de proyecto', async () => {
     const api = await renderApp('/proyectos');
+    selectProject('Aquaventura');
 
     fireEvent.click(screen.getAllByTitle('Editar orden')[1]);
     const dialog = screen.getByRole('dialog');
@@ -222,6 +266,7 @@ describe('Proyectos', () => {
 
   it('no deja eliminar órdenes con piezas y elimina las que no tienen', async () => {
     const api = await renderApp('/proyectos');
+    selectProject('Aquaventura');
 
     fireEvent.click(screen.getAllByTitle('Eliminar orden')[0]);
     expect(api.mutations()).toEqual([]);

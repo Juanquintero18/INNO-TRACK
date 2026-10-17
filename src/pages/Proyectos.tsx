@@ -11,7 +11,8 @@ import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Button } from '@/components/ui/button';
 import { useAppData } from '@/contexts/AppDataContext';
 import { OrdenFormDialog, ProyectoFormDialog } from '@/features/proyectos/ProyectoDialogs';
-import { OrdenesCard, ProyectoDetailCard, ProyectosCard } from '@/features/proyectos/ProyectosCards';
+import { ProyectoDashboard } from '@/features/proyectos/ProyectoDashboard';
+import { OrdenesCard, ProyectosCard } from '@/features/proyectos/ProyectosCards';
 import {
   EMPTY_FILTERS,
   buildProyectosSheets,
@@ -35,17 +36,10 @@ export default function Proyectos() {
   const projectSort = useSort<ProyectoSortField>('nombre');
   const orderSort = useSort<OrdenSortField>('fecha_creacion', 'desc');
 
-  // Siempre debe haber un proyecto seleccionado mientras exista alguno.
+  // La pantalla empieza sin proyecto seleccionado; si el elegido deja de existir, se quita la selección.
   useEffect(() => {
-    if (proyectosList.length === 0) {
+    if (selectedProyectoId != null && !proyectosList.some(proyecto => proyecto.id === selectedProyectoId)) {
       setSelectedProyectoId(null);
-      return;
-    }
-
-    const stillExists = selectedProyectoId != null && proyectosList.some(proyecto => proyecto.id === selectedProyectoId);
-
-    if (!stillExists) {
-      setSelectedProyectoId(proyectosList[0].id);
     }
   }, [proyectosList, selectedProyectoId]);
 
@@ -137,10 +131,11 @@ export default function Proyectos() {
         />
       </div>
 
-      <ProyectoDetailCard
+      <ProyectoDashboard
         proyecto={selectedProyecto}
         ordenes={selectedProjectOrders}
-        pieceCountByOrderId={pieceCountByOrderId}
+        piezas={piezasList}
+        onClearSelection={() => setSelectedProyectoId(null)}
       />
 
       <ProyectoFormDialog form={proyectoForm} />

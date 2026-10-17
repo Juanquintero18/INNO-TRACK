@@ -1,6 +1,6 @@
 /**
- * Tarjetas del módulo de proyectos: listado de proyectos, órdenes del
- * proyecto seleccionado y resumen del proyecto.
+ * Tarjetas del módulo de proyectos: listado de proyectos y órdenes del
+ * proyecto seleccionado. El resumen del proyecto está en ProyectoDashboard.
  */
 import type { ReactNode } from 'react';
 import { ListOrdered } from 'lucide-react';
@@ -22,10 +22,8 @@ import {
   EMPTY_FILTERS,
   TODOS_LOS_ESTADOS,
   formatStatusLabel,
-  normalizeStatus,
   orderStatusOptions,
   projectStatusOptions,
-  sortOrdenesByFechaDesc,
   type CountById,
   type ListFilters,
   type OrdenSortField,
@@ -351,147 +349,6 @@ export function OrdenesCard({
               {ordenes.length === 0 && <EmptyRow colSpan={5}>Este proyecto aun no tiene ordenes registradas.</EmptyRow>}
             </TableBody>
           </Table>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function Metric({ label, children, className, valueClassName }: { label: string; children: ReactNode; className: string; valueClassName: string }) {
-  return (
-    <div className={className}>
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className={valueClassName}>{children}</p>
-    </div>
-  );
-}
-
-interface ProyectoDetailCardProps {
-  proyecto: Proyecto | null;
-  /** Todas las órdenes del proyecto, sin los filtros de la tabla de órdenes. */
-  ordenes: Orden[];
-  pieceCountByOrderId: CountById;
-}
-
-/** Resumen ejecutivo del proyecto seleccionado con sus órdenes y piezas asociadas. */
-export function ProyectoDetailCard({ proyecto, ordenes, pieceCountByOrderId }: ProyectoDetailCardProps) {
-  const fechas = ordenes.map(orden => orden.fecha_creacion).filter((fecha): fecha is string => Boolean(fecha));
-  const primeraOrden = fechas.reduce((min, fecha) => (!min || fecha < min ? fecha : min), '');
-  const ultimaOrden = fechas.reduce((max, fecha) => (!max || fecha > max ? fecha : max), '');
-  const totalPiezas = ordenes.reduce((total, orden) => total + (pieceCountByOrderId.get(orden.id) ?? 0), 0);
-
-  const ordenesPorEstado = new Map<string, number>();
-  for (const orden of ordenes) {
-    const estado = normalizeStatus(orden.estado) || 'sin_estado';
-    ordenesPorEstado.set(estado, (ordenesPorEstado.get(estado) ?? 0) + 1);
-  }
-
-  const infoClass = 'rounded-lg border bg-muted/20 p-4';
-  const infoValueClass = 'mt-1 text-base font-semibold text-foreground';
-  const metricClass = 'rounded-lg border p-4';
-
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex flex-col gap-1">
-          <p className="font-semibold text-foreground">Detalle del proyecto</p>
-          <p className="text-sm text-muted-foreground">
-            Resumen ejecutivo del proyecto seleccionado con sus órdenes y piezas asociadas.
-          </p>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        {!proyecto ? (
-          <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
-            Selecciona un proyecto para visualizar su detalle y métricas.
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Metric label="Código" className={infoClass} valueClassName={infoValueClass}>
-                {proyecto.codigo || 'Sin código'}
-              </Metric>
-              <Metric label="Estado" className={infoClass} valueClassName={infoValueClass}>
-                {formatStatusLabel(proyecto.estado)}
-              </Metric>
-              <Metric label="Fecha inicio" className={infoClass} valueClassName={infoValueClass}>
-                {formatFecha(proyecto.fecha_inicio)}
-              </Metric>
-              <Metric label="Fecha fin" className={infoClass} valueClassName={infoValueClass}>
-                {formatFecha(proyecto.fecha_fin)}
-              </Metric>
-            </div>
-
-            <Metric
-              label="Descripción"
-              className="rounded-lg border bg-background p-4"
-              valueClassName="mt-2 text-sm text-foreground whitespace-pre-wrap"
-            >
-              {proyecto.descripcion || 'Sin descripción registrada.'}
-            </Metric>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Metric label="Órdenes totales" className={metricClass} valueClassName="mt-1 text-2xl font-bold text-foreground">
-                {ordenes.length}
-              </Metric>
-              <Metric label="Piezas totales" className={metricClass} valueClassName="mt-1 text-2xl font-bold text-foreground">
-                {totalPiezas}
-              </Metric>
-              <Metric label="Primera orden" className={metricClass} valueClassName="mt-1 text-sm font-semibold text-foreground">
-                {formatFecha(primeraOrden || null)}
-              </Metric>
-              <Metric label="Última orden" className={metricClass} valueClassName="mt-1 text-sm font-semibold text-foreground">
-                {formatFecha(ultimaOrden || null)}
-              </Metric>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">Distribución de órdenes por estado</p>
-              <div className="flex flex-wrap gap-2">
-                {ordenesPorEstado.size > 0 ? (
-                  Array.from(ordenesPorEstado.entries()).map(([estado, count]) => (
-                    <Badge key={estado} variant="secondary">
-                      {formatStatusLabel(estado)}: {count}
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge variant="outline">Sin órdenes registradas</Badge>
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-lg border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Orden</TableHead>
-                    <TableHead>Fecha creación</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Piezas</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {ordenes.length > 0 ? (
-                    sortOrdenesByFechaDesc(ordenes).map(orden => (
-                      <TableRow key={orden.id}>
-                        <TableCell className="font-mono text-primary font-medium">
-                          {orden.codigo_orden || `Orden #${orden.id}`}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">{formatFecha(orden.fecha_creacion)}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{formatStatusLabel(orden.estado)}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">{pieceCountByOrderId.get(orden.id) ?? 0}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <EmptyRow colSpan={4}>Este proyecto no tiene órdenes registradas.</EmptyRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
         )}
       </CardContent>
     </Card>
