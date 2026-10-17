@@ -14,9 +14,19 @@ interface ImportFlowOptions {
   title: string;
   templateFileName: string;
   successMessage: string;
+  /** Texto del botón que abre la importación, si la pantalla tiene más de una. */
+  buttonName?: string;
 }
 
-export async function runImportFlow({ route, userId, resourcePath, title, templateFileName, successMessage }: ImportFlowOptions) {
+export async function runImportFlow({
+  route,
+  userId,
+  resourcePath,
+  title,
+  templateFileName,
+  successMessage,
+  buttonName = 'Importar Excel',
+}: ImportFlowOptions) {
   const downloads: string[] = [];
   vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
     downloads.push(this.download);
@@ -26,7 +36,7 @@ export async function runImportFlow({ route, userId, resourcePath, title, templa
 
   const api = await renderApp(route, userId ? { userId } : {});
 
-  fireEvent.click(screen.getByRole('button', { name: 'Importar Excel' }));
+  fireEvent.click(screen.getByRole('button', { name: buttonName }));
   const dialog = screen.getByRole('dialog');
   expect(within(dialog).getByText(title)).toBeInTheDocument();
 

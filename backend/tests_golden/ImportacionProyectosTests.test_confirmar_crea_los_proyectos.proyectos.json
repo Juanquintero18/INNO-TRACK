@@ -1,0 +1,41 @@
+{
+  "body": [
+    {
+      "codigo": "AQ-01",
+      "descripcion": "Toboganes del parque.",
+      "estado": "activo",
+      "fecha_fin": null,
+      "fecha_inicio": "2026-01-10",
+      "id": 1,
+      "nombre": "Aquaventura"
+    },
+    {
+      "codigo": null,
+      "descripcion": null,
+      "estado": "pausado",
+      "fecha_fin": null,
+      "fecha_inicio": null,
+      "id": 2,
+      "nombre": "Sin órdenes"
+    },
+    {
+      "codigo": "PRJ-010",
+      "descripcion": "Toboganes",
+      "estado": "activo",
+      "fecha_fin": "2026-12-15",
+      "fecha_inicio": "2026-06-01",
+      "id": 3,
+      "nombre": "Parque Norte"
+    },
+    {
+      "codigo": null,
+      "descripcion": null,
+      "estado": "planeacion",
+      "fecha_fin": null,
+      "fecha_inicio": null,
+      "id": 4,
+      "nombre": "Mantenimiento"
+    }
+  ],
+  "status": 200
+}

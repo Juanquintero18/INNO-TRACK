@@ -1,0 +1,24 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_ordenes.xlsx\"",
+  "filas": [
+    [
+      "proyecto",
+      "codigo_orden",
+      "fecha_creacion",
+      "estado"
+    ],
+    [
+      "PRJ-010",
+      "ORD-100",
+      "2026-06-03",
+      "abierta"
+    ],
+    [
+      "Parque Acuático Norte",
+      "ORD-101",
+      null,
+      "en_proceso"
+    ]
+  ],
+  "status": 200
+}

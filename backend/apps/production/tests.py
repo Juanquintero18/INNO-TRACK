@@ -1,7 +1,11 @@
 """Pruebas de caracterización de la API de producción."""
 
+from io import BytesIO
+
+from openpyxl import load_workbook
+
 from apps.production.models import Pieza, PiezaHistorial, PiezaMateriaPrima
-from config.testing import ApiTestCase
+from config.testing import ApiTestCase, csv_file
 
 
 BASE = "/api/production"
@@ -128,3 +132,93 @@ class PiezasTests(ApiTestCase):
     def test_endpoints_de_materiales_e_historial(self):
         self.assert_golden("materiales", self.client.get(f"{BASE}/pieza-materias-primas/"))
         self.assert_golden("historial", self.client.get(f"{BASE}/pieza-historial/"))
+
+
+class ImportacionProyectosTests(ApiTestCase):
+    URL = f"{BASE}/proyectos/import"
+
+    CSV_MIXTO = (
+        "Codigo,Nombre del proyecto,Descripcion,Inicio,Fin,Estado\n"
+        "PRJ-010,Parque Norte,Toboganes,2026-06-01,2026-12-15,Planeación\n"
+        "aq-01,Código repetido,,,,activo\n"
+        "PRJ-010,Repetido en archivo,,,,\n"
+        ",Fechas al revés,,2026-06-10,2026-06-01,activo\n"
+        ",Sin estado válido,,no-es-fecha,,cerrado\n"
+        ",,,,,\n"
+        "PRJ-011,,Sin nombre,,,\n"
+    )
+    CSV_LIMPIO = (
+        "codigo,nombre,descripcion,fecha_inicio,fecha_fin,estado\n"
+        "PRJ-010,Parque Norte,Toboganes,2026-06-01,2026-12-15,activo\n"
+        ",Mantenimiento,,,,\n"
+    )
+
+    def test_plantilla(self):
+        response = self.client.get(f"{self.URL}/template/")
+        filas = [list(fila) for fila in load_workbook(BytesIO(response.content)).active.iter_rows(values_only=True)]
+
+        self.assert_golden_data("plantilla", {"status": response.status_code, "content_disposition": response["Content-Disposition"], "filas": filas})
+
+    def test_vista_previa_con_errores(self):
+        self.assert_golden("vista_previa", self.client.post(f"{self.URL}/preview/", {"file": csv_file(self.CSV_MIXTO, "proyectos.csv")}, format="multipart"))
+
+    def test_confirmar_crea_los_proyectos(self):
+        self.assert_golden("confirmar", self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "proyectos.csv")}, format="multipart"))
+        self.assert_golden("proyectos", self.client.get(f"{BASE}/proyectos/"))
+
+    def test_confirmar_con_errores_no_crea_nada(self):
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_MIXTO, "proyectos.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["created_count"], 0)
+        self.assertEqual(len(self.client.get(f"{BASE}/proyectos/").json()), 2)
+
+    def test_solo_el_administrador_importa(self):
+        self.login_as(self.trabajador)
+
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "proyectos.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 403)
+
+
+class ImportacionOrdenesTests(ApiTestCase):
+    URL = f"{BASE}/ordenes/import"
+
+    CSV_MIXTO = (
+        "Proyecto,Orden,Fecha,Estado\n"
+        "AQ-01,ORD-010,2026-03-01,En proceso\n"
+        "aquaventura,ord-001,,\n"
+        "Sin ordenes,ORD-001,,cerrada\n"
+        "Sin ordenes,ORD-001,,\n"
+        "Kalahari,ORD-020,,abierta\n"
+        "AQ-01,,31/02/2026,terminada\n"
+        ",,,\n"
+    )
+    CSV_LIMPIO = "proyecto,codigo_orden,fecha_creacion,estado\nAQ-01,ORD-010,2026-03-01,en_proceso\nSin órdenes,ORD-001,,\n"
+
+    def test_plantilla(self):
+        response = self.client.get(f"{self.URL}/template/")
+        filas = [list(fila) for fila in load_workbook(BytesIO(response.content)).active.iter_rows(values_only=True)]
+
+        self.assert_golden_data("plantilla", {"status": response.status_code, "content_disposition": response["Content-Disposition"], "filas": filas})
+
+    def test_vista_previa_con_errores(self):
+        self.assert_golden("vista_previa", self.client.post(f"{self.URL}/preview/", {"file": csv_file(self.CSV_MIXTO, "ordenes.csv")}, format="multipart"))
+
+    def test_confirmar_crea_las_ordenes_en_su_proyecto(self):
+        self.assert_golden("confirmar", self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "ordenes.csv")}, format="multipart"))
+        self.assert_golden("ordenes", self.client.get(f"{BASE}/ordenes/"))
+
+    def test_confirmar_con_errores_no_crea_nada(self):
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_MIXTO, "ordenes.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["created_count"], 0)
+        self.assertEqual(len(self.client.get(f"{BASE}/ordenes/").json()), 2)
+
+    def test_solo_el_administrador_importa(self):
+        self.login_as(self.almacenista)
+
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "ordenes.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 403)

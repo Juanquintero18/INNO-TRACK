@@ -14,6 +14,7 @@ import {
   type,
   within,
 } from '@/test/app-harness';
+import { runImportFlow } from '@/test/import-flow';
 
 const PROJECT_SEARCH = 'Buscar proyecto por nombre, codigo o estado...';
 const ORDER_SEARCH = 'Buscar orden por codigo o estado...';
@@ -314,5 +315,33 @@ describe('Proyectos', () => {
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancelar' }));
     fireEvent.click(screen.getByRole('button', { name: 'Nueva orden' }));
     expect(dom(screen.getByRole('dialog'))).toMatchSnapshot('nueva orden');
+  });
+
+  it('importa proyectos desde Excel', async () => {
+    const result = await runImportFlow({
+      route: '/proyectos',
+      buttonName: 'Importar proyectos',
+      resourcePath: '/api/production/proyectos/',
+      title: 'Importar Excel de proyectos',
+      templateFileName: 'plantilla_proyectos.xlsx',
+      successMessage: 'Se importaron 2 proyectos correctamente.',
+    });
+
+    expect(result.previewDom).toMatchSnapshot('vista previa con errores');
+    expect(result.requestsAfterConfirm).toMatchSnapshot('confirmacion y recarga');
+  });
+
+  it('importa órdenes desde Excel enlazadas a su proyecto', async () => {
+    const result = await runImportFlow({
+      route: '/proyectos',
+      buttonName: 'Importar órdenes',
+      resourcePath: '/api/production/ordenes/',
+      title: 'Importar Excel de órdenes',
+      templateFileName: 'plantilla_ordenes.xlsx',
+      successMessage: 'Se importaron 2 órdenes correctamente.',
+    });
+
+    expect(result.previewDom).toMatchSnapshot('vista previa con errores');
+    expect(result.requestsAfterConfirm).toMatchSnapshot('confirmacion y recarga');
   });
 });

@@ -2,7 +2,8 @@
  * Modulo de proyectos y ordenes de produccion.
  *
  * Permite administrar el maestro de proyectos y crear varias ordenes
- * dentro de cada proyecto para alimentar el flujo de piezas.
+ * dentro de cada proyecto para alimentar el flujo de piezas; ambos se pueden
+ * importar desde Excel.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -10,9 +11,13 @@ import { FolderKanban, Plus } from 'lucide-react';
 import { ExportExcelButton } from '@/components/ExportExcelButton';
 import { Button } from '@/components/ui/button';
 import { useAppData } from '@/contexts/AppDataContext';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog } from '@/features/importing/ImportExcelDialog';
+import { useExcelImport } from '@/features/importing/useExcelImport';
 import { OrdenFormDialog, ProyectoFormDialog } from '@/features/proyectos/ProyectoDialogs';
 import { ProyectoDashboard } from '@/features/proyectos/ProyectoDashboard';
 import { OrdenesCard, ProyectosCard } from '@/features/proyectos/ProyectosCards';
+import { ORDENES_IMPORT_COLUMNS, PROYECTOS_IMPORT_COLUMNS } from '@/features/proyectos/proyectos-import';
 import {
   EMPTY_FILTERS,
   buildProyectosSheets,
@@ -26,10 +31,13 @@ import {
 import { useOrdenForm } from '@/features/proyectos/useOrdenForm';
 import { useProyectoForm } from '@/features/proyectos/useProyectoForm';
 import { useProyectosDeletion } from '@/features/proyectos/useProyectosDeletion';
+import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
+import { ENDPOINTS } from '@/lib/api';
 
 export default function Proyectos() {
-  const { proyectosList, ordenesList, piezasList } = useAppData();
+  const { proyectosList, ordenesList, piezasList, refreshProductionData } = useAppData();
+  const { canManage } = useModulePermission('proyectos');
   const [selectedProyectoId, setSelectedProyectoId] = useState<number | null>(null);
   const [projectFilters, setProjectFilters] = useState(EMPTY_FILTERS);
   const [orderFilters, setOrderFilters] = useState(EMPTY_FILTERS);
@@ -60,6 +68,19 @@ export default function Proyectos() {
   const proyectoForm = useProyectoForm({ onCreated: setSelectedProyectoId });
   const ordenForm = useOrdenForm({ selectedProyectoId, onSaved: setSelectedProyectoId });
   const { deleteProyecto, deleteOrden } = useProyectosDeletion(pieceCountByOrderId);
+  const proyectosImporter = useExcelImport({
+    resourcePath: ENDPOINTS.proyectos,
+    templateFileName: 'plantilla_proyectos.xlsx',
+    successMessage: count => `Se importaron ${count} proyectos correctamente.`,
+    onImported: refreshProductionData,
+  });
+  // Las órdenes se enlazan a proyectos existentes: conviene importar primero los proyectos.
+  const ordenesImporter = useExcelImport({
+    resourcePath: ENDPOINTS.ordenes,
+    templateFileName: 'plantilla_ordenes.xlsx',
+    successMessage: count => `Se importaron ${count} órdenes correctamente.`,
+    onImported: refreshProductionData,
+  });
 
   const selectedProyecto = proyectosList.find(proyecto => proyecto.id === selectedProyectoId) ?? null;
   const selectedProjectOrders = ordenesList.filter(
@@ -94,6 +115,21 @@ export default function Proyectos() {
             fileName="proyectos"
             getSheets={() => buildProyectosSheets(sortedProyectos, ordenesList, orderCountByProjectId, pieceCountByOrderId)}
           />
+
+          {canManage && (
+            <>
+              <ImportExcelActions
+                onImport={proyectosImporter.open}
+                label="Importar proyectos"
+                rowHint="una fila por proyecto"
+              />
+              <ImportExcelActions
+                onImport={ordenesImporter.open}
+                label="Importar órdenes"
+                rowHint="una fila por orden indicando el código o nombre de su proyecto"
+              />
+            </>
+          )}
 
           <Button type="button" variant="outline" onClick={ordenForm.openNew}>
             <Plus className="w-4 h-4 mr-2" />
@@ -140,6 +176,18 @@ export default function Proyectos() {
 
       <ProyectoFormDialog form={proyectoForm} />
       <OrdenFormDialog form={ordenForm} />
+      <ImportExcelDialog
+        importer={proyectosImporter}
+        title="Importar Excel de proyectos"
+        inputId="proyectos-import-file"
+        columns={PROYECTOS_IMPORT_COLUMNS}
+      />
+      <ImportExcelDialog
+        importer={ordenesImporter}
+        title="Importar Excel de órdenes"
+        inputId="ordenes-import-file"
+        columns={ORDENES_IMPORT_COLUMNS}
+      />
     </motion.div>
   );
 }

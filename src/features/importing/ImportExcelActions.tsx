@@ -9,9 +9,11 @@ interface ImportExcelActionsProps {
   onImport: () => void;
   /** Por ejemplo "una fila por movimiento". */
   rowHint: string;
+  /** Texto del botón; útil cuando una pantalla importa más de un recurso. */
+  label?: string;
 }
 
-export function ImportExcelActions({ onImport, rowHint }: ImportExcelActionsProps) {
+export function ImportExcelActions({ onImport, rowHint, label = 'Importar Excel' }: ImportExcelActionsProps) {
   return (
     <div className="flex items-center gap-2">
       <Popover>
@@ -21,7 +23,7 @@ export function ImportExcelActions({ onImport, rowHint }: ImportExcelActionsProp
             variant="outline"
             size="icon"
             className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
-            aria-label="Recomendaciones para importar Excel"
+            aria-label={`Recomendaciones para ${label.charAt(0).toLowerCase()}${label.slice(1)}`}
           >
             <Info className="h-4 w-4" />
           </Button>
@@ -35,7 +37,7 @@ export function ImportExcelActions({ onImport, rowHint }: ImportExcelActionsProp
 
       <Button type="button" onClick={onImport} className="bg-emerald-600 text-white hover:bg-emerald-700">
         <Upload className="w-4 h-4 mr-2" />
-        Importar Excel
+        {label}
       </Button>
     </div>
   );

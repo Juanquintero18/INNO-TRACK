@@ -1,0 +1,125 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "proyectos.csv",
+    "header_observations": [
+      "Se interpretó 'Nombre del proyecto' como 'nombre'.",
+      "Se interpretó 'Inicio' como 'fecha_inicio'.",
+      "Se interpretó 'Fin' como 'fecha_fin'."
+    ],
+    "invalid_rows": 5,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {
+          "estado": "planeacion"
+        },
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "codigo": "PRJ-010",
+          "descripcion": "Toboganes",
+          "estado": "Planeación",
+          "fecha_fin": "2026-12-15",
+          "fecha_inicio": "2026-06-01",
+          "nombre": "Parque Norte"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe un registro con el código 'aq-01'."
+        ],
+        "resolved": {
+          "estado": "activo"
+        },
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "codigo": "aq-01",
+          "descripcion": "",
+          "estado": "activo",
+          "fecha_fin": "",
+          "fecha_inicio": "",
+          "nombre": "Código repetido"
+        }
+      },
+      {
+        "errors": [
+          "El código 'PRJ-010' está repetido en el archivo."
+        ],
+        "resolved": {
+          "estado": "planeacion"
+        },
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "codigo": "PRJ-010",
+          "descripcion": "",
+          "estado": "",
+          "fecha_fin": "",
+          "fecha_inicio": "",
+          "nombre": "Repetido en archivo"
+        }
+      },
+      {
+        "errors": [
+          "La fecha fin no puede ser anterior a la fecha inicio."
+        ],
+        "resolved": {
+          "estado": "activo"
+        },
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "codigo": "",
+          "descripcion": "",
+          "estado": "activo",
+          "fecha_fin": "2026-06-01",
+          "fecha_inicio": "2026-06-10",
+          "nombre": "Fechas al revés"
+        }
+      },
+      {
+        "errors": [
+          "La fecha de inicio debe usar formato YYYY-MM-DD o DD/MM/YYYY.",
+          "El estado 'cerrado' no existe. Usa planeacion, activo, pausado o finalizado."
+        ],
+        "resolved": {
+          "estado": "cerrado"
+        },
+        "row_number": 6,
+        "status": "error",
+        "values": {
+          "codigo": "",
+          "descripcion": "",
+          "estado": "cerrado",
+          "fecha_fin": "",
+          "fecha_inicio": "no-es-fecha",
+          "nombre": "Sin estado válido"
+        }
+      },
+      {
+        "errors": [
+          "El nombre del proyecto es obligatorio."
+        ],
+        "resolved": {
+          "estado": "planeacion"
+        },
+        "row_number": 7,
+        "status": "error",
+        "values": {
+          "codigo": "PRJ-011",
+          "descripcion": "Sin nombre",
+          "estado": "",
+          "fecha_fin": "",
+          "fecha_inicio": "",
+          "nombre": ""
+        }
+      }
+    ],
+    "total_rows": 6,
+    "valid_rows": 1
+  },
+  "status": 200
+}

@@ -1,0 +1,30 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_proyectos.xlsx\"",
+  "filas": [
+    [
+      "codigo",
+      "nombre",
+      "descripcion",
+      "fecha_inicio",
+      "fecha_fin",
+      "estado"
+    ],
+    [
+      "PRJ-010",
+      "Parque Acuático Norte",
+      "Toboganes y piscina de olas",
+      "2026-06-01",
+      "2026-12-15",
+      "planeacion"
+    ],
+    [
+      null,
+      "Mantenimiento Aquaventura",
+      null,
+      "2026-05-20",
+      null,
+      "activo"
+    ]
+  ],
+  "status": 200
+}

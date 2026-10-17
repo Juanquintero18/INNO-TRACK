@@ -1,0 +1,117 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "ordenes.csv",
+    "header_observations": [
+      "Se interpretó 'Orden' como 'codigo_orden'.",
+      "Se interpretó 'Fecha' como 'fecha_creacion'."
+    ],
+    "invalid_rows": 4,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {
+          "estado": "en_proceso",
+          "proyecto": "Aquaventura"
+        },
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "codigo_orden": "ORD-010",
+          "estado": "En proceso",
+          "fecha_creacion": "2026-03-01",
+          "proyecto": "AQ-01"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe la orden 'ord-001' en el proyecto 'Aquaventura'."
+        ],
+        "resolved": {
+          "estado": "abierta",
+          "proyecto": "Aquaventura"
+        },
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "codigo_orden": "ord-001",
+          "estado": "",
+          "fecha_creacion": "",
+          "proyecto": "aquaventura"
+        }
+      },
+      {
+        "errors": [],
+        "resolved": {
+          "estado": "cerrada",
+          "proyecto": "Sin órdenes"
+        },
+        "row_number": 4,
+        "status": "valid",
+        "values": {
+          "codigo_orden": "ORD-001",
+          "estado": "cerrada",
+          "fecha_creacion": "",
+          "proyecto": "Sin ordenes"
+        }
+      },
+      {
+        "errors": [
+          "La orden 'ORD-001' está repetida en el archivo para el proyecto 'Sin órdenes'."
+        ],
+        "resolved": {
+          "estado": "abierta",
+          "proyecto": "Sin órdenes"
+        },
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "codigo_orden": "ORD-001",
+          "estado": "",
+          "fecha_creacion": "",
+          "proyecto": "Sin ordenes"
+        }
+      },
+      {
+        "errors": [
+          "El proyecto no existe. Usa el código o el nombre de un proyecto registrado."
+        ],
+        "resolved": {
+          "estado": "abierta",
+          "proyecto": null
+        },
+        "row_number": 6,
+        "status": "error",
+        "values": {
+          "codigo_orden": "ORD-020",
+          "estado": "abierta",
+          "fecha_creacion": "",
+          "proyecto": "Kalahari"
+        }
+      },
+      {
+        "errors": [
+          "El código de la orden es obligatorio.",
+          "La fecha de creación debe usar formato YYYY-MM-DD o DD/MM/YYYY.",
+          "El estado 'terminada' no existe. Usa abierta, en_proceso, cerrada o cancelada."
+        ],
+        "resolved": {
+          "estado": "terminada",
+          "proyecto": "Aquaventura"
+        },
+        "row_number": 7,
+        "status": "error",
+        "values": {
+          "codigo_orden": "",
+          "estado": "terminada",
+          "fecha_creacion": "31/02/2026",
+          "proyecto": "AQ-01"
+        }
+      }
+    ],
+    "total_rows": 6,
+    "valid_rows": 2
+  },
+  "status": 200
+}

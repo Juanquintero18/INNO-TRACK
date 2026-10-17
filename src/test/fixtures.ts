@@ -418,6 +418,56 @@ export const importPreview = {
 
 /** Vistas previas de importación de otros recursos, por ruta del recurso en la API. */
 export const importPreviews: Record<string, typeof importPreview | Record<string, unknown>> = {
+  '/api/production/proyectos/': {
+    file_name: 'proyectos.xlsx',
+    file_errors: [],
+    header_observations: ["Se interpretó 'Inicio' como 'fecha_inicio'."],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      {
+        row_number: 2,
+        status: 'valid',
+        errors: [],
+        values: { codigo: 'PRJ-010', nombre: 'Parque Norte', descripcion: '', fecha_inicio: '2026-06-01', fecha_fin: '', estado: '' },
+        resolved: { estado: 'planeacion' },
+      },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ["Ya existe un registro con el código 'AQ-01'.", 'La fecha fin no puede ser anterior a la fecha inicio.'],
+        values: { codigo: 'AQ-01', nombre: 'Repetido', descripcion: '', fecha_inicio: '2026-06-10', fecha_fin: '2026-06-01', estado: 'activo' },
+        resolved: { estado: 'activo' },
+      },
+    ],
+  },
+  '/api/production/ordenes/': {
+    file_name: 'ordenes.xlsx',
+    file_errors: [],
+    header_observations: [],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      {
+        row_number: 2,
+        status: 'valid',
+        errors: [],
+        values: { proyecto: 'AQ-01', codigo_orden: 'ORD-010', fecha_creacion: '2026-03-01', estado: 'En proceso' },
+        resolved: { proyecto: 'Aquaventura', estado: 'en_proceso' },
+      },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ['El proyecto no existe. Usa el código o el nombre de un proyecto registrado.'],
+        values: { proyecto: 'Atlantis', codigo_orden: 'ORD-020', fecha_creacion: '', estado: '' },
+        resolved: { proyecto: null, estado: 'abierta' },
+      },
+    ],
+  },
   '/api/accounts/users/': {
     file_name: 'usuarios.xlsx',
     file_errors: [],

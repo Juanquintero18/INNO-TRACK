@@ -1,0 +1,53 @@
+{
+  "body": {
+    "created_count": 2,
+    "created_ids": [
+      3,
+      4
+    ],
+    "preview": {
+      "can_import": true,
+      "file_errors": [],
+      "file_name": "proyectos.csv",
+      "header_observations": [],
+      "invalid_rows": 0,
+      "rows": [
+        {
+          "errors": [],
+          "resolved": {
+            "estado": "activo"
+          },
+          "row_number": 2,
+          "status": "valid",
+          "values": {
+            "codigo": "PRJ-010",
+            "descripcion": "Toboganes",
+            "estado": "activo",
+            "fecha_fin": "2026-12-15",
+            "fecha_inicio": "2026-06-01",
+            "nombre": "Parque Norte"
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {
+            "estado": "planeacion"
+          },
+          "row_number": 3,
+          "status": "valid",
+          "values": {
+            "codigo": "",
+            "descripcion": "",
+            "estado": "",
+            "fecha_fin": "",
+            "fecha_inicio": "",
+            "nombre": "Mantenimiento"
+          }
+        }
+      ],
+      "total_rows": 2,
+      "valid_rows": 2
+    }
+  },
+  "status": 201
+}
