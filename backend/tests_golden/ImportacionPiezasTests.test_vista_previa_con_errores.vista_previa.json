@@ -1,0 +1,171 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "piezas.csv",
+    "header_observations": [
+      "Se interpretó 'Trace' como 'trace_id'.",
+      "Se interpretó 'Nombre pieza' como 'nombre'.",
+      "Se interpretó 'Responsable' como 'usuario'.",
+      "Se interpretó 'Gelcoat' como 'fecha_gelcoat'.",
+      "Se interpretó 'QC' como 'fecha_qc'.",
+      "Se interpretó 'Peso' como 'peso_real'.",
+      "Se interpretó 'Materias primas' como 'materiales'."
+    ],
+    "invalid_rows": 5,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {
+          "materiales": "Resina poliéster: 20; Fibra de vidrio: 10",
+          "orden": "ORD-001",
+          "proyecto": "Aquaventura",
+          "usuario": "Carlos"
+        },
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "fecha_gelcoat": "2026-06-05",
+          "fecha_qc": "",
+          "materiales": "Resina poliester: 20; Fibra de vidrio = 10",
+          "nombre": "Tobogán C",
+          "orden": "ORD-001",
+          "peso_real": "48.2",
+          "proyecto": "AQ-01",
+          "trace_id": "TR-0100",
+          "usuario": "carlos@innolution.test"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe un registro con el trace ID 'tr-0001'."
+        ],
+        "resolved": {
+          "materiales": null,
+          "orden": "ORD-001",
+          "proyecto": "Aquaventura",
+          "usuario": "Juan Administrador"
+        },
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "fecha_gelcoat": "2026-06-05",
+          "fecha_qc": "",
+          "materiales": "",
+          "nombre": "Repetida",
+          "orden": "ORD-001",
+          "peso_real": "",
+          "proyecto": "Aquaventura",
+          "trace_id": "tr-0001",
+          "usuario": "Juan Administrador"
+        }
+      },
+      {
+        "errors": [
+          "El trace ID 'TR-0100' está repetido en el archivo."
+        ],
+        "resolved": {
+          "materiales": null,
+          "orden": "ORD-002",
+          "proyecto": "Aquaventura",
+          "usuario": "Carla Mejía"
+        },
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "fecha_gelcoat": "2026-06-05",
+          "fecha_qc": "",
+          "materiales": "",
+          "nombre": "Repetida en archivo",
+          "orden": "ORD-002",
+          "peso_real": "",
+          "proyecto": "AQ-01",
+          "trace_id": "TR-0100",
+          "usuario": "Carla Mejía"
+        }
+      },
+      {
+        "errors": [
+          "La orden 'ORD-001' no existe en el proyecto 'Sin órdenes'."
+        ],
+        "resolved": {
+          "materiales": null,
+          "orden": null,
+          "proyecto": "Sin órdenes",
+          "usuario": "Carlos"
+        },
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "fecha_gelcoat": "2026-06-05",
+          "fecha_qc": "",
+          "materiales": "",
+          "nombre": "Orden ajena",
+          "orden": "ORD-001",
+          "peso_real": "",
+          "proyecto": "Sin ordenes",
+          "trace_id": "TR-0101",
+          "usuario": "carlos@innolution.test"
+        }
+      },
+      {
+        "errors": [
+          "El proyecto no existe. Usa el código o el nombre de un proyecto registrado.",
+          "El usuario no existe. Usa el correo o el nombre completo de un usuario registrado. ¿Quisiste decir 'admin@innolution.test'?",
+          "La fecha de gelcoat es obligatoria.",
+          "La fecha de QC debe usar formato YYYY-MM-DD o DD/MM/YYYY.",
+          "El peso real debe ser mayor que cero."
+        ],
+        "resolved": {
+          "materiales": null,
+          "orden": null,
+          "proyecto": null,
+          "usuario": null
+        },
+        "row_number": 6,
+        "status": "error",
+        "values": {
+          "fecha_gelcoat": "",
+          "fecha_qc": "no-fecha",
+          "materiales": "",
+          "nombre": "Usuario y proyecto",
+          "orden": "ORD-001",
+          "peso_real": "-3",
+          "proyecto": "Atlantis",
+          "trace_id": "TR-0102",
+          "usuario": "nadie@innolution.test"
+        }
+      },
+      {
+        "errors": [
+          "La materia prima 'Catalizador MEKP' está deshabilitada para nuevas piezas.",
+          "La cantidad de 'Resina poliéster' debe ser mayor que cero.",
+          "La materia prima 'Kevlar' no existe.",
+          "El material 'Gelcoat blanco' debe tener el formato 'Material: cantidad'."
+        ],
+        "resolved": {
+          "materiales": "Resina poliéster: 2",
+          "orden": "ORD-001",
+          "proyecto": "Aquaventura",
+          "usuario": "Carlos"
+        },
+        "row_number": 7,
+        "status": "error",
+        "values": {
+          "fecha_gelcoat": "2026-06-05",
+          "fecha_qc": "",
+          "materiales": "Catalizador MEKP: 1; Resina poliéster: 0; Resina poliéster: 2; Kevlar: 3; Gelcoat blanco",
+          "nombre": "Materiales",
+          "orden": "ORD-001",
+          "peso_real": "",
+          "proyecto": "AQ-01",
+          "trace_id": "TR-0103",
+          "usuario": "Carlos"
+        }
+      }
+    ],
+    "total_rows": 6,
+    "valid_rows": 1
+  },
+  "status": 200
+}

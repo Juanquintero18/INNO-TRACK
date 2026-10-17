@@ -15,6 +15,7 @@ import {
   type,
   within,
 } from '@/test/app-harness';
+import { runImportFlow } from '@/test/import-flow';
 
 const SEARCH = 'Buscar por nombre, trace ID, orden o proyecto...';
 
@@ -314,5 +315,25 @@ describe('Piezas', () => {
     fireEvent.keyDown(topDialog(), { key: 'Escape' });
     fireEvent.click(within(form).getByRole('button', { name: /Añadir materiales/ }));
     expect(dom(topDialog())).toMatchSnapshot('tras cerrar con Escape');
+  });
+
+  it('el trabajador importa piezas desde Excel', async () => {
+    const result = await runImportFlow({
+      route: '/piezas',
+      userId: USUARIO_TRABAJADOR,
+      resourcePath: '/api/production/piezas/',
+      title: 'Importar Excel de piezas',
+      templateFileName: 'plantilla_piezas.xlsx',
+      successMessage: 'Se importaron 2 piezas correctamente.',
+    });
+
+    expect(result.previewDom).toMatchSnapshot('vista previa con errores');
+    expect(result.requestsAfterConfirm).toMatchSnapshot('confirmacion y recarga');
+  });
+
+  it('no muestra la importación al almacenista', async () => {
+    await renderApp('/piezas', { userId: USUARIO_ALMACENISTA });
+
+    expect(screen.queryByRole('button', { name: 'Importar Excel' })).not.toBeInTheDocument();
   });
 });

@@ -418,6 +418,31 @@ export const importPreview = {
 
 /** Vistas previas de importación de otros recursos, por ruta del recurso en la API. */
 export const importPreviews: Record<string, typeof importPreview | Record<string, unknown>> = {
+  '/api/production/piezas/': {
+    file_name: 'piezas.xlsx',
+    file_errors: [],
+    header_observations: ["Se interpretó 'Responsable' como 'usuario'."],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      {
+        row_number: 2,
+        status: 'valid',
+        errors: [],
+        values: { trace_id: 'TR-0100', nombre: 'Tobogán curva C', proyecto: 'AQ-01', orden: 'ORD-001', usuario: 'carlos@innolution.test', materiales: 'Resina poliester: 20; Fibra de vidrio: 10' },
+        resolved: { proyecto: 'Aquaventura', orden: 'ORD-001', usuario: 'Carlos Operador', materiales: 'Resina poliéster: 20; Fibra de vidrio: 10' },
+      },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ["Ya existe un registro con el trace ID 'TR-0001'.", "La materia prima 'Catalizador MEKP' está deshabilitada para nuevas piezas."],
+        values: { trace_id: 'TR-0001', nombre: 'Repetida', proyecto: 'AQ-01', orden: 'ORD-001', usuario: 'Carlos', materiales: 'Catalizador MEKP: 1' },
+        resolved: { proyecto: 'Aquaventura', orden: 'ORD-001', usuario: 'Carlos Operador', materiales: null },
+      },
+    ],
+  },
   '/api/production/proyectos/': {
     file_name: 'proyectos.xlsx',
     file_errors: [],

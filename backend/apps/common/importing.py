@@ -221,12 +221,16 @@ class CatalogLookup:
         return None
 
     def not_found_error(self, raw_value: object) -> str:
-        """Mensaje de error para un valor ausente del catálogo, con sugerencia si la hay."""
+        """Mensaje de error para un valor ausente del catálogo, con sugerencia si la hay.
+
+        `not_found_message` puede incluir `{valor}` para nombrar el texto que no se encontró.
+        """
+        message = self.not_found_message.replace("{valor}", cell_to_text(raw_value))
         suggestion = self.suggest(raw_value)
 
         if suggestion:
-            return f"{self.not_found_message} ¿Quisiste decir '{suggestion}'?"
-        return self.not_found_message
+            return f"{message} ¿Quisiste decir '{suggestion}'?"
+        return message
 
 
 class DuplicateTracker:
@@ -245,7 +249,7 @@ class DuplicateTracker:
         if key in self._existing:
             return f"Ya existe un registro con {self.label} '{value}'."
         if key in self._seen_in_file:
-            return f"{self.label.capitalize()} '{value}' está repetido en el archivo."
+            return f"{self.label[0].upper()}{self.label[1:]} '{value}' está repetido en el archivo."
         self._seen_in_file.add(key)
         return None
 

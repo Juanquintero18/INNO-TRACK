@@ -1,0 +1,39 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_piezas.xlsx\"",
+  "filas": [
+    [
+      "trace_id",
+      "nombre",
+      "proyecto",
+      "orden",
+      "usuario",
+      "fecha_gelcoat",
+      "fecha_qc",
+      "peso_real",
+      "materiales"
+    ],
+    [
+      "TR-0100",
+      "Tobogán curva C",
+      "PRJ-010",
+      "ORD-100",
+      "carlos@innolution.com",
+      "2026-06-05",
+      "2026-06-12",
+      "48.20",
+      "Resina poliéster: 20; Fibra de vidrio: 10"
+    ],
+    [
+      "TR-0101",
+      "Tobogán recto D",
+      "Parque Acuático Norte",
+      "ORD-100",
+      "Carlos Operador",
+      "2026-06-06",
+      null,
+      null,
+      null
+    ]
+  ],
+  "status": 200
+}

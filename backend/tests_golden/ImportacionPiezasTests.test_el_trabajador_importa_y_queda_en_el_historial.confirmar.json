@@ -1,0 +1,65 @@
+{
+  "body": {
+    "created_count": 2,
+    "created_ids": [
+      2,
+      3
+    ],
+    "preview": {
+      "can_import": true,
+      "file_errors": [],
+      "file_name": "piezas.csv",
+      "header_observations": [],
+      "invalid_rows": 0,
+      "rows": [
+        {
+          "errors": [],
+          "resolved": {
+            "materiales": "Resina poliéster: 20; Fibra de vidrio: 10",
+            "orden": "ORD-002",
+            "proyecto": "Aquaventura",
+            "usuario": "Carlos"
+          },
+          "row_number": 2,
+          "status": "valid",
+          "values": {
+            "fecha_gelcoat": "2026-06-05",
+            "fecha_qc": "2026-06-12",
+            "materiales": "Resina poliéster: 20; Fibra de vidrio: 10",
+            "nombre": "Tobogán C",
+            "orden": "ORD-002",
+            "peso_real": "48.2",
+            "proyecto": "AQ-01",
+            "trace_id": "TR-0100",
+            "usuario": "carlos@innolution.test"
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {
+            "materiales": null,
+            "orden": "ORD-001",
+            "proyecto": "Aquaventura",
+            "usuario": "Juan Administrador"
+          },
+          "row_number": 3,
+          "status": "valid",
+          "values": {
+            "fecha_gelcoat": "2026-06-06",
+            "fecha_qc": "",
+            "materiales": "",
+            "nombre": "Tobogán D",
+            "orden": "ORD-001",
+            "peso_real": "",
+            "proyecto": "Aquaventura",
+            "trace_id": "TR-0101",
+            "usuario": "Juan Administrador"
+          }
+        }
+      ],
+      "total_rows": 2,
+      "valid_rows": 2
+    }
+  },
+  "status": 201
+}

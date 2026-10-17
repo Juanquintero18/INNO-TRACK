@@ -2,7 +2,8 @@
  * Pantalla de piezas fabricadas.
  *
  * Es el modulo mas completo del frontend: consulta piezas, registra materiales
- * asociados, calcula costos y mantiene la trazabilidad de produccion.
+ * asociados, calcula costos, mantiene la trazabilidad de produccion e importa
+ * piezas desde Excel.
  */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -13,6 +14,10 @@ import { SearchInput } from '@/components/data/SearchInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useAppData } from '@/contexts/AppDataContext';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog } from '@/features/importing/ImportExcelDialog';
+import { previewValue, type ImportPreviewColumn } from '@/features/importing/import-preview';
+import { useExcelImport } from '@/features/importing/useExcelImport';
 import { MaterialesConfigDialog } from '@/features/piezas/MaterialesConfigDialog';
 import { HistorialDetailDialog, PiezaDetailDialog } from '@/features/piezas/PiezaDetailDialogs';
 import { AddMaterialDialog, PiezaFormDialog } from '@/features/piezas/PiezaFormDialogs';
@@ -22,11 +27,21 @@ import { useMaterialesConfig } from '@/features/piezas/useMaterialesConfig';
 import { usePiezaForm } from '@/features/piezas/usePiezaForm';
 import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
+import { ENDPOINTS } from '@/lib/api';
 import type { Pieza, PiezaHistorial } from '@/lib/types';
 import { getErrorMessage } from '@/lib/utils';
 
+const IMPORT_COLUMNS: ImportPreviewColumn[] = [
+  { header: 'Trace ID', value: row => previewValue(row, 'trace_id'), className: 'font-mono' },
+  { header: 'Pieza', value: row => previewValue(row, 'nombre') },
+  { header: 'Proyecto', value: row => previewValue(row, 'proyecto') },
+  { header: 'Orden', value: row => previewValue(row, 'orden'), className: 'font-mono' },
+  { header: 'Responsable', value: row => previewValue(row, 'usuario') },
+  { header: 'Materiales', value: row => previewValue(row, 'materiales'), className: 'text-xs' },
+];
+
 export default function Piezas() {
-  const { piezasList, deleteEntity } = useAppData();
+  const { piezasList, deleteEntity, refreshProductionData } = useAppData();
   const { canManage, showPermissionDenied } = useModulePermission('piezas');
   const [search, setSearch] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
@@ -38,6 +53,13 @@ export default function Piezas() {
   const piezaForm = usePiezaForm({
     // Si el detalle de esa pieza está abierto, debe reflejar lo recién guardado.
     onUpdated: pieza => setSelected(current => (current?.id === pieza.id ? pieza : current)),
+  });
+
+  const importer = useExcelImport({
+    resourcePath: ENDPOINTS.piezas,
+    templateFileName: 'plantilla_piezas.xlsx',
+    successMessage: count => `Se importaron ${count} piezas correctamente.`,
+    onImported: refreshProductionData,
   });
 
   const filtered = filterPiezas(piezasList, { search, fechaInicio, fechaFin });
@@ -73,6 +95,13 @@ export default function Piezas() {
 
         <div className="flex flex-wrap items-center justify-end gap-2">
           <ExportExcelButton fileName="piezas" getSheets={() => buildPiezasSheets(sorted)} />
+
+          {canManage && (
+            <ImportExcelActions
+              onImport={importer.open}
+              rowHint="una fila por pieza con sus materiales como 'Resina: 20; Fibra: 10'"
+            />
+          )}
 
           {materialesConfig.isAdmin && (
             <Button type="button" variant="outline" onClick={materialesConfig.open}>
@@ -119,6 +148,7 @@ export default function Piezas() {
       <AddMaterialDialog form={piezaForm} />
       <PiezaDetailDialog pieza={selected} onClose={() => setSelected(null)} onSelectHistorial={setSelectedHistorial} />
       <HistorialDetailDialog item={selectedHistorial} onClose={() => setSelectedHistorial(null)} />
+      <ImportExcelDialog importer={importer} title="Importar Excel de piezas" inputId="piezas-import-file" columns={IMPORT_COLUMNS} />
     </motion.div>
   );
 }

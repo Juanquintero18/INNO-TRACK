@@ -222,3 +222,56 @@ class ImportacionOrdenesTests(ApiTestCase):
         response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "ordenes.csv")}, format="multipart")
 
         self.assertEqual(response.status_code, 403)
+
+
+class ImportacionPiezasTests(ApiTestCase):
+    URL = f"{BASE}/piezas/import"
+
+    CSV_MIXTO = (
+        "Trace,Nombre pieza,Proyecto,Orden,Responsable,Gelcoat,QC,Peso,Materias primas\n"
+        "TR-0100,Tobogán C,AQ-01,ORD-001,carlos@innolution.test,2026-06-05,,48.2,Resina poliester: 20; Fibra de vidrio = 10\n"
+        "tr-0001,Repetida,Aquaventura,ORD-001,Juan Administrador,2026-06-05,,,\n"
+        "TR-0100,Repetida en archivo,AQ-01,ORD-002,Carla Mejía,2026-06-05,,,\n"
+        "TR-0101,Orden ajena,Sin ordenes,ORD-001,carlos@innolution.test,2026-06-05,,,\n"
+        "TR-0102,Usuario y proyecto,Atlantis,ORD-001,nadie@innolution.test,,no-fecha,-3,\n"
+        "TR-0103,Materiales,AQ-01,ORD-001,Carlos,2026-06-05,,,Catalizador MEKP: 1; Resina poliéster: 0; Resina poliéster: 2; Kevlar: 3; Gelcoat blanco\n"
+        ",,,,,,,,\n"
+    )
+    CSV_LIMPIO = (
+        "trace_id,nombre,proyecto,orden,usuario,fecha_gelcoat,fecha_qc,peso_real,materiales\n"
+        "TR-0100,Tobogán C,AQ-01,ORD-002,carlos@innolution.test,2026-06-05,2026-06-12,48.2,Resina poliéster: 20; Fibra de vidrio: 10\n"
+        "TR-0101,Tobogán D,Aquaventura,ORD-001,Juan Administrador,2026-06-06,,,\n"
+    )
+
+    def test_plantilla(self):
+        response = self.client.get(f"{self.URL}/template/")
+        filas = [list(fila) for fila in load_workbook(BytesIO(response.content)).active.iter_rows(values_only=True)]
+
+        self.assert_golden_data("plantilla", {"status": response.status_code, "content_disposition": response["Content-Disposition"], "filas": filas})
+
+    def test_vista_previa_con_errores(self):
+        self.assert_golden("vista_previa", self.client.post(f"{self.URL}/preview/", {"file": csv_file(self.CSV_MIXTO, "piezas.csv")}, format="multipart"))
+
+    def test_el_trabajador_importa_y_queda_en_el_historial(self):
+        self.login_as(self.trabajador)
+
+        self.assert_golden("confirmar", self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "piezas.csv")}, format="multipart"))
+        self.assert_golden("piezas", self.client.get(f"{BASE}/piezas/"))
+
+        historial = PiezaHistorial.objects.get(pieza__trace_id="TR-0100")
+        self.assertEqual((historial.accion, historial.usuario_id), ("creacion", self.trabajador.id))
+
+    def test_confirmar_con_errores_no_crea_nada(self):
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_MIXTO, "piezas.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["created_count"], 0)
+        self.assertEqual(Pieza.objects.count(), 1)
+        self.assertEqual(PiezaMateriaPrima.objects.count(), 2)
+
+    def test_el_almacenista_no_puede_importar(self):
+        self.login_as(self.almacenista)
+
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO, "piezas.csv")}, format="multipart")
+
+        self.assertEqual(response.status_code, 403)
