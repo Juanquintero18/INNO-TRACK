@@ -1,0 +1,25 @@
+{
+  "body": [
+    {
+      "codigo_trabajador": "TRB-001",
+      "id": 1,
+      "nombre": "Pedro Gómez"
+    },
+    {
+      "codigo_trabajador": "TRB-002",
+      "id": 2,
+      "nombre": "Laura Ríos"
+    },
+    {
+      "codigo_trabajador": "TRB-020",
+      "id": 3,
+      "nombre": "Nora Paz"
+    },
+    {
+      "codigo_trabajador": "TRB-021",
+      "id": 4,
+      "nombre": "Iván Mora"
+    }
+  ],
+  "status": 200
+}

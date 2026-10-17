@@ -1,7 +1,7 @@
 /**
  * Columnas de la vista previa al importar movimientos desde Excel.
  */
-import { previewValue, type ImportPreviewColumn } from '@/features/importing/ImportExcelDialog';
+import { previewValue, type ImportPreviewColumn } from '@/features/importing/import-preview';
 
 export const MOVIMIENTOS_IMPORT_COLUMNS: ImportPreviewColumn[] = [
   { header: 'Material', value: row => previewValue(row, 'materia_prima') },

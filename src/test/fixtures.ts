@@ -418,6 +418,25 @@ export const importPreview = {
 
 /** Vistas previas de importación de otros recursos, por ruta del recurso en la API. */
 export const importPreviews: Record<string, typeof importPreview | Record<string, unknown>> = {
+  '/api/inventory/trabajadores/': {
+    file_name: 'trabajadores.xlsx',
+    file_errors: [],
+    header_observations: [],
+    total_rows: 2,
+    valid_rows: 1,
+    invalid_rows: 1,
+    can_import: false,
+    rows: [
+      { row_number: 2, status: 'valid', errors: [], values: { codigo_trabajador: 'TRB-020', nombre: 'Nora Paz' }, resolved: {} },
+      {
+        row_number: 3,
+        status: 'error',
+        errors: ["Ya existe un registro con el código 'TRB-001'."],
+        values: { codigo_trabajador: 'TRB-001', nombre: 'Repetido' },
+        resolved: {},
+      },
+    ],
+  },
   '/api/inventory/proveedores/': {
     file_name: 'proveedores.xlsx',
     file_errors: [],

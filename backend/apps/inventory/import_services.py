@@ -18,7 +18,7 @@ from apps.common.importing import (
     parse_decimal,
 )
 from apps.inventory.models import MateriaPrima, Proveedor, TrabajadorProduccion
-from apps.inventory.serializers import MovimientoInventarioSerializer, ProveedorSerializer
+from apps.inventory.serializers import MovimientoInventarioSerializer, ProveedorSerializer, TrabajadorProduccionSerializer
 from apps.inventory.services import TIPO_AJUSTE, TIPO_ENTRADA, TIPO_SALIDA, TIPOS_MOVIMIENTO
 
 
@@ -249,3 +249,52 @@ class ProveedorImportSpec(ImportSpec):
 
 
 PROVEEDORES_IMPORT = ProveedorImportSpec()
+
+
+# --- Trabajadores de producción ----------------------------------------------------
+
+
+class TrabajadorImportSpec(ImportSpec):
+    """Catálogo de operarios. Código y nombre son obligatorios y el código no se repite."""
+
+    headers = ["codigo_trabajador", "nombre"]
+    aliases = {
+        "codigo": "codigo_trabajador",
+        "cod": "codigo_trabajador",
+        "codigo trabajador": "codigo_trabajador",
+        "codigo del trabajador": "codigo_trabajador",
+        "nombre completo": "nombre",
+        "trabajador": "nombre",
+        "operario": "nombre",
+    }
+    sheet_title = "trabajadores"
+    template_file_name = "plantilla_trabajadores.xlsx"
+    example_rows = [
+        ["TRB-006", "Laura Gómez"],
+        ["TRB-007", "Andrés Pérez"],
+    ]
+
+    def new_context(self) -> DuplicateTracker:
+        return DuplicateTracker(TrabajadorProduccion.objects.values_list("codigo_trabajador", flat=True), "el código")
+
+    def validate_row(self, values, raw_row, codigos: DuplicateTracker) -> RowResult:
+        datos = {campo: values[campo].strip() for campo in self.headers}
+        errors = []
+
+        if not datos["codigo_trabajador"]:
+            errors.append("El código del trabajador es obligatorio.")
+        elif error_codigo := codigos.check(datos["codigo_trabajador"]):
+            errors.append(error_codigo)
+
+        if not datos["nombre"]:
+            errors.append("El nombre es obligatorio.")
+
+        return RowResult(errors=errors, payload=None if errors else datos)
+
+    def save(self, payload, user):
+        serializer = TrabajadorProduccionSerializer(data=payload)
+        serializer.is_valid(raise_exception=True)
+        return serializer.save()
+
+
+TRABAJADORES_IMPORT = TrabajadorImportSpec()

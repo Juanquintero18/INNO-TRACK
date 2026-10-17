@@ -11,21 +11,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { ImportPreview as ImportPreviewData, ImportPreviewRow } from '@/lib/types';
+import type { ImportPreview as ImportPreviewData } from '@/lib/types';
+import type { ImportPreviewColumn } from './import-preview';
 import type { ExcelImportController } from './useExcelImport';
-
-const EMPTY = '—';
-
-/** Columna de la tabla de vista previa, entre "Estado" y "Errores". */
-export interface ImportPreviewColumn {
-  header: string;
-  value: (row: ImportPreviewRow) => string;
-  className?: string;
-}
-
-/** Valor de una columna: el nombre reconocido en el sistema o, si no, el texto del archivo. */
-export const previewValue = (row: ImportPreviewRow, ...keys: string[]) =>
-  keys.map(key => row.resolved[key] ?? row.values[key]).find(value => value) || EMPTY;
 
 function PreviewCounter({ label, value, valueClassName }: { label: string; value: number; valueClassName: string }) {
   return (

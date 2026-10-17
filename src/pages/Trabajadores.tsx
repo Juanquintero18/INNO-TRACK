@@ -17,6 +17,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAppData } from '@/contexts/AppDataContext';
+import { ImportExcelActions } from '@/features/importing/ImportExcelActions';
+import { ImportExcelDialog } from '@/features/importing/ImportExcelDialog';
+import { previewValue, type ImportPreviewColumn } from '@/features/importing/import-preview';
+import { useExcelImport } from '@/features/importing/useExcelImport';
 import { useFormState } from '@/hooks/useFormState';
 import { useModulePermission } from '@/hooks/useModulePermission';
 import { useSort } from '@/hooks/useSort';
@@ -30,15 +34,26 @@ type SortField = 'codigo_trabajador' | 'nombre';
 
 const EMPTY_FORM = { codigo_trabajador: '', nombre: '' };
 
+const IMPORT_COLUMNS: ImportPreviewColumn[] = [
+  { header: 'Código', value: row => previewValue(row, 'codigo_trabajador'), className: 'font-mono' },
+  { header: 'Nombre', value: row => previewValue(row, 'nombre') },
+];
+
 /** Controla la vista, el formulario y las acciones CRUD de trabajadores. */
 export default function Trabajadores() {
-  const { trabajadoresList: trabajadores, setTrabajadoresList: setTrabajadores, deleteEntity } = useAppData();
+  const { trabajadoresList: trabajadores, setTrabajadoresList: setTrabajadores, deleteEntity, refreshInventoryData } = useAppData();
   const { canManage, showPermissionDenied } = useModulePermission('trabajadores');
   const [search, setSearch] = useState('');
   const { sortField, sortDirection, toggleSort } = useSort<SortField>('codigo_trabajador');
   const [openCreate, setOpenCreate] = useState(false);
   const [editingTrabajador, setEditingTrabajador] = useState<TrabajadorProduccion | null>(null);
   const form = useFormState(EMPTY_FORM);
+  const importer = useExcelImport({
+    resourcePath: ENDPOINTS.trabajadores,
+    templateFileName: 'plantilla_trabajadores.xlsx',
+    successMessage: count => `Se importaron ${count} trabajadores correctamente.`,
+    onImported: refreshInventoryData,
+  });
 
   // Filtra por nombre o codigo para localizar rapidamente al operario.
   const term = search.toLowerCase();
@@ -164,6 +179,8 @@ export default function Trabajadores() {
         <div className="flex flex-wrap items-center justify-end gap-2">
           <ExportExcelButton fileName="trabajadores" getSheets={getExportSheets} />
 
+          {canManage && <ImportExcelActions onImport={importer.open} rowHint="una fila por trabajador" />}
+
           {canManage && (
             <Button type="button" onClick={() => setOpenCreate(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -242,6 +259,13 @@ export default function Trabajadores() {
         <FormError message={form.error} />
         <FormActions onCancel={() => setOpenCreate(false)} submitLabel={editingTrabajador ? 'Actualizar' : 'Guardar'} />
       </FormDialog>
+
+      <ImportExcelDialog
+        importer={importer}
+        title="Importar Excel de trabajadores"
+        inputId="trabajadores-import-file"
+        columns={IMPORT_COLUMNS}
+      />
     </motion.div>
   );
 }

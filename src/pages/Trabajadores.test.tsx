@@ -13,6 +13,7 @@ import {
   type,
   within,
 } from '@/test/app-harness';
+import { runImportFlow } from '@/test/import-flow';
 
 describe('Trabajadores', () => {
   it('muestra el listado completo al administrador', async () => {
@@ -140,5 +141,24 @@ describe('Trabajadores', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Nuevo trabajador' }));
     expect(dom(screen.getByRole('dialog'))).toMatchSnapshot('tras cerrar con Escape');
+  });
+
+  it('importa trabajadores desde Excel', async () => {
+    const result = await runImportFlow({
+      route: '/trabajadores',
+      resourcePath: '/api/inventory/trabajadores/',
+      title: 'Importar Excel de trabajadores',
+      templateFileName: 'plantilla_trabajadores.xlsx',
+      successMessage: 'Se importaron 2 trabajadores correctamente.',
+    });
+
+    expect(result.previewDom).toMatchSnapshot('vista previa con errores');
+    expect(result.requestsAfterConfirm).toMatchSnapshot('confirmacion y recarga');
+  });
+
+  it('no muestra la importación a quien no puede editar', async () => {
+    await renderApp('/trabajadores', { userId: USUARIO_TRABAJADOR });
+
+    expect(screen.queryByRole('button', { name: 'Importar Excel' })).not.toBeInTheDocument();
   });
 });

@@ -1,0 +1,63 @@
+{
+  "body": {
+    "can_import": false,
+    "file_errors": [],
+    "file_name": "movimientos.csv",
+    "header_observations": [
+      "Se interpretó 'Codigo' como 'codigo_trabajador'.",
+      "Se interpretó 'Nombre completo' como 'nombre'."
+    ],
+    "invalid_rows": 3,
+    "rows": [
+      {
+        "errors": [],
+        "resolved": {},
+        "row_number": 2,
+        "status": "valid",
+        "values": {
+          "codigo_trabajador": "TRB-020",
+          "nombre": "Nora Paz"
+        }
+      },
+      {
+        "errors": [
+          "Ya existe un registro con el código 'trb-001'."
+        ],
+        "resolved": {},
+        "row_number": 3,
+        "status": "error",
+        "values": {
+          "codigo_trabajador": "trb-001",
+          "nombre": "Ya existe"
+        }
+      },
+      {
+        "errors": [
+          "El código 'TRB-020' está repetido en el archivo."
+        ],
+        "resolved": {},
+        "row_number": 4,
+        "status": "error",
+        "values": {
+          "codigo_trabajador": "TRB-020",
+          "nombre": "Repetido"
+        }
+      },
+      {
+        "errors": [
+          "El nombre es obligatorio."
+        ],
+        "resolved": {},
+        "row_number": 5,
+        "status": "error",
+        "values": {
+          "codigo_trabajador": "TRB-021",
+          "nombre": ""
+        }
+      }
+    ],
+    "total_rows": 4,
+    "valid_rows": 1
+  },
+  "status": 200
+}

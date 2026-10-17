@@ -1,0 +1,18 @@
+{
+  "content_disposition": "attachment; filename=\"plantilla_trabajadores.xlsx\"",
+  "filas": [
+    [
+      "codigo_trabajador",
+      "nombre"
+    ],
+    [
+      "TRB-006",
+      "Laura Gómez"
+    ],
+    [
+      "TRB-007",
+      "Andrés Pérez"
+    ]
+  ],
+  "status": 200
+}

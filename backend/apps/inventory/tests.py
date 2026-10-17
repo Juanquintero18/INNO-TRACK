@@ -256,3 +256,38 @@ class ImportacionProveedoresTests(ApiTestCase):
         response = self.client.post(f"{self.URL}/commit/", {"file": csv_file(self.CSV_LIMPIO)}, format="multipart")
 
         self.assertEqual(response.status_code, 403)
+
+
+class ImportacionTrabajadoresTests(ApiTestCase):
+    URL = f"{BASE}/trabajadores/import"
+
+    CSV_MIXTO = (
+        "Codigo,Nombre completo\n"
+        "TRB-020,Nora Paz\n"
+        "trb-001,Ya existe\n"
+        "TRB-020,Repetido\n"
+        ",\n"
+        "TRB-021,\n"
+    )
+
+    def test_plantilla(self):
+        response = self.client.get(f"{self.URL}/template/")
+        filas = [list(fila) for fila in load_workbook(BytesIO(response.content)).active.iter_rows(values_only=True)]
+
+        self.assert_golden_data("plantilla", {"status": response.status_code, "content_disposition": response["Content-Disposition"], "filas": filas})
+
+    def test_vista_previa_con_errores(self):
+        self.assert_golden("vista_previa", self.client.post(f"{self.URL}/preview/", {"file": csv_file(self.CSV_MIXTO)}, format="multipart"))
+
+    def test_confirmar_crea_los_trabajadores(self):
+        limpio = "codigo_trabajador,nombre\nTRB-020,Nora Paz\nTRB-021,Iván Mora\n"
+
+        self.assert_golden("confirmar", self.client.post(f"{self.URL}/commit/", {"file": csv_file(limpio)}, format="multipart"))
+        self.assert_golden("trabajadores", self.client.get(f"{BASE}/trabajadores/"))
+
+    def test_solo_el_administrador_importa(self):
+        self.login_as(self.almacenista)
+
+        response = self.client.post(f"{self.URL}/commit/", {"file": csv_file("codigo_trabajador,nombre\nTRB-020,Nora\n")}, format="multipart")
+
+        self.assertEqual(response.status_code, 403)

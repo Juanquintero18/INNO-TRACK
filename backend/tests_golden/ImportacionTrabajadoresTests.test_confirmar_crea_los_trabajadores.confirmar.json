@@ -1,0 +1,41 @@
+{
+  "body": {
+    "created_count": 2,
+    "created_ids": [
+      3,
+      4
+    ],
+    "preview": {
+      "can_import": true,
+      "file_errors": [],
+      "file_name": "movimientos.csv",
+      "header_observations": [],
+      "invalid_rows": 0,
+      "rows": [
+        {
+          "errors": [],
+          "resolved": {},
+          "row_number": 2,
+          "status": "valid",
+          "values": {
+            "codigo_trabajador": "TRB-020",
+            "nombre": "Nora Paz"
+          }
+        },
+        {
+          "errors": [],
+          "resolved": {},
+          "row_number": 3,
+          "status": "valid",
+          "values": {
+            "codigo_trabajador": "TRB-021",
+            "nombre": "Iván Mora"
+          }
+        }
+      ],
+      "total_rows": 2,
+      "valid_rows": 2
+    }
+  },
+  "status": 201
+}
